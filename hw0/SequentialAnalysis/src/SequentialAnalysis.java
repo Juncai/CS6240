@@ -50,7 +50,7 @@ public class SequentialAnalysis {
             stats = getPriceMapWithBufferedReader(isr, priceMap);
 
         } catch (IOException ex) {
-            ex.printStackTrace();
+//            ex.printStackTrace();
             return;
         }
 
@@ -151,13 +151,22 @@ public class SequentialAnalysis {
         return true;
     }
 
-    public int getMinDiff(String t1, String t2) throws ParseException {
+    public int getMinDiff(String t1, String t2) {
         // time format: HHMM
-        // return t1 - t2 in minutes
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-        Date date1 = format.parse(formatTime(t1));
-        Date date2 = format.parse(formatTime(t2));
-        return (int)((date1.getTime() - date2.getTime()) / 60000);
+        // return t1 - t2 in minutes, t1 should always later than t2
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+            Date date1 = format.parse(formatTime(t1));
+            Date date2 = format.parse(formatTime(t2));
+            long timeDiff = (date1.getTime() - date2.getTime()) / 6000;
+            if (timeDiff <= 0) {
+                timeDiff += 1440;
+            }
+
+            return (int) timeDiff;
+        } catch (ParseException ex) {
+            return -1;
+        }
     }
 
     public List<String[]> getSortedPrices(HashMap<String, List<Double>> priceMap) {
@@ -170,7 +179,11 @@ public class SequentialAnalysis {
         Comparator<String[]> comp = new Comparator<String[]>() {
             @Override
             public int compare(String[] o1, String[] o2) {
-                return o1[1].compareTo(o2[1]);
+                if (Double.parseDouble(o1[1]) > (Double.parseDouble(o2[1]))) {
+                    return 1;
+                } else {
+                    return -1;
+                }
             }
         };
         Collections.sort(priceList, comp);
@@ -245,7 +258,7 @@ public class SequentialAnalysis {
 //    if ArrDelay < 0 then ArrDelayMinutes should be zero
 //    if ArrDelayMinutes >= 15 then ArrDel15 should be false
     public boolean sanityCheck(String[] values) {
-        if (values.length < 110) return false;
+        if (values.length != 110) return false;
         try {
             // Indices
             // # ARR = DEP + 11
@@ -323,7 +336,7 @@ public class SequentialAnalysis {
                 if (arrDelayNew >= 15 && !arrDel15) return false;
             }
 
-        } catch (Exception ex) {
+        } catch (NumberFormatException ex) {
 //            ex.printStackTrace();
             return false;
         }

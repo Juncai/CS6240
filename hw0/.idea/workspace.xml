@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="df840904-4a30-4b17-9698-eee9f629f81e" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SequentialAnalysis/SequentialAnalysis.iml" afterPath="$PROJECT_DIR$/SequentialAnalysis/SequentialAnalysis.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SequentialAnalysis/src/SequentialAnalysis.java" afterPath="$PROJECT_DIR$/SequentialAnalysis/src/SequentialAnalysis.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SequentialAnalysis/src/SequentialAnalysisTest.java" afterPath="$PROJECT_DIR$/SequentialAnalysis/src/SequentialAnalysisTest.java" />
     </list>
@@ -30,14 +28,12 @@
       <file leaf-file-name="SequentialAnalysis.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/SequentialAnalysis/src/SequentialAnalysis.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.11704312">
-              <caret line="305" column="0" selection-start-line="305" selection-start-column="0" selection-end-line="305" selection-end-column="0" />
+            <state vertical-scroll-proportion="4.7002053">
+              <caret line="267" column="48" selection-start-line="267" selection-start-column="48" selection-end-line="267" selection-end-column="48" />
               <folding>
                 <element signature="n#!!doc" expanded="true" />
                 <element signature="imports" expanded="true" />
                 <element signature="e#1523#1545#0" expanded="true" />
-                <element signature="e#6692#6693#0" expanded="true" />
-                <element signature="e#6753#6754#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -47,7 +43,7 @@
         <entry file="file://$PROJECT_DIR$/SequentialAnalysis/src/SequentialAnalysisTest.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="10" column="22" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
+              <caret line="15" column="42" selection-start-line="15" selection-start-column="42" selection-end-line="15" selection-end-column="42" />
               <folding />
             </state>
           </provider>
@@ -524,9 +520,6 @@
     <history-entry file="SequentialAnalysisTest_testParseCSVLine - 2016.01.15 at 06h 25m 03s.xml">
       <configuration name="SequentialAnalysisTest.testParseCSVLine" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="SequentialAnalysisTest_testSanityCheck - 2016.01.13 at 08h 41m 49s.xml">
-      <configuration name="SequentialAnalysisTest.testSanityCheck" configurationId="JUnit" />
-    </history-entry>
     <history-entry file="SequentialAnalysisTest_testSanityCheck - 2016.01.13 at 08h 42m 29s.xml">
       <configuration name="SequentialAnalysisTest.testSanityCheck" configurationId="JUnit" />
     </history-entry>
@@ -546,6 +539,9 @@
       <configuration name="SequentialAnalysisTest.testSanityCheck" configurationId="JUnit" />
     </history-entry>
     <history-entry file="SequentialAnalysisTest_testSanityCheck - 2016.01.15 at 06h 56m 00s.xml">
+      <configuration name="SequentialAnalysisTest.testSanityCheck" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="SequentialAnalysisTest_testSanityCheck - 2016.01.15 at 07h 57m 16s.xml">
       <configuration name="SequentialAnalysisTest.testSanityCheck" configurationId="JUnit" />
     </history-entry>
   </component>
@@ -593,12 +589,12 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/SequentialAnalysis/src/SequentialAnalysis.java</url>
-          <line>312</line>
+          <line>162</line>
           <properties />
-          <option name="timeStamp" value="7" />
+          <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="8" />
+      <option name="time" value="14" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -615,8 +611,6 @@
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
             <element signature="e#1523#1545#0" expanded="true" />
-            <element signature="e#6692#6693#0" expanded="true" />
-            <element signature="e#6753#6754#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -637,8 +631,6 @@
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
             <element signature="e#1523#1545#0" expanded="true" />
-            <element signature="e#6692#6693#0" expanded="true" />
-            <element signature="e#6753#6754#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -659,8 +651,6 @@
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
             <element signature="e#1523#1545#0" expanded="true" />
-            <element signature="e#6692#6693#0" expanded="true" />
-            <element signature="e#6753#6754#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -681,8 +671,6 @@
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
             <element signature="e#1523#1545#0" expanded="true" />
-            <element signature="e#6692#6693#0" expanded="true" />
-            <element signature="e#6753#6754#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -711,8 +699,6 @@
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
             <element signature="e#1523#1545#0" expanded="true" />
-            <element signature="e#6692#6693#0" expanded="true" />
-            <element signature="e#6753#6754#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -733,8 +719,6 @@
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
             <element signature="e#1523#1545#0" expanded="true" />
-            <element signature="e#6692#6693#0" expanded="true" />
-            <element signature="e#6753#6754#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -750,21 +734,19 @@
     <entry file="file://$PROJECT_DIR$/SequentialAnalysis/src/SequentialAnalysisTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="10" column="22" selection-start-line="10" selection-start-column="22" selection-end-line="10" selection-end-column="22" />
+          <caret line="15" column="42" selection-start-line="15" selection-start-column="42" selection-end-line="15" selection-end-column="42" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/SequentialAnalysis/src/SequentialAnalysis.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.11704312">
-          <caret line="305" column="0" selection-start-line="305" selection-start-column="0" selection-end-line="305" selection-end-column="0" />
+        <state vertical-scroll-proportion="4.7002053">
+          <caret line="267" column="48" selection-start-line="267" selection-start-column="48" selection-end-line="267" selection-end-column="48" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
             <element signature="imports" expanded="true" />
             <element signature="e#1523#1545#0" expanded="true" />
-            <element signature="e#6692#6693#0" expanded="true" />
-            <element signature="e#6753#6754#0" expanded="true" />
           </folding>
         </state>
       </provider>
