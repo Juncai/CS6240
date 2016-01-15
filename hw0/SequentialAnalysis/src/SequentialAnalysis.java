@@ -39,6 +39,57 @@ import java.util.zip.GZIPInputStream;
 
 public class SequentialAnalysis {
 
+    // constants for indices
+    // CRS_ARR_TIME 40
+    // CRS_DEP_TIME 29
+    // CRS_ELAPSED_TIME 50
+    private final static int CRS_ARR_TIME = 40;
+    private final static int CRS_DEP_TIME = 29;
+    private final static int CRS_ELAPSED_TIME = 50;
+    private final static int[] indShouldNotBeZero = {29, 40};
+
+    // ORIGIN_AIRPORT_ID 11
+    // ORIGIN_AIRPORT_SEQ_ID 12
+    // ORIGIN_CITY_MARKET_ID 13
+    // ORIGIN_STATE_FIPS 17
+    // ORIGIN_WAC 19
+    // DEST_AIRPORT_ID 20 (do we need DIV_AIRPORT_ID?)
+    // DEST_AIRPORT_SEQ_ID 21
+    // DEST_CITY_MARKET_ID 22
+    // DEST_STATE_FIPS 26
+    // DEST_WAC 28
+    private final static int[] indShouldLargerThanZero = {11, 12, 13, 17, 19, 20, 21, 22, 26, 28};
+
+    // ORIGIN 14
+    // ORIGIN_CITY_NAME 15
+    // ORIGIN_STATE_ABR 16
+    // ORIGIN_STATE_NM 18
+    // DEST 23
+    // DEST_CITY_NAME 24
+    // DEST_STATE_ABR 25
+    // DEST_STATE_NM 27
+    private final static int[] indSholdNotBeEmpty = {14, 15, 16, 18, 23, 24, 25, 27};
+
+    // CANCELLED 47
+    private final static int CANCELLED = 47;
+
+    // DEP_TIME 30
+    // ARR_TIME 41
+    // ACTUAL_ELAPSED_TIME 51
+    // ARR_DELAY 42
+    // ARR_DELAY_NEW 43
+    // ARR_DEL15 44
+    // UNIQUE_CARRIER 6
+    // AVG_TICKET_PRICE 109
+    private final static int DEP_TIME = 30;
+    private final static int ARR_TIME = 41;
+    private final static int ACTUAL_ELAPSED_TIME = 51;
+    private final static int ARR_DELAY = 42;
+    private final static int ARR_DELAY_NEW = 43;
+    private final static int ARR_DEL15 = 44;
+    private final static int UNIQUE_CARRIER = 6;
+    private final static int AVG_TICKET_PRICE = 109;
+
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("The usage is $ java SequentialAnalysis GZIIPED_FILE_PATH");
@@ -106,10 +157,8 @@ public class SequentialAnalysis {
             if (!sanityCheck(values)) {
                 k++;
             } else {
-                // UNIQUE_CARRIER 6
-                // AVG_TICKET_PRICE 109
-                carrier = values[6];
-                price = Double.parseDouble(values[109]);
+                carrier = values[UNIQUE_CARRIER];
+                price = Double.parseDouble(values[AVG_TICKET_PRICE]);
                 if (!priceMap.containsKey(carrier)) {
                     priceMap.put(carrier, Arrays.asList(1.0, price));
                 } else {
@@ -160,17 +209,6 @@ public class SequentialAnalysis {
         return values.toArray(new String[1]);
     }
 
-    // Rules
-    //    CRSArrTime and CRSDepTime should not be zero
-    //    timeZone = CRSArrTime - CRSDepTime - CRSElapsedTime;
-    //    timeZone % 60 should be 0
-    //    AirportID,  AirportSeqID, CityMarketID, StateFips, Wac should be larger than 0
-    //    Origin, Destination,  CityName, State, StateName should not be empty
-    //    For flights that not Cancelled:
-    //    ArrTime -  DepTime - ActualElapsedTime - timeZone should be zero
-    //    if ArrDelay > 0 then ArrDelay should equal to ArrDelayMinutes
-    //    if ArrDelay < 0 then ArrDelayMinutes should be zero
-    //    if ArrDelayMinutes >= 15 then ArrDel15 should be false
     /**
      * Check the number of fields in the record and the logic between some fields
      * @param values a String array contains the value of each field in a record
@@ -179,87 +217,54 @@ public class SequentialAnalysis {
     public boolean sanityCheck(String[] values) {
         if (values.length != 110) return false;
         try {
-            // Indices
-            // # ARR = DEP + 11
-            // # not 0
-            // CRS_ARR_TIME 40
-            // CRS_DEP_TIME 29
-            int[] indShouldNotBeZero = {29, 40};
+            // check not 0
             for (int i : indShouldNotBeZero) {
                 if (Double.parseDouble(values[i]) == 0) return false;
             }
 
-            // CRS_ELAPSED_TIME 50
-            double timeZone = getMinDiff(values[40], values[29]) - Double.parseDouble(values[50]);
+            double timeZone = getMinDiff(values[CRS_ARR_TIME], values[CRS_DEP_TIME])
+                    - Double.parseDouble(values[CRS_ELAPSED_TIME]);
             double residue = timeZone % 60;
             if (residue != 0) return false;
 
-            // # DEST = ORIGIN + 9
-            // # larger than 0
-            // ORIGIN_AIRPORT_ID 11
-            // ORIGIN_AIRPORT_SEQ_ID 12
-            // ORIGIN_CITY_MARKET_ID 13
-            // ORIGIN_STATE_FIPS 17
-            // ORIGIN_WAC 19
-            // DEST_AIRPORT_ID 20 (do we need DIV_AIRPORT_ID?)
-            // DEST_AIRPORT_SEQ_ID 21
-            // DEST_CITY_MARKET_ID 22
-            // DEST_STATE_FIPS 26
-            // DEST_WAC 28
-            int[] indShouldLargerThanZero = {11, 12, 13, 17, 19, 20, 21, 22, 26, 28};
+            // check larger than 0
             for (int i : indShouldLargerThanZero) {
                 if (Double.parseDouble(values[i]) <= 0) return false;
             }
 
-            // # not empty
-            // ORIGIN 14
-            // ORIGIN_CITY_NAME 15
-            // ORIGIN_STATE_ABR 16
-            // ORIGIN_STATE_NM 18
-            // DEST 23
-            // DEST_CITY_NAME 24
-            // DEST_STATE_ABR 25
-            // DEST_STATE_NM 27
-            int[] indSholdNotBeEmpty = {14, 15, 16, 18, 23, 24, 25, 27};
+            // check not empty
             for (int i : indSholdNotBeEmpty) {
                 if (values[i].isEmpty()) return false;
             }
 
-            // # for flights not canceled
-            // CANCELLED 47
-            boolean isCanceled = (Double.parseDouble(values[47]) == 1);
-            // # ArrTime -  DepTime - ActualElapsedTime - timeZone should be zero
-            // DEP_TIME 30
-            // ARR_TIME 41
-            // ACTUAL_ELAPSED_TIME 51
+            // for flights not canceled
+            boolean isCanceled = (Double.parseDouble(values[CANCELLED]) == 1);
+
+            // ArrTime -  DepTime - ActualElapsedTime - timeZone should be zero
             if (!isCanceled) {
-                double timeDiff = getMinDiff(values[41], values[30]) - Double.parseDouble(values[51]) - timeZone;
+                double timeDiff = getMinDiff(values[ARR_TIME], values[DEP_TIME])
+                        - Double.parseDouble(values[ACTUAL_ELAPSED_TIME]) - timeZone;
                 if (timeDiff != 0) return false;
 
-                // ARR_DELAY 42
-                // ARR_DELAY_NEW 43
-                double arrDelay = Double.parseDouble(values[42]);
-                double arrDelayNew = Double.parseDouble(values[43]);
-                //        if ArrDelay > 0 then ArrDelay should equal to ArrDelayMinutes
+                double arrDelay = Double.parseDouble(values[ARR_DELAY]);
+                double arrDelayNew = Double.parseDouble(values[ARR_DELAY_NEW]);
+                // if ArrDelay > 0 then ArrDelay should equal to ArrDelayMinutes
                 if (arrDelay > 0) {
                     if (arrDelay != arrDelayNew) return false;
                 }
 
-                //    if ArrDelay < 0 then ArrDelayMinutes???? should be zero
+                // if ArrDelay < 0 then ArrDelayMinutes???? should be zero
                 if (arrDelay < 0) {
                     if (arrDelayNew != 0) return false;
                 }
-                //    if ArrDelayMinutes >= 15 then ArrDel15 should be false
-                // ARR_DEL15 44
-                boolean arrDel15 = (Double.parseDouble(values[44]) == 1);
+                // if ArrDelayMinutes >= 15 then ArrDel15 should be false
+                boolean arrDel15 = (Double.parseDouble(values[ARR_DEL15]) == 1);
                 if (arrDelayNew >= 15 && !arrDel15) return false;
             }
 
             // finally, check the carrier field and price field
-            // UNIQUE_CARRIER 6
-            // AVG_TICKET_PRICE 109
-            if (values[6].isEmpty()) return false;
-            double avgTicketPrice = Double.parseDouble(values[109]);
+            if (values[UNIQUE_CARRIER].isEmpty()) return false;
+            double avgTicketPrice = Double.parseDouble(values[AVG_TICKET_PRICE]);
 
         } catch (NumberFormatException ex) {
             // ex.printStackTrace();
