@@ -7,6 +7,7 @@
  *      F (number of sane flights)
  *      C p (where C is the carrier code, p is the mean price of tickets)
  */
+
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,15 +24,8 @@ public class SequentialAnalysis {
         }
 
         String gzipFilePath = args[0];
-
-        long startTime = System.currentTimeMillis();
-
         SequentialAnalysis sa = new SequentialAnalysis();
         sa.unzipAndAnalyze(gzipFilePath);
-
-        long endTime = System.currentTimeMillis();
-        System.out.println("Time used:");
-        System.out.println((endTime - startTime) / 1000);
     }
 
     /**
@@ -86,14 +80,12 @@ public class SequentialAnalysis {
         String[] values;
         while ((line = br.readLine()) != null) {
             numOfFlights++;
-            // System.out.println(line);
             values = parseCSVLine(line);
             if (!sanityCheck(values)) {
-                // System.out.println(numOfFlights - 1);
                 k++;
             } else {
                 // UNIQUE_CARRIER 6
-                // AVG_TICKET_PRICE 110
+                // AVG_TICKET_PRICE 109
                 carrier = values[6];
                 price = Double.parseDouble(values[109]);
                 if (!priceMap.containsKey(carrier)) {
@@ -141,7 +133,7 @@ public class SequentialAnalysis {
                 }
             }
         }
-        values.add(sb.toString());
+        values.add(sb.toString());  // last field
 
         return values.toArray(new String[1]);
     }
@@ -176,8 +168,8 @@ public class SequentialAnalysis {
             }
 
             // CRS_ELAPSED_TIME 50
-            int timeZone = getMinDiff(values[40], values[29]) - Integer.parseInt(values[50]);
-            int residue = timeZone % 60;
+            double timeZone = getMinDiff(values[40], values[29]) - Double.parseDouble(values[50]);
+            double residue = timeZone % 60;
             if (residue != 0) return false;
 
             // # DEST = ORIGIN + 9
@@ -241,6 +233,12 @@ public class SequentialAnalysis {
                 if (arrDelayNew >= 15 && !arrDel15) return false;
             }
 
+            // finally, check the carrier field and price field
+            // UNIQUE_CARRIER 6
+            // AVG_TICKET_PRICE 109
+            if (values[6].isEmpty()) return false;
+            double avgTicketPrice = Double.parseDouble(values[109]);
+
         } catch (NumberFormatException ex) {
             // ex.printStackTrace();
             return false;
@@ -260,9 +258,9 @@ public class SequentialAnalysis {
             SimpleDateFormat format = new SimpleDateFormat("HHmm");
             Date date1 = format.parse(t1);
             Date date2 = format.parse(t2);
-            long timeDiff = (date1.getTime() - date2.getTime()) / 6000;
+            long timeDiff = (date1.getTime() - date2.getTime()) / 60000;
             if (timeDiff <= 0) {
-                timeDiff += 1440;
+                timeDiff += 24 * 60;
             }
 
             return (int) timeDiff;
@@ -282,8 +280,8 @@ public class SequentialAnalysis {
     public List<String[]> getSortedPrices(HashMap<String, List<Double>> priceMap) {
         List<String[]> priceList = new ArrayList<>();
         for (String key : priceMap.keySet()) {
-            Double avgPrice = priceMap.get(key).get(1) / priceMap.get(key).get(0);
-            priceList.add(new String[]{key, avgPrice + ""});
+            double avgPrice = priceMap.get(key).get(1) / priceMap.get(key).get(0);
+            priceList.add(new String[]{key, String.format("%.2f", avgPrice)});
         }
 
         Comparator<String[]> comp = new Comparator<String[]>() {
@@ -307,7 +305,7 @@ public class SequentialAnalysis {
      */
     public void printPriceList(List<String[]> priceList) {
         for (String[] strs : priceList) {
-            System.out.format("%s %.2f%n", strs[0], Double.parseDouble(strs[1]));
+            System.out.format("%s %s%n", strs[0], strs[1]);
         }
     }
 }
