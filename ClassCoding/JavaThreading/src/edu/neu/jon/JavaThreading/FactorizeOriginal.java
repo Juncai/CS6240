@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 public class FactorizeOriginal {
     public static void main(String[] args) {
+        long startTime = System.currentTimeMillis();
+
         if (args.length != 1) {
             System.out.println("Usage: java Factor 123456");
         }
@@ -16,6 +18,8 @@ public class FactorizeOriginal {
         for (BigInteger xx : factors) {
             System.out.println(xx);
         }
+        long endTime = System.currentTimeMillis();
+        System.out.println((endTime - startTime) / 1000);
     }
 
     static ArrayList<BigInteger> factorize(BigInteger nn) {
@@ -50,27 +54,3 @@ public class FactorizeOriginal {
     }
 }
 
-class BigMath {
-    public final static BigInteger TWO  = new BigInteger("2");
-    public final static BigInteger ZERO = new BigInteger("0");
-
-    static BigInteger sqrt(BigInteger nn) {
-        return sqrtSearch(nn, TWO, nn);
-    }
-
-    static BigInteger sqrtSearch(BigInteger nn, BigInteger lo, BigInteger hi) {
-        BigInteger xx = lo.add(hi).divide(TWO);
-
-        if (xx.equals(lo) || xx.equals(hi)) {
-            return xx;
-        }
-
-        BigInteger dy = nn.subtract(xx.multiply(xx));
-        if (dy.compareTo(ZERO) < 0) {
-            return sqrtSearch(nn, lo, xx);
-        }
-        else {
-            return sqrtSearch(nn, xx, hi);
-        }
-    }
-}

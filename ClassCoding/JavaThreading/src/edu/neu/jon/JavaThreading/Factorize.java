@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 public class Factorize {
     public static void main(String[] args) throws InterruptedException {
+        long startTime = System.currentTimeMillis();
+
         if (args.length != 1) {
             System.out.println("Usage: java Factorize 123456");
         }
@@ -29,6 +31,9 @@ public class Factorize {
         for (BigInteger xx : factors) {
             System.out.println(xx);
         }
+
+        long endTime = System.currentTimeMillis();
+        System.out.println((endTime - startTime) / 1000);
     }
 
     static ArrayList<BigInteger> factorize(BigInteger nn) {
@@ -76,11 +81,16 @@ public class Factorize {
             rn = BigMath.sqrt(nn);
         }
 
+        if (nn.compareTo(new BigInteger("2")) > 0) {
+            factors.add(nn);
+        }
+
         return factors;
     }
 
     public static ArrayList<BigInteger> factorizeByThreeAndAbove(BigInteger nn) {
-        BigInteger rn = BigMath.sqrt(nn);
+//        BigInteger rn = BigMath.sqrt(nn);
+        BigInteger rn = nn.divide(BigMath.TWO).add(BigInteger.ONE);
 
         System.out.println("Input: " + nn);
         System.out.println("Sqrt: "  + rn);
@@ -97,8 +107,9 @@ public class Factorize {
                 ii = ii.add(BigMath.TWO);
             }
         }
-
-        factors.add(nn);
+        if (nn.compareTo(new BigInteger("3")) > 0) {
+            factors.add(nn);
+        }
 
         return factors;
     }
