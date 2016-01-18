@@ -1,5 +1,3 @@
-package edu.neu.jon.JavaThreading;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 
