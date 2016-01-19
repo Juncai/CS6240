@@ -44,29 +44,86 @@ public class FactorizeMT {
             factors = factorizeSingle(nn);
         }
         if (t == 2) {
-            BigInteger[] newNNAndRN = factorizeWithTwo(nn, factors);
-            BigInteger newNN = newNNAndRN[0];
-            BigInteger rn = newNNAndRN[1];
-
-            BigInteger start1 = new BigInteger("3");
-            BigInteger start2 = new BigInteger("5");
-            BigInteger interval = new BigInteger("4");
-
-            WorkThread t1 = new WorkThread(newNN, rn, start1, interval);
-            WorkThread t2 = new WorkThread(newNN, rn, start2, interval);
-
-            t1.run();
-            t2.run();
-
-            t1.join();
-            t2.join();
-
-            factors.addAll(t1.factors);
-            factors.addAll(t2.factors);
+            factors = factorizeWithTwoThreads(nn);
         }
+        return factors;
+    }
+
+//    public static ArrayList<BigInteger> factorizeWithThreadsOld(BigInteger nn, int t) throws InterruptedException {
+//        ArrayList<BigInteger> factors = new ArrayList<BigInteger>();
+//
+//        BigInteger[] newNNAndRN = factorizeWithTwo(nn, factors);
+//        BigInteger newNN = newNNAndRN[0];
+//        BigInteger rn = newNNAndRN[1];
+//
+//        BigInteger start1 = new BigInteger("3");
+//        BigInteger start2 = new BigInteger("5");
+//        BigInteger interval = new BigInteger("4");
+//
+//        WorkThread t1 = new WorkThread(newNN, rn, start1, interval);
+//        WorkThread t2 = new WorkThread(newNN, rn, start2, interval);
+//
+//        t1.run();
+//        t2.run();
+//
+//        t1.join();
+//        t2.join();
+//
+//        factors.addAll(t1.factors);
+//        factors.addAll(t2.factors);
+//
+//        return factors;
+//    }
+
+    public static ArrayList<BigInteger> factorizeWithTwoThreads(BigInteger nn) throws InterruptedException {
+        ArrayList<BigInteger> factors = new ArrayList<BigInteger>();
+
+        BigInteger[] twoFactors = findTwoFactors(nn);
+        BigInteger f1 = twoFactors[0];
+        BigInteger f2 = twoFactors[1];
+        BigInteger nf1 = twoFactors[2];
+
+        WorkThread t1 = new WorkThread(f1);
+        WorkThread t2 = new WorkThread(f2);
+
+        t1.run();
+        t2.run();
+
+        t1.join();
+        t2.join();
+
+        for (BigInteger i = BigInteger.ZERO; i.compareTo(nf1) < 0; i = i.add(BigInteger.ONE)) {
+            factors.addAll(t1.factors);
+        }
+        factors.addAll(t2.factors);
 
         return factors;
     }
+
+
+    static BigInteger[] findTwoFactors(BigInteger nn) {
+        BigInteger rn = BigMath.sqrt(nn);
+        BigInteger f1, f2, nf1;
+        nf1 = BigInteger.ZERO;
+
+        System.out.println("Input: " + nn);
+        System.out.println("Sqrt: "  + rn);
+
+        f1 = rn;
+
+        while(!nn.mod(f1).equals(BigMath.ZERO)) {
+            f1 = f1.subtract(BigInteger.ONE);
+        }
+
+        while (nn.mod(f1).equals(BigMath.ZERO) ) {
+            nf1 = nf1.add(BigInteger.ONE);
+            nn = nn.divide(f1);
+        }
+
+        f2 = nn;
+        return new BigInteger[]{f1, f2, nf1};
+    }
+
 
     static ArrayList<BigInteger> factorizeHelper(BigInteger nn, BigInteger rn, BigInteger ii, BigInteger interval) {
         ArrayList<BigInteger> factors = new ArrayList<BigInteger>();
@@ -139,20 +196,14 @@ public class FactorizeMT {
 
 class WorkThread extends Thread {
     private BigInteger nn;
-    private BigInteger rn;
-    private BigInteger init;
-    private BigInteger interval;
     public ArrayList<BigInteger> factors;
 
-    public WorkThread (BigInteger nn, BigInteger rn, BigInteger init, BigInteger interval) {
+    public WorkThread (BigInteger nn) {
         this.nn = new BigInteger(nn.toString());
-        this.rn = new BigInteger(rn.toString());
-        this.init = new BigInteger(init.toString());
-        this.interval = new BigInteger(interval.toString());
     }
 
     public void run() {
-        this.factors = FactorizeMT.factorizeHelper(this.nn, this.rn, this.init, this.interval);
+        this.factors = FactorizeMT.factorizeSingle(this.nn);
     }
 }
 
