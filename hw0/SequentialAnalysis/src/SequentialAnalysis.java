@@ -4,19 +4,19 @@
  * #### My result with input file 323.csv.gz ######
      4082
      435940
-     WN 57.79
-     HP 65.39
-     AS 74.96
-     PI 189.67
-     CO 203.56
-     EA 269.25
-     PA (1) 283.09
-     US 287.81
-     TW 295.68
-     AA 304.96
-     DL 346.31
-     UA 541.65
-     NW 53856.85
+     WN 59.50
+     HP 67.06
+     AS 75.47
+     PI 190.54
+     CO 204.75
+     EA 273.33
+     PA 284.25
+     US 289.21
+     TW 298.97
+     AA 307.33
+     DL 348.12
+     UA 547.08
+     NW 54354.39
  * ################### Note about header handling ###################
  * I didn't include the header line as a record, so my K would be one
  * smaller than the reference result (4082 instead of 4083).
@@ -53,7 +53,7 @@ public class SequentialAnalysis {
     // ORIGIN_CITY_MARKET_ID 13
     // ORIGIN_STATE_FIPS 17
     // ORIGIN_WAC 19
-    // DEST_AIRPORT_ID 20 (do we need DIV_AIRPORT_ID?)
+    // DEST_AIRPORT_ID 20
     // DEST_AIRPORT_SEQ_ID 21
     // DEST_CITY_MARKET_ID 22
     // DEST_STATE_FIPS 26
@@ -79,7 +79,7 @@ public class SequentialAnalysis {
     // ARR_DELAY 42
     // ARR_DELAY_NEW 43
     // ARR_DEL15 44
-    // UNIQUE_CARRIER 6
+    // CARRIER 8
     // AVG_TICKET_PRICE 109
     private final static int DEP_TIME = 30;
     private final static int ARR_TIME = 41;
@@ -87,7 +87,7 @@ public class SequentialAnalysis {
     private final static int ARR_DELAY = 42;
     private final static int ARR_DELAY_NEW = 43;
     private final static int ARR_DEL15 = 44;
-    private final static int UNIQUE_CARRIER = 6;
+    private final static int CARRIER = 8;
     private final static int AVG_TICKET_PRICE = 109;
 
     public static void main(String[] args) {
@@ -157,7 +157,7 @@ public class SequentialAnalysis {
             if (!sanityCheck(values)) {
                 k++;
             } else {
-                carrier = values[UNIQUE_CARRIER];
+                carrier = values[CARRIER];
                 price = Double.parseDouble(values[AVG_TICKET_PRICE]);
                 if (!priceMap.containsKey(carrier)) {
                     priceMap.put(carrier, Arrays.asList(1.0, price));
@@ -263,7 +263,7 @@ public class SequentialAnalysis {
             }
 
             // finally, check the carrier field and price field
-            if (values[UNIQUE_CARRIER].isEmpty()) return false;
+            if (values[CARRIER].isEmpty()) return false;
             double avgTicketPrice = Double.parseDouble(values[AVG_TICKET_PRICE]);
 
         } catch (NumberFormatException ex) {
