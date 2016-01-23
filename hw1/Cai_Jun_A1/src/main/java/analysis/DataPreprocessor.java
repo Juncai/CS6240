@@ -1,6 +1,7 @@
-package edu.neu.jon.optAnalysis;
+package analysis;
 
 import java.io.*;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -11,28 +12,24 @@ public class DataPreprocessor {
     private long k;
     private long f;
     private Map<String, List<Double>> resMap;
+    private Set<String> eligibleCarrier;
 
-    public DataPreprocessor() {
+    public DataPreprocessor(Map<String, List<Double>> priceMap, Set<String> eligibleCarrier) {
         this.k = 0;
         this.f = 0;
-        this.resMap = new HashMap<String, List<Double>>();
+        this.resMap = priceMap;
+        this.eligibleCarrier = eligibleCarrier;
     }
 
     public long getK() {
         return this.k;
     }
 
-
     public long getF() {
         return this.f;
     }
 
-    public Map<String, List<Double>> getResMap() {
-        return this.resMap;
-    }
-
     public void unzipAndParseCSV(String gzPath) {
-//        List<String[]> records;
 
         try {
             FileInputStream fis = new FileInputStream(gzPath);
@@ -41,14 +38,17 @@ public class DataPreprocessor {
 
             getCSVRecords(isr);
         } catch (IOException ex) {
-            //  ex.printStackTrace();
+            return;
         }
     }
 
-
+    /**
+     * Get records from the given reader, then add to result map.
+     * @param reader Reader object
+     * @throws IOException
+     */
     public void getCSVRecords(Reader reader) throws IOException {
         BufferedReader br = new BufferedReader(reader);
-//        List<String[]> records = new ArrayList<String[]>();
         String carrier;
         Double price;
         List<Double> priceList;
@@ -166,10 +166,16 @@ public class DataPreprocessor {
             }
 
             // finally, check the carrier field and price field
-            if (values[OTPConsts.UNIQUE_CARRIER].isEmpty()) return false;
+            String carrier = values[OTPConsts.UNIQUE_CARRIER];
+            if (carrier.isEmpty()) return false;
             double avgTicketPrice = Double.parseDouble(values[OTPConsts.AVG_TICKET_PRICE]);
 
-        } catch (NumberFormatException ex) {
+            // if the FL_DATE is Jan 2015, add the carrier to the eligible carriers
+            if(values[OTPConsts.FL_DATE].startsWith(OTPConsts.ACTIVE_MONTH)) {
+                this.eligibleCarrier.add(carrier);
+            }
+
+        } catch (Exception ex) {
             // ex.printStackTrace();
             return false;
         }

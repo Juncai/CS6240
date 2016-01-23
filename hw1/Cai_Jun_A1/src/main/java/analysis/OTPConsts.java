@@ -1,36 +1,4 @@
-package edu.neu.jon.optAnalysis;
-/**
- * Created by jonca on 1/12/2016.
- *
- * #### My result with input file 323.csv.gz ######
-     4082
-     435940
-     WN 57.79
-     HP 65.39
-     AS 74.96
-     PI 189.67
-     CO 203.56
-     EA 269.25
-     PA (1) 283.09
-     US 287.81
-     TW 295.68
-     AA 304.96
-     DL 346.31
-     UA 541.65
-     NW 53856.85
- * ################### Note about header handling ###################
- * I didn't include the header line as a record, so my K would be one
- * smaller than the reference result (4082 instead of 4083).
- *
- * ##################################################################
- *
- * Input argument: path to gzip file
- * Output:
- *      K (number of corrupted lines)
- *      F (number of sane flights)
- *      C p (where C is the carrier code, p is the mean price of tickets)
- */
-
+package analysis;
 
 public class OTPConsts {
 
@@ -72,4 +40,6 @@ public class OTPConsts {
     public final static int ARR_DEL15 = 44;
     public final static int UNIQUE_CARRIER = 6;
     public final static int AVG_TICKET_PRICE = 109;
+
+    public final static String ACTIVE_MONTH = "2015-01";
 }

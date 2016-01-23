@@ -1,0 +1,27 @@
+####### Building the project: ########
+     gradle build
+
+####### Running the application: #####
+     - single-threaded (where DIR is the path to the data file folder):
+          gradle single -Pdir=DIR
+     - multi-threaded (where DIR is the path to the data file folder):
+          gradle multi -Pdir=DIR
+
+####### Results #######
+
+60457
+12598804
+AA 500.61 467.50
+OO 285.05 257.40
+VX 638.06 594.00
+MQ 286.34 267.75
+DL 570.19 480.51
+UA 957.43 865.44
+EV 293.61 273.06
+AS 203.15 171.60
+F9 135.37 82.11
+B6 500.76 462.48
+WN 139.61 117.00
+HA 278.32 122.85
+NK 487.51 469.37
+US 572.21 469.17
