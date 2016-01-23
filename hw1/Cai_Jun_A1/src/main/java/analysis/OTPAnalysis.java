@@ -4,7 +4,6 @@ package analysis;
 public class OTPAnalysis {
 
     public static void main(String[] args) throws InterruptedException {
-        long start = System.currentTimeMillis();
         String inputStr = "-input=";
         String pStr = "-p";
 
@@ -33,8 +32,5 @@ public class OTPAnalysis {
             ta.analyze(dir);
             ta.printResults();
         }
-
-        long end = System.currentTimeMillis();
-        System.out.println("Running time: " + (end - start) / 1000);
     }
 }

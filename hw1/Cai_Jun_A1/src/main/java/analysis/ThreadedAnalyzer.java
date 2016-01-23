@@ -11,6 +11,7 @@ public class ThreadedAnalyzer extends SequentialAnalyzer {
      * @throws InterruptedException
      */
     public void analyze(String dir) throws InterruptedException {
+
         File[] files  = new File(dir).listFiles();
         List<String> fileList1 = new ArrayList<String>();
         List<String> fileList2 = new ArrayList<String>();
