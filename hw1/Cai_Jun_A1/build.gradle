@@ -13,7 +13,7 @@ task single (type: JavaExec, dependsOn: classes) {
     if(project.hasProperty('dir')) {
         args('-input=' + dir)
     }
-    description = "Run the analysis program on OTP data."
+    description = "Run the analysis program on OTP data on single thread."
     main = "analysis.OTPAnalysis"
     classpath = sourceSets.main.runtimeClasspath
 }
@@ -22,7 +22,7 @@ task multi (type: JavaExec, dependsOn: classes) {
     if(project.hasProperty('dir')) {
         args(['-p', '-input=' + dir])
     }
-    description = "Run the analysis program on OTP data."
+    description = "Run the analysis program on OTP data on two thread."
     main = "analysis.OTPAnalysis"
     classpath = sourceSets.main.runtimeClasspath
 }

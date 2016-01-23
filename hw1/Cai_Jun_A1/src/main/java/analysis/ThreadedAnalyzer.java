@@ -29,8 +29,8 @@ public class ThreadedAnalyzer extends SequentialAnalyzer {
         WorkingThread t1 = new WorkingThread(fileList1);
         WorkingThread t2 = new WorkingThread(fileList2);
 
-        t1.run();
-        t2.run();
+        t1.start();
+        t2.start();
 
         t1.join();
         t2.join();

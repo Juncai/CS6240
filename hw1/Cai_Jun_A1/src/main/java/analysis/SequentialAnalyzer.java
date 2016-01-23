@@ -114,10 +114,23 @@ public class SequentialAnalyzer {
         sortPrices();
         Map<String, Double> medianMap = new HashMap<String, Double>();
         for (String k : this.eligibleCarrier) {
-            int medianIndex = this.priceMap.get(k).size() / 2;
-            medianMap.put(k, this.priceMap.get(k).get(medianIndex));
+            medianMap.put(k, getMedian(this.priceMap.get(k)));
         }
         return medianMap;
+    }
+
+    /**
+     * Get median from a sorted list of doubles
+     * @param lod a sorted list of doubles
+     * @return the median
+     */
+    public double getMedian(List<Double> lod) {
+        int len = lod.size();
+        if (len % 2 == 0) {
+            return (lod.get(len / 2) + lod.get((len / 2) + 1)) / 2;
+        } else {
+            return lod.get((len / 2) + 1);
+        }
     }
 
     /**

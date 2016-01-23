@@ -17,7 +17,6 @@ public class OTPAnalysis {
 
         // single-threaded
         if (args.length == 1) {
-            System.out.println("Single-threaded analysis begins!");
             String dir = args[0].substring(7);
             SequentialAnalyzer sa = new SequentialAnalyzer();
             sa.batchAnalyze(dir);
@@ -26,7 +25,6 @@ public class OTPAnalysis {
 
         // multi-threaded
         if (args.length == 2) {
-            System.out.println("Multi-threaded analysis begins!");
             String dir = args[1].substring(7);
             ThreadedAnalyzer ta = new ThreadedAnalyzer();
             ta.analyze(dir);
