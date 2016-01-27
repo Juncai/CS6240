@@ -1,9 +1,5 @@
 package analysis;
 
-import org.apache.hadoop.util.Tool;
-import org.apache.hadoop.util.ToolRunner;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
@@ -22,7 +18,7 @@ import java.util.StringTokenizer;
  * Created by phoenix on 1/24/16.
  */
 
-public class MRPractice extends Configured implements Tool {
+public class MRPractice {
     public static class MyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
         private final IntWritable one = new IntWritable(1);
         private Text word = new Text();
@@ -52,14 +48,13 @@ public class MRPractice extends Configured implements Tool {
         }
     }
 
-    public int run (String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         Job job = new Job();
         job.setJarByClass(MRPractice.class);
         job.setJobName("Word Count");
 
-        // FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileInputFormat.addInputPath(job, new Path("input/text.txt"));
-        FileOutputFormat.setOutputPath(job, new Path("output/" + args[0]));
+        FileInputFormat.addInputPath(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
         job.setMapperClass(MyMapper.class);
         job.setReducerClass(MyReducer.class);
@@ -67,10 +62,6 @@ public class MRPractice extends Configured implements Tool {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
 
-        return job.waitForCompletion(true) ? 0 : 1;
+        System.exit(job.waitForCompletion(true) ? 0 : 1);
     }
-
-	public static void main(String[] args) throws Exception {
-		System.exit(ToolRunner.run(new MRPractice(), args));
-	}
 }
