@@ -11,6 +11,6 @@ hstop:
 	stop-yarn.sh
 	stop-dfs.sh
 
-phoenix:
-	hadoop fs -mkdir -p /user/phoenix
-	hadoop fs -mkdir -p /user/phoenix/input
+jon:
+	hadoop fs -mkdir -p /user/jon
+	hadoop fs -mkdir -p /user/jon/input

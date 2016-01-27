@@ -1,5 +1,3 @@
-package analysis;
-
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.hadoop.conf.Configuration;
@@ -58,8 +56,8 @@ public class MRPractice extends Configured implements Tool {
         job.setJobName("Word Count");
 
         // FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileInputFormat.addInputPath(job, new Path("input/text.txt"));
-        FileOutputFormat.setOutputPath(job, new Path("output/" + args[0]));
+        FileInputFormat.addInputPath(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
         job.setMapperClass(MyMapper.class);
         job.setReducerClass(MyReducer.class);
