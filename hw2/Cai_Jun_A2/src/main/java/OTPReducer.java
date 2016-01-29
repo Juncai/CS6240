@@ -29,7 +29,12 @@ public class OTPReducer extends Reducer<Text, Text, Text, DoubleWritable> {
             Text carrierMonth = new Text();
             DoubleWritable mean = new DoubleWritable();
 
+			// check if this carrier is still active in 2015
+			if (!DataPreprocessor.isActiveCarrier(values)) return;
+
+			int totalFl = 0;
             for (Text value : values) {
+				totalFl++;
                 month = DataPreprocessor.getMonth(value);
                 price = DataPreprocessor.getPrice(value);
                 if (!monthPrices.containsKey(month)) {
@@ -42,7 +47,7 @@ public class OTPReducer extends Reducer<Text, Text, Text, DoubleWritable> {
             }
 
             for (String mk : monthPrices.keySet()) {
-                carrierMonth.set(key.toString() + " " + mk);
+                carrierMonth.set(mk + "," + key.toString() + "," + totalFl);
                 mean.set(DataPreprocessor.getMean(monthPrices.get(mk)));
                 context.write(carrierMonth, mean);
             }

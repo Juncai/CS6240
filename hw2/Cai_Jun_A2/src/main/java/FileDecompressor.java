@@ -7,6 +7,7 @@ import org.apache.hadoop.io.compress.CompressionCodecFactory;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.File;
 import java.net.URI;
 
 /**
@@ -16,7 +17,13 @@ import java.net.URI;
 public class FileDecompressor {
 
     public static void main(String[] args) throws Exception {
-        String uri = args[0];
+		// for (File file : new File(args[0]).listFiles()) {
+            // unzip(file.getAbsolutePath());
+        // }
+		unzip(args[0]);
+	}
+	
+    public static void unzip(String uri) throws Exception {
         Configuration conf = new Configuration();
         FileSystem fs = FileSystem.get(URI.create(uri), conf);
 

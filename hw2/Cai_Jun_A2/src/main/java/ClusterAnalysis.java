@@ -1,3 +1,4 @@
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DoubleWritable;
@@ -34,9 +35,15 @@ public class ClusterAnalysis extends Configured implements Tool {
         job.setMapperClass(OTPMapper.class);
         job.setReducerClass(OTPReducer.class);
 
+		job.setMapOutputKeyClass(Text.class);
+		job.setMapOutputValueClass(Text.class);
+
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(DoubleWritable.class);
 
+        // set separator in the output to be ","
+        Configuration conf = job.getConfiguration();
+        conf.set("mapreduce.textoutputformat.separator", ",");
 
         return job.waitForCompletion(true) ? 0 : 1;
     }
