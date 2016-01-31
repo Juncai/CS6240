@@ -1,3 +1,5 @@
+package analysis;
+
 public class OTPConsts {
     // constant for invalid record
     public final static String INVALID = "INVALID";

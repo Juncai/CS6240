@@ -1,3 +1,6 @@
+envvar:
+	export AWS_CREDENTIAL_PROFILES_FILE=.aws/credentials
+
 jar:
 	gradle clean
 	gradle jar

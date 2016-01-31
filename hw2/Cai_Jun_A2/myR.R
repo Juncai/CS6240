@@ -10,17 +10,16 @@ require(plyr)
 carrier_flnum <- ddply(res,~carrier,summarise,totalFL=mean(totalFl))
 attach(carrier_flnum)
 sorted_carrier <- carrier_flnum[order(totalFL, decreasing=TRUE),]
-top_carriers <- sorted_carrier[1:10]
+top_carriers <- sorted_carrier[1:10,]
 top_carriers <- top_carriers$carrier
 # sorted_res <- sorted_res[carrier %in% top_carriers,]
 
 # loop through top carriers and plot the mean prices for each month
-for (i in 1:10) {
-	c_carrier <- top_carriers[i]
-	c_df <- res[carrier == c_carrier,]
-	attach(c_df)
-	c_sorted <- c_df[order(month)]
-	plot(c_sorted$month, c_sorted$meanPrice)
-}
-
+c_carrier <- top_carriers[1]
+c_df <- res[res$carrier == c_carrier,]
+attach(c_df)
+c_sorted <- c_df[order(month),]
+require(ggplot2)
+qplot(c_sorted$month, c_sorted$meanPrice)
+ggsave("test.PNG")
 

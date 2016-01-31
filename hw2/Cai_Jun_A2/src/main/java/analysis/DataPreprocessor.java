@@ -1,3 +1,5 @@
+package analysis;
+
 import org.apache.hadoop.io.Text;
 
 import java.io.*;
