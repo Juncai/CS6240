@@ -1,5 +1,3 @@
-package analysis;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -18,6 +16,7 @@ import org.apache.hadoop.util.ToolRunner;
 public class ClusterAnalysis extends Configured implements Tool {
 
     public int run (String[] args) throws Exception {
+
         Job job = new Job();
         job.setJarByClass(ClusterAnalysis.class);
         job.setJobName("ClusterAnalysis");
@@ -36,7 +35,8 @@ public class ClusterAnalysis extends Configured implements Tool {
 
         // set separator in the output to be ","
         Configuration conf = job.getConfiguration();
-        conf.set("mapreduce.textoutputformat.separator", ",");
+        // Configuration conf = new Configuration();
+        conf.set("mapreduce.output.textoutputformat.separator", ",");
 
         return job.waitForCompletion(true) ? 0 : 1;
     }

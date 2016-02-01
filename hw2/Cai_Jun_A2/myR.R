@@ -1,9 +1,16 @@
-setwd("./output")
-res <- read.csv(file="part-r-00000", head=FALSE)
+options(warn=-1)
+res <- data.frame(month=character(),
+                 carrier=character(), 
+                 totalFl=integer(), 
+				 meanPrice=double(),
+                 stringsAsFactors=FALSE) 
+
+filenames <- list.files("output", pattern="part-r-*", full.names=TRUE)
+for (i in 1:length(filenames))
+	res <- rbind(res, read.csv(file=filenames[i], head=FALSE))
+
+res <- res[complete.cases(res),]
 names(res) <- c("month", "carrier", "totalFl", "meanPrice")
-# attach(res)
-# sorted_res <- res[order(month, -meanPrice),]
-# sorted_res <- sorted_res[!is.na(totalFl)]
 
 # find the top 10 carriers with most flights
 require(plyr)
@@ -12,14 +19,34 @@ attach(carrier_flnum)
 sorted_carrier <- carrier_flnum[order(totalFL, decreasing=TRUE),]
 top_carriers <- sorted_carrier[1:10,]
 top_carriers <- top_carriers$carrier
-# sorted_res <- sorted_res[carrier %in% top_carriers,]
 
 # loop through top carriers and plot the mean prices for each month
+opar <- par(no.readonly=TRUE)
+# get min and max price, then config the y-axis
+min_price <- min(res[,4])
+max_price <- max(res[,4])
+
+colcolors <- rainbow(10)
+
 c_carrier <- top_carriers[1]
 c_df <- res[res$carrier == c_carrier,]
 attach(c_df)
 c_sorted <- c_df[order(month),]
-require(ggplot2)
-qplot(c_sorted$month, c_sorted$meanPrice)
-ggsave("test.PNG")
-
+plot(c_sorted$month, c_sorted$meanPrice, type="l",
+	 main="Mean Ticket Prices for Each Month for Each Carrier",
+	 xlab="Month", ylab="Mean Ticket Price",
+	 col="blue",
+	 ylim=c(min_price, max_price))
+ltys <- c(2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
+pchs <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+for (i in 1:10)
+{
+	c_carrier <- top_carriers[i]
+	c_df <- res[res$carrier == c_carrier,]
+	attach(c_df)
+	c_sorted <- c_df[order(month),]
+	lines(c_sorted$month, c_sorted$meanPrice, col=colcolors[i], pch=pchs[i], lty=ltys[i], type="o")
+}
+# create legends
+legend("topleft", inset=.05, title="Carrier", legend=top_carriers, lty=ltys, pch=pchs, col=colcolors)
+par(opar)
