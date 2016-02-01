@@ -1,13 +1,19 @@
 ---
-title: "TestRM"
-output: html_document
+title: "OTP Flight Ticket Price Analysis with Hadoop"
+author: "Jun Cai"
+date: January 31, 2016
+output: pdf_document
 ---
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+This document describes an implementation of Mapreduce instance with Hadoop on the OTP flight ticket price dataset. The purpose of the application is to calculate the average ticket price for each month for each carrier in the given data. 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+<h3>Implementation</h3>
+<h4>Mapping</h4>
 
-You can also embed plots, for example:
+
+In this 
+
+Following is the result graph created by R script. 
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
 #setwd("/home/jon/git/CS6240/hw2/Cai_Jun_A2/")

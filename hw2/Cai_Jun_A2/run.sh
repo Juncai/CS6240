@@ -66,10 +66,11 @@ emr () {
 	# aws s3 mb s3://${bucketname}
 	# upload the data files
 	if [ ${emrinput} = 1 ]; then
+		aws s3 rm s3://${bucketname}/input --recursive
 		aws s3 sync ${MR_INPUT} s3://${bucketname}/input
 		# aws s3 sync log s3://${bucketname}/log
 	fi
-		# upload jar file
+	# upload jar file
 	aws s3 cp build/libs/ClusterAnalysis.jar s3://${bucketname}/ClusterAnalysis.jar
 
 	# configure EMR
@@ -99,7 +100,6 @@ emr () {
 	# get the output
 	aws s3 sync s3://${bucketname}/output output --delete
 	# clean the files
-	# aws s3 rm s3://juncai001/input --recursive
 	aws s3 rm s3://${bucketname}/output --recursive
 }
 
@@ -107,6 +107,7 @@ report () {
 	Rscript -e "rmarkdown::render('report.Rmd')"
 }
 
+# check if need to upload data files to S3
 if [ "$2" = '-EMRInput' ]; then
 	sanityCheck
 	emrinput=1
@@ -124,5 +125,4 @@ if [ $1 = '-emr' ]; then
 fi
 
 report
-
 rmpwd
