@@ -22,7 +22,7 @@ delimiter="_"
 offset=$(strindex "$outputname" "$delimiter")
 executiontype=${outputname:9:offset}
 interprogramtype=${outputname:$((offset+1)):desiredlength}
-programtype=$programtype$size
+programtype=$interprogramtype$size
 
 echo "${executiontype}, ${actual}, ${programtype}" >> my_file.csv
 
