@@ -1,4 +1,4 @@
-package median;
+package analysis;
 
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class OTPReducer extends Reducer<Text, Text, Text, DoubleWritable> {
+public class OTPMedianReducer extends Reducer<Text, Text, Text, DoubleWritable> {
 
     @Override
     public void reduce(Text key, Iterable<Text> values, Context context)

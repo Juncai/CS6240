@@ -27,7 +27,14 @@ public class ClusterAnalysis extends Configured implements Tool {
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
         job.setMapperClass(OTPMapper.class);
-        job.setReducerClass(OTPReducer.class);
+        job.setReducerClass(OTPMeanReducer.class);
+		if (args.length > 2) {
+			if (args[2].equals(OTPConsts.MEDIAN)) {
+				job.setReducerClass(OTPMedianReducer.class);
+			} else if (args[2].equals(OTPConsts.MEDIAN)) {
+				job.setReducerClass(OTPFastMedianReducer.class);
+			}
+		}
 
 		job.setMapOutputKeyClass(Text.class);
 		job.setMapOutputValueClass(Text.class);

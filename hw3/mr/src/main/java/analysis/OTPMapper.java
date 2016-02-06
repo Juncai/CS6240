@@ -1,4 +1,4 @@
-package median;
+package analysis;
 
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;

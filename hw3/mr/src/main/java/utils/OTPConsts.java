@@ -1,6 +1,11 @@
 package utils;
 
 public class OTPConsts {
+	// for type of job
+	public final static String MEAN = "-mean";
+	public final static String MEDIAN = "-median";
+	public final static String FAST_MEDIAN = "-fastmedian";
+
     // constant for invalid record
     public final static String INVALID = "INVALID";
     public final static String ACTIVE_YEAR = "2015";
