@@ -2,6 +2,7 @@ package analysis;
 
 public class OTPConsts {
 
+	public final static String INVALID = "INVALID";
     // constants for indices
     public final static int FL_DATE = 5;
     public final static int CRS_ARR_TIME = 40;

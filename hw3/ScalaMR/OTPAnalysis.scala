@@ -5,7 +5,11 @@ import org.apache.hadoop.mapreduce._
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
 import org.apache.hadoop.fs.Path
+//import java.util._
+//import java.lang._
 import scala.collection.JavaConverters._
+
+import scala.collection.mutable
 
 // Author: Jun Cai
 object OTPAnalysis {
@@ -29,7 +33,7 @@ object OTPAnalysis {
     job.setNumReduceTasks(2)
 
     /* FileInputFormat.addInputPath(job, new Path(args(0))) */
-    FileInputFormat.addInputPath(job, new Path("""/home/jon/Downloads/part"""))
+    FileInputFormat.addInputPath(job, new Path("""/home/phoenix/Downloads/part"""))
     /* FileOutputFormat.setOutputPath(job, new Path(args(1))) */
     FileOutputFormat.setOutputPath(job, new Path("output"))
 
@@ -71,44 +75,64 @@ class OTPMapper extends Mapper[Object, Text, Text, Text] {
 
 // vim: set ts=4 sw=4 et:
 // Author: Jun Cai
-class OTPReducer extends Reducer[Text, Text, Text, Text] {
-  type Context = Reducer[Text, Text, Text, Text]#Context
-
-  var reduces = 0
-  var valsSeen = 0
+class OTPReducer extends Reducer[Text, Text, Text, DoubleWritable] {
+  type Context = Reducer[Text, Text, Text, DoubleWritable]#Context
 
   override def setup(ctx: Context): Unit = {
-    reduces = 0
     println("DemoReducer.setup")
   }
 
   override def cleanup(ctx: Context): Unit = {
     println("DemoReducer.cleanup")
-    println("Reduces: " + reduces)
-    println("Vals seen: " + valsSeen)
   }
 
   override def reduce(key: Text, jvals: java.lang.Iterable[Text], ctx: Context): Unit = {
 
-    var count = 0
-    val vals: Iterable[Text] = jvals.asScala
+    println("See: " + key.toString)
+    val values: Iterable[Text] = jvals.asScala
     if (key.toString.equals(OTPConsts.INVALID)) {
       var sum = 0
-      vals.foreach(v => {
+      values.foreach(v => {
         sum += v.toString.toInt
-        ctx.write(key, new Text(sum.toString))
+        ctx.write(key, new DoubleWritable(sum))
       })
 
     } else {
-      var monthPrices:Map[String, Double] = Map()
+//      var monthPrices:mutable.Map[String, List[Double]] = mutable.Map()
+      var monthPrices:java.util.Map[String, java.util.List[java.lang.Double]] = new java.util.HashMap()
+      var month = ""
+//      var price:java.util.List[Double] = java.util.ArrayList[Double]()
+      var price:Double = 0
+      var prices:java.util.List[java.lang.Double] = new java.util.ArrayList[java.lang.Double]()
+      var carrierMonth = new Text()
+      var mean = new DoubleWritable()
+
+//      if (DataPreprocessor.isActiveCarrier(jvals)) {
+        var totalFl = 0
+        values.foreach(v => {
+          totalFl += 1
+          month = DataPreprocessor.getMonth(v)
+//          price = List(DataPreprocessor.getPrice(v))
+          price = DataPreprocessor.getPrice(v)
+//          if (monthPrices contains month) {
+          if (monthPrices.containsKey(month)) {
+            monthPrices.get(month).add(price)
+          } else {
+//            prices = List()
+            prices = new java.util.ArrayList[java.lang.Double]()
+            prices.add(price)
+            monthPrices.put(month, prices)
+          }
+        })
+
+        monthPrices.asScala.foreach(mk => {
+          carrierMonth.set(mk + "," + key.toString() + "," + totalFl)
+          mean.set(DataPreprocessor.getMean(monthPrices.get(mk)))
+          ctx.write(carrierMonth, mean)
+        })
+//      }
 
     }
-    vals.foreach(v => {
-      count += v.toString().toInt
-      valsSeen += 1
-    })
 
-    ctx.write(word, new Text(count .toString()))
-    reduces += 1
   }
 }
