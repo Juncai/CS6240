@@ -1,0 +1,33 @@
+[0m[[0minfo[0m] [0mPackaging /home/jon/git/CS6240/hw3/ScalaMR/target/scala-2.10/otpanalysis_2.10-1.0.jar ...[0m
+[0m[[0mdebug[0m] [0mInput file mappings:[0m
+[0m[[0mdebug[0m] [0m	analysis/DataPreprocessor.class[0m
+[0m[[0mdebug[0m] [0m	  /home/jon/git/CS6240/hw3/ScalaMR/target/scala-2.10/classes/analysis/DataPreprocessor.class[0m
+[0m[[0mdebug[0m] [0m	main/DemoReducer$$anonfun$reduce$1.class[0m
+[0m[[0mdebug[0m] [0m	  /home/jon/git/CS6240/hw3/ScalaMR/target/scala-2.10/classes/main/DemoReducer$$anonfun$reduce$1.class[0m
+[0m[[0mdebug[0m] [0m	analysis/OTPConsts.class[0m
+[0m[[0mdebug[0m] [0m	  /home/jon/git/CS6240/hw3/ScalaMR/target/scala-2.10/classes/analysis/OTPConsts.class[0m
+[0m[[0mdebug[0m] [0m	main/Demo.class[0m
+[0m[[0mdebug[0m] [0m	  /home/jon/git/CS6240/hw3/ScalaMR/target/scala-2.10/classes/main/Demo.class[0m
+[0m[[0mdebug[0m] [0m	analysis[0m
+[0m[[0mdebug[0m] [0m	  /home/jon/git/CS6240/hw3/ScalaMR/target/scala-2.10/classes/analysis[0m
+[0m[[0mdebug[0m] [0m	main/DemoMapper.class[0m
+[0m[[0mdebug[0m] [0m	  /home/jon/git/CS6240/hw3/ScalaMR/target/scala-2.10/classes/main/DemoMapper.class[0m
+[0m[[0mdebug[0m] [0m	analysis/OTPAnalysis$.class[0m
+[0m[[0mdebug[0m] [0m	  /home/jon/git/CS6240/hw3/ScalaMR/target/scala-2.10/classes/analysis/OTPAnalysis$.class[0m
+[0m[[0mdebug[0m] [0m	analysis/OTPAnalysis.class[0m
+[0m[[0mdebug[0m] [0m	  /home/jon/git/CS6240/hw3/ScalaMR/target/scala-2.10/classes/analysis/OTPAnalysis.class[0m
+[0m[[0mdebug[0m] [0m	main/DemoMapper$$anonfun$map$1.class[0m
+[0m[[0mdebug[0m] [0m	  /home/jon/git/CS6240/hw3/ScalaMR/target/scala-2.10/classes/main/DemoMapper$$anonfun$map$1.class[0m
+[0m[[0mdebug[0m] [0m	analysis/OTPReducer$$anonfun$reduce$1.class[0m
+[0m[[0mdebug[0m] [0m	  /home/jon/git/CS6240/hw3/ScalaMR/target/scala-2.10/classes/analysis/OTPReducer$$anonfun$reduce$1.class[0m
+[0m[[0mdebug[0m] [0m	analysis/OTPReducer.class[0m
+[0m[[0mdebug[0m] [0m	  /home/jon/git/CS6240/hw3/ScalaMR/target/scala-2.10/classes/analysis/OTPReducer.class[0m
+[0m[[0mdebug[0m] [0m	main/DemoReducer.class[0m
+[0m[[0mdebug[0m] [0m	  /home/jon/git/CS6240/hw3/ScalaMR/target/scala-2.10/classes/main/DemoReducer.class[0m
+[0m[[0mdebug[0m] [0m	analysis/OTPMapper.class[0m
+[0m[[0mdebug[0m] [0m	  /home/jon/git/CS6240/hw3/ScalaMR/target/scala-2.10/classes/analysis/OTPMapper.class[0m
+[0m[[0mdebug[0m] [0m	main/Demo$.class[0m
+[0m[[0mdebug[0m] [0m	  /home/jon/git/CS6240/hw3/ScalaMR/target/scala-2.10/classes/main/Demo$.class[0m
+[0m[[0mdebug[0m] [0m	main[0m
+[0m[[0mdebug[0m] [0m	  /home/jon/git/CS6240/hw3/ScalaMR/target/scala-2.10/classes/main[0m
+[0m[[0minfo[0m] [0mDone packaging.[0m

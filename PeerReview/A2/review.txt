@@ -1,0 +1,55 @@
+review.txt
+
+Reviewer: Jun Cai (cai.jun@husky.neu.edu)
+Code under review: Ramesha's HW2
+
+Building And Running The Code:
+
+	The dependencies are provided by jar files instead of using build tool (i.e. gradle). This is not a good practice. No automatic build script is included in the submission. Evironment variables for building (i.e. JAVA_HOME) are hardcoded which might not be a good idea either because they can be different based on where they being installed and which version is in use. I am not able to build the code following the instruction. But I succeeded by create a gradle project for it. 
+	The other problem I went into is that no Makefile is included in the submission. I can only guess it would be the same as in the tutorial. Same thing with the Hadoop conifgurations. I get the Mapreduce run with my own build.gradle script and a modified hadoop cmd "hadoop jar cm.jar input/all output".
+
+Does it work?
+
+	As mentioned in the ImplementationReport.txt, the code only work for pseudo-distributed mode, not on the AWS. Also there is no R script for dynamically generate the report and graph. The output file format is not the same as in the README.txt. The records are led by the carrier ids not the months. 
+
+Can you understand the code?
+
+	The code is writen in a pretty clear way. Method names and most variable names are picked properly. I can easily read and understand it. Though some indices of the data column are hardcoded. 
+
+Does their submission constitute a reasonable solution to the problem?
+
+	# This submission is missing some of the important requirements. 
+		1. Running Mapreduce on AWS
+		2. Graph and report generating functionality.
+	
+	# I have some doubts on the calculation of average ticket prices. In the output, there are only 12 average prices for each carrier. So only the months in the flight date have been taken into consideration but not the years.
+
+How does the overall design of the program differ from your solution?
+
+	The overall design of the Mapreduce program is quite similar to my solution. We both use a mapper to parse the csv flight data, then use a reducer to do the result calculation.
+
+Which do you think is a better approach? Why?
+
+	Since our approaches are quite similar, I think they both are reasonable solutions to the assignment.
+
+What would you improve about the code?
+
+	To improve the code, I will first write a build script to automatically compile and run the program. Then I will consider adding the missing functionalities to it. Another improvement may be replacing the hardcoded indices with some constants.
+
+	One other improvement can be a better output format. Instead of using space and tab as separator, using comma will make the output file in csv format which is convinient for further processing.
+
+Can you find any bugs?
+
+	The command which runs hadoop job uses absolute path for input and output. So there will always be path conflicts when running the job with HDFS.
+
+Does the program make good use of the map-reduce form?
+
+	Yes, I think the key value pair design is reasonable for this task. And the Mapper and Reducer both have reasonable workload.
+
+Does it have any concurrency issues (mistakes that assume sequential execution between Mappers or Reducers)?
+	
+	Not found.
+
+Can you find any Amazon keys in the submission?
+
+	No.
