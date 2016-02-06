@@ -1,8 +1,1 @@
-* fast median: median of median/ selection algorithm
-* refactor A1 code for handling month base analysis and finding active carriers in 2015 with top 10 number of flights
-	- change the input arguments parser to allow mean/median, [fast]Median config.
-* test harness script
-	- auto run 12 configurations
-	- generate running times result in csv format
-	- ploting graph with R
-* 
+cleanup scripts
