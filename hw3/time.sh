@@ -19,7 +19,7 @@ desiredlength=$((desiredlength-3))
 outputname=${realname:0:desiredlength}
 delimiter="_"
 offset=$(strindex "$outputname" "$delimiter")
-executiontype=${outputname:0:offset}
+executiontype=${outputname:9:offset}
 programtype=${outputname:$((offset+1)):desiredlength}
 
 echo "${executiontype}, ${actual}, ${programtype}" >> my_file.csv
