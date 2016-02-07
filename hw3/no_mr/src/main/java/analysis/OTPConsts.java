@@ -41,5 +41,5 @@ public class OTPConsts {
     public final static int UNIQUE_CARRIER = 6;
     public final static int AVG_TICKET_PRICE = 109;
 
-    public final static String ACTIVE_YEAR = "2014";
+    public final static String ACTIVE_YEAR = "2015";
 }

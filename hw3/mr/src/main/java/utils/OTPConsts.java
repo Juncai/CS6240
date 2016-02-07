@@ -2,9 +2,9 @@ package utils;
 
 public class OTPConsts {
 	// for type of job
-	public final static String MEAN = "-mean";
-	public final static String MEDIAN = "-median";
-	public final static String FAST_MEDIAN = "-fastmedian";
+	public final static String MEAN = "mean";
+	public final static String MEDIAN = "median";
+	public final static String FAST_MEDIAN = "fastmedian";
 
     // constant for invalid record
     public final static String INVALID = "INVALID";
@@ -48,6 +48,4 @@ public class OTPConsts {
     public final static int ARR_DEL15 = 44;
     public final static int UNIQUE_CARRIER = 6;
     public final static int AVG_TICKET_PRICE = 109;
-
-    public final static String ACTIVE_MONTH = "2015-01";
 }

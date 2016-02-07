@@ -21,7 +21,7 @@ public class OTPMedianReducer extends Reducer<Text, Text, Text, DoubleWritable> 
         if (key.toString().equals(OTPConsts.INVALID)) {
             int sum = 0;
             for (Text value : values) {
-                sum += 1;
+                sum += Integer.parseInt(value.toString());
             }
             context.write(key, new DoubleWritable((double)sum));
         } else {
