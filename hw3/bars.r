@@ -134,5 +134,3 @@ bar(dv = Time,
     ylim=c(0,max(times) + max(times) * 0.10))
 
 
-
-
