@@ -20,6 +20,12 @@ prepare () {
 	cd ../..
 }
 
+upload_data () {
+	cd mr
+	./run.sh -data
+	cd ..
+}
+
 clean () {
 	cd mr
 	./run.sh -clean
@@ -100,6 +106,10 @@ run_pd_fastmedian () {
 
 if [ $1 == 'prepare' ]; then
 	prepare
+fi
+
+if [ $1 == 'upload_data' ]; then
+	upload_data
 fi
 
 if [ $1 == 'clean' ]; then

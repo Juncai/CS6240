@@ -41,10 +41,18 @@ start_server () {
 
 	# create user folder in hdfs then upload the input files
 	hadoop fs -mkdir -p /user/${USER}
-	hadoop fs -put ${MR_INPUT} input
+	# hadoop fs -put ${MR_INPUT} input
 
 	# remove the previous output from server if any
 	hadoop fs -rm -r output
+}
+
+upload_data () {
+	hadoop fs -rm -r input
+	hadoop fs -put ${MR_INPUT} input
+	# upload the data files
+	aws s3 rm s3://${bucketname}/input --recursive
+	aws s3 sync ${MR_INPUT} s3://${bucketname}/input
 }
 
 stop_server () {
@@ -70,7 +78,6 @@ pd () {
 }
 
 emr () {
-	bucketname=juncai001
 	# set aws credentials
 	export AWS_ACCESS_KEY=AKIAI6WT62DBECZIFLHQ
 	export AWS_SECRET_KEY=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
@@ -79,13 +86,6 @@ emr () {
 	# create s3 bucket
 	# aws s3 rb s3://${bucketname} --force
 	# aws s3 mb s3://${bucketname}
-	# upload the data files
-	if [ ${emrinput} = 1 ]; then
-		aws s3 rm s3://${bucketname}/input --recursive
-		aws s3 sync ${MR_INPUT} s3://${bucketname}/input
-		# aws s3 sync log s3://${bucketname}/log
-	fi
-
 	# clean the files
 	aws s3 rm s3://${bucketname}/output --recursive
 	aws s3 rm s3://${bucketname}/ClusterAnalysis.jar
@@ -102,7 +102,7 @@ emr () {
 		--enable-debugging \
 		--release-label emr-4.3.0 \
 		--log-uri ${loguri} \
-		--steps '[{"Args":["analysis.ClusterAnalysis","s3://juncai001/'$input_path'","s3://juncai001/output", "'${task}'"],"Type":"CUSTOM_JAR","ActionOnFailure":"CONTINUE","Jar":"s3://juncai001/ClusterAnalysis.jar","Properties":"","Name":"ClusterAnalysis"}]' \
+		--steps '[{"Args":["analysis.ClusterAnalysis","s3://'${bucketname}'/'${input_path}'","s3://'${bucketname}'/output", "'${task}'"],"Type":"CUSTOM_JAR","ActionOnFailure":"CONTINUE","Jar":"s3://'${bucketname}'/ClusterAnalysis.jar","Properties":"","Name":"ClusterAnalysis"}]' \
 		--name 'Jun MR cluster' \
 		--instance-groups '[{"InstanceCount":1,"InstanceGroupType":"MASTER","InstanceType":"m1.medium","Name":"Master Instance Group"},{"InstanceCount":2,"InstanceGroupType":"CORE","InstanceType":"m1.medium","Name":"Core Instance Group"}]' \
 		--configurations '[{"Classification":"spark","Properties":{"maximizeResourceAllocation":"true"},"Configurations":[]}]' \
@@ -118,6 +118,8 @@ emr () {
 		sleep 1m
 	done
 
+	echo ${cid} > cid.tmp
+
 	# get the output
 	aws s3 sync s3://${bucketname}/output output --delete
 }
@@ -131,10 +133,7 @@ process_output () {
 }
 
 # check if need to upload data files to S3
-if [ "$2" = '-EMRInput' ]; then
-	sanityCheck
-	emrinput=1
-fi
+bucketname=juncai001
 
 if [ $1 = '-clean' ]; then
 	clean
@@ -147,6 +146,11 @@ if [ $1 = '-prepare' ]; then
 	cmp
 	start_server
 fi
+
+if [ $1 = '-data' ]; then
+	upload_data
+fi
+
 
 input_path='input'
 
