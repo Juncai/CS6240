@@ -1,5 +1,6 @@
 package analysis;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -22,6 +23,7 @@ public class FittingMapper extends Mapper<LongWritable, Text, Text, Text> {
     private static Map<String, List<Double[][]>> distanceMap;
     private static Map<String, List<Double[][]>> timeMap;
     private static Map<String, Boolean> isActiveMap;
+    private static double[] stats;
 
     @Override
     protected void setup(Context ctx) {
@@ -29,6 +31,14 @@ public class FittingMapper extends Mapper<LongWritable, Text, Text, Text> {
         distanceMap = new HashMap<String, List<Double[][]>>();
         timeMap = new HashMap<String, List<Double[][]>>();
         isActiveMap = new HashMap<String, Boolean>();
+
+        stats = new double[4];
+        Configuration conf = ctx.getConfiguration();
+        stats[0] = conf.getDouble(OTPConsts.DISTANCE_MEAN, 0);
+        stats[1] = conf.getDouble(OTPConsts.AIR_TIME_MEAN, 0);
+        stats[2] = conf.getDouble(OTPConsts.DISTANCE_STD, 1);
+        stats[3] = conf.getDouble(OTPConsts.AIR_TIME_STD, 1);
+
     }
 
     @Override
@@ -36,7 +46,7 @@ public class FittingMapper extends Mapper<LongWritable, Text, Text, Text> {
         String line = value.toString();
         List<Double[][]> dLOM = new ArrayList<Double[][]>();
         List<Double[][]> tLOM = new ArrayList<Double[][]>();
-        boolean isActive = DataPreprocessor.processLine(line, carrier, dLOM, tLOM);
+        boolean isActive = DataPreprocessor.processLine(line, carrier, dLOM, tLOM, stats);
         if (!carrier.toString().equals(OTPConsts.INVALID)) {
             if (isActive) {
                 if (!isActiveMap.containsKey(carrier.toString())) {

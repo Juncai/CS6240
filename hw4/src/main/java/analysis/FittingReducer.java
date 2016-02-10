@@ -30,12 +30,6 @@ public class FittingReducer extends Reducer<Text, Text, Text, Text> {
             if (valString.startsWith("T ")) {
                 DataPreprocessor.updateMatrices(rlomT, lom);
             }
-//            for (int i = 0; i < 2; i++) {
-//                for (int j = 0; j < 2; j++) {
-//                    xtx[i][j] += lom.get(0)[i][j];
-//                    xty[i][j] += lom.get(1)[i][j];
-//                }
-//            }
         }
         double[][] thetaD = DataPreprocessor.fit(rlomD);
         double[][] thetaT = DataPreprocessor.fit(rlomT);

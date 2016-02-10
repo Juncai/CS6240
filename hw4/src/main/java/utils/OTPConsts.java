@@ -1,12 +1,11 @@
 package utils;
 
 public class OTPConsts {
-
-    // means and std of the distance and airtime
-    public final static double DISTANCE_MEAN = 714.9609;
-    public final static double DISTANCE_STD = 605.7318;
-    public final static double AIR_TIME_MEAN = 100.3320;
-    public final static double AIR_TIME_STD = 74.0220;
+    // Stats variable name
+    public final static String DISTANCE_MEAN = "DM";
+    public final static String DISTANCE_STD = "DS";
+    public final static String AIR_TIME_MEAN = "TM";
+    public final static String AIR_TIME_STD = "TS";
     // for flight time and distance
     public final static int DISTANCE = 54;
     public final static int AIR_TIME = 52;

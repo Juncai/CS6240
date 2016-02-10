@@ -45,12 +45,19 @@ start_server () {
 	hadoop fs -rm -r output
 }
 
-upload_data () {
+upload_data_pd () {
 	hadoop fs -rm -r input
+	hadoop fs -rm -r tmp
 	hadoop fs -put ${MR_INPUT} input
+	hadoop fs -put tmp tmp 
+}
+
+upload_data_emr() {
 	# upload the data files
-	# aws s3 rm s3://${bucketname}/input --recursive
-	# aws s3 sync ${MR_INPUT} s3://${bucketname}/input
+	aws s3 rm s3://${bucketname}/input --recursive
+	aws s3 rm s3://${bucketname}/tmp --recursive
+	aws s3 sync ${MR_INPUT} s3://${bucketname}/input
+	aws s3 sync tmp s3://${bucketname}/tmp
 }
 
 stop_server () {
@@ -65,7 +72,7 @@ pd () {
 	hadoop fs -rm -r output
 
 	# run the job
-	hadoop jar build/libs/LinearRegressionFit.jar analysis.LinearRegressionFit input output
+	hadoop jar build/libs/LinearRegressionFit.jar analysis.LinearRegressionFit input output tmp/stats
 	# hadoop jar build/libs/ClusterAnalysis.jar analysis.ClusterAnalysis input output ${task} 2>>hd_log
 
 	# get the output
@@ -87,7 +94,7 @@ emr () {
 	aws s3 rm s3://${bucketname}/ClusterAnalysis.jar
 
 	# upload jar file
-	aws s3 cp build/libs/ClusterAnalysis.jar s3://${bucketname}/ClusterAnalysis.jar
+	aws s3 cp build/libs/LinearRegressionFit.jar s3://${bucketname}/Job.jar
 
 	# configure EMR
 	loguri=s3n://${bucketname}/log/
@@ -98,7 +105,7 @@ emr () {
 		--enable-debugging \
 		--release-label emr-4.3.0 \
 		--log-uri ${loguri} \
-		--steps '[{"Args":["analysis.ClusterAnalysis","s3://'${bucketname}'/'${input_path}'","s3://'${bucketname}'/output"],"Type":"CUSTOM_JAR","ActionOnFailure":"CONTINUE","Jar":"s3://'${bucketname}'/LinearRegressionFit.jar","Properties":"","Name":"LinearRegressionFit"}]' \
+		--steps '[{"Args":["analysis.LinearRegressionFit","s3://'${bucketname}'/'${input_path}'","s3://'${bucketname}'/output", "s3://'${bucketname}'/tmp/stats"],"Type":"CUSTOM_JAR","ActionOnFailure":"CONTINUE","Jar":"s3://'${bucketname}'/Job.jar","Properties":"","Name":"LinearRegressionFit"}]' \
 		--name 'Jun MR cluster' \
 		--instance-groups '[{"InstanceCount":1,"InstanceGroupType":"MASTER","InstanceType":"m1.medium","Name":"Master Instance Group"},{"InstanceCount":2,"InstanceGroupType":"CORE","InstanceType":"m1.medium","Name":"Core Instance Group"}]' \
 		--configurations '[{"Classification":"spark","Properties":{"maximizeResourceAllocation":"true"},"Configurations":[]}]' \
@@ -114,10 +121,14 @@ emr () {
 		sleep 1m
 	done
 
-	echo ${cid} > cid.tmp
-
 	# get the output
 	aws s3 sync s3://${bucketname}/output output --delete
+}
+
+get_stats () {
+	rm -rf tmp
+	mkdir tmp
+	Rscript mean_std.R
 }
 
 report () {
@@ -128,7 +139,6 @@ process_output () {
 	Rscript processOutput.R
 }
 
-# check if need to upload data files to S3
 bucketname=juncai001
 
 if [ $1 = '-clean' ]; then
@@ -140,11 +150,13 @@ fi
 if [ $1 = '-prepare' ]; then
 	clean
 	cmp
+	get_stats
 	start_server
 fi
 
 if [ $1 = '-data' ]; then
-	upload_data
+	upload_data_pd
+	upload_data_emr
 fi
 
 
@@ -165,5 +177,25 @@ if [ "$1" = '-emr' ]; then
 	emr
 	# process_output
 fi
+if [ "$1" = '-full-pd' ]; then
+	clean
+	cmp
+	get_stats
+	start_server
+	upload_data_pd
+	pd
+	stop_server
+# process result by R
+fi
+
+if [ "$1" = '-full-emr' ]; then
+	clean
+	cmp
+	get_stats
+	upload_data_emr
+	emr
+# process result by R
+fi
+
 
 # report

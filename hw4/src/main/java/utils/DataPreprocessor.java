@@ -1,6 +1,8 @@
 package utils;
 
 import org.apache.commons.math3.linear.*;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.*;
 import org.apache.hadoop.io.Text;
 
 import java.io.*;
@@ -14,7 +16,9 @@ import java.lang.*;
 public class DataPreprocessor {
 
 
-    public static boolean processLine(String line, Text carrier, List<Double[][]> dLOM, List<Double[][]> tLOM)
+    public static boolean processLine(String line, Text carrier,
+                                      List<Double[][]> dLOM, List<Double[][]> tLOM,
+                                      double[] stats)
             throws IOException {
         double[][] xd = new double[1][2];
         double[][] xt = new double[1][2];
@@ -42,11 +46,11 @@ public class DataPreprocessor {
 
             if (year >= OTPConsts.TARGET_YEAR_START && year <= OTPConsts.TARGET_YEAR_END) {
                 y[0][0] = Double.parseDouble(values[OTPConsts.AVG_TICKET_PRICE]);
-                xd[0][0] = (Double.parseDouble(values[OTPConsts.DISTANCE]) - OTPConsts.DISTANCE_MEAN)
-                        / OTPConsts.DISTANCE_STD;
+                xd[0][0] = (Double.parseDouble(values[OTPConsts.DISTANCE]) - stats[0])
+                        / stats[2];
                 xd[0][1] = 1.0;
-                xt[0][0] = (Double.parseDouble(values[OTPConsts.AIR_TIME]) - OTPConsts.AIR_TIME_MEAN)
-                        / OTPConsts.AIR_TIME_STD;
+                xt[0][0] = (Double.parseDouble(values[OTPConsts.AIR_TIME]) - stats[1])
+                        / stats[3];
                 xt[0][1] = 1.0;
                 dLOM.clear();
                 dLOM.add(dToD(getXTY(xd, xd)));
@@ -420,6 +424,22 @@ public class DataPreprocessor {
             return inv.getData();
         }
         return new double[3][1];
+    }
+
+    public static double[] getStats(Path p) {
+        double[] res = {0, 0, 1, 1};
+        try {
+            FileSystem fs = FileSystem.get(new Configuration());
+            BufferedReader br=new BufferedReader(new InputStreamReader(fs.open(p)));
+            String line =br.readLine();
+            res[0] = Double.parseDouble(line.split(",")[0]);
+            res[1] = Double.parseDouble(line.split(",")[1]);
+            line=br.readLine();
+            res[2] = Double.parseDouble(line.split(",")[0]);
+            res[3] = Double.parseDouble(line.split(",")[1]);
+        } catch (Exception e) {
+        }
+        return res;
     }
 
 }

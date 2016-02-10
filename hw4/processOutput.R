@@ -1,5 +1,19 @@
 options(warn=-1)
 suppressMessages(library(plyr))
+
+res <- data.frame(DISTANCE=integer(),
+                  AIR_TIME=integer(), 
+                  AVG_TICKET_PRICE=double(), 
+                  stringsAsFactors=FALSE) 
+input_path <- Sys.getenv("MR_INPUT")
+filenames <- list.files(input_path, pattern="*.csv.gz", full.names=TRUE)
+for (i in 1:length(filenames))
+	res <- rbind(res, read.csv(file=filenames[i], head=TRUE, row.names=NULL)[c("DISTANCE", "AIR_TIME", "AVG_TICKET_PRICE")])
+
+# testing the model?
+
+# plot the graphs 
+# read results from output
 res <- data.frame(month=character(),
                   carrier=character(), 
                   totalFl=integer(), 
@@ -10,9 +24,7 @@ filenames <- list.files("output", pattern="part-r-*", full.names=TRUE)
 for (i in 1:length(filenames))
 	res <- rbind(res, read.csv(file=filenames[i], head=FALSE))
 
-res <- res[complete.cases(res),]
-names(res) <- c("month", "carrier", "totalFl", "meanPrice")
-# find the top 10 carriers with most flights
+
 require(plyr)
 carrier_flnum <- ddply(res,~carrier,summarise,totalFL=mean(totalFl))
 attach(carrier_flnum)

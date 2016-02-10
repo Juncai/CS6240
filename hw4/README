@@ -1,0 +1,9 @@
+Running the code:
+  Pseudo-distributed mode:
+	1. Set environment variable MR_INPUT to the directory which contains the data files.
+	2. Set environment variable HADOOP_CONF_DIR to the PWD/.hadoop, where PWD is the current directory.
+	3. Use './run.sh -full-pd' to run the code.
+
+  EMR mode:
+	1. Set environment variable MR_INPUT to the directory which contains the data files.
+	2. Use './run.sh -full-emr' to run the code.
