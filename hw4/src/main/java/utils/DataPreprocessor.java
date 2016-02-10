@@ -14,14 +14,18 @@ import java.lang.*;
 public class DataPreprocessor {
 
 
-    public static boolean processLine(String line, Text carrier, List<Double[][]> matrices) throws IOException {
-        double[][] x = new double[1][3];
+    public static boolean processLine(String line, Text carrier, List<Double[][]> dLOM, List<Double[][]> tLOM)
+            throws IOException {
+        double[][] xd = new double[1][2];
+        double[][] xt = new double[1][2];
         double[][] y = new double[1][1];
         String date;
         int year;
 
-        matrices.add(newMatrix(3, 3));
-        matrices.add(newMatrix(3, 1));
+        dLOM.add(newMatrix(3, 3));
+        dLOM.add(newMatrix(3, 1));
+        tLOM.add(newMatrix(3, 3));
+        tLOM.add(newMatrix(3, 1));
 
         String[] values;
         values = parseCSVLine(line);
@@ -38,19 +42,18 @@ public class DataPreprocessor {
 
             if (year >= OTPConsts.TARGET_YEAR_START && year <= OTPConsts.TARGET_YEAR_END) {
                 y[0][0] = Double.parseDouble(values[OTPConsts.AVG_TICKET_PRICE]);
-//                System.out.println(values[OTPConsts.AVG_TICKET_PRICE]);
-//                System.out.println(y[0][0]);
-                x[0][0] = Double.parseDouble(values[OTPConsts.DISTANCE]);
-//                System.out.println(values[OTPConsts.DISTANCE]);
-//                System.out.println(x[0][0]);
-                x[0][1] = Double.parseDouble(values[OTPConsts.AIR_TIME]);
-                x[0][2] = 1.0;
-//                System.out.println(values[OTPConsts.AIR_TIME]);
-//                System.out.println(y[0][1]);
-                matrices.clear();
-                matrices.add(dToD(getXTY(x, x)));
-                matrices.add(dToD(getXTY(x, y)));
-//                replaceMatrices(matrices, getXTY(x, x), getXTY(x, y));
+                xd[0][0] = (Double.parseDouble(values[OTPConsts.DISTANCE]) - OTPConsts.DISTANCE_MEAN)
+                        / OTPConsts.DISTANCE_STD;
+                xd[0][1] = 1.0;
+                xt[0][0] = (Double.parseDouble(values[OTPConsts.AIR_TIME]) - OTPConsts.AIR_TIME_MEAN)
+                        / OTPConsts.AIR_TIME_STD;
+                xt[0][1] = 1.0;
+                dLOM.clear();
+                dLOM.add(dToD(getXTY(xd, xd)));
+                dLOM.add(dToD(getXTY(xd, y)));
+                tLOM.clear();
+                tLOM.add(dToD(getXTY(xt, xt)));
+                tLOM.add(dToD(getXTY(xt, y)));
             }
         }
         return false;
@@ -86,8 +89,8 @@ public class DataPreprocessor {
 
     public static List<Double[][]> getNewLOM() {
         List<Double[][]> res = new ArrayList<Double[][]>();
-        res.add(newMatrix(3, 3));
-        res.add(newMatrix(3, 1));
+        res.add(newMatrix(2, 2));
+        res.add(newMatrix(2, 1));
         return res;
     }
 
@@ -205,6 +208,7 @@ public class DataPreprocessor {
             double avgTicketPrice = Double.parseDouble(values[OTPConsts.AVG_TICKET_PRICE]);
             String airTime = values[OTPConsts.AIR_TIME];
             double airTimeVal = Double.parseDouble(airTime);
+            double distance = Double.parseDouble(values[OTPConsts.DISTANCE]);
 
         } catch (Exception ex) {
             // ex.printStackTrace();
@@ -369,17 +373,17 @@ public class DataPreprocessor {
 
     public static List<Double[][]> deserializeMatrices(String str) {
         List<Double[][]> lom = new ArrayList<Double[][]>();
-        lom.add(newMatrix(3, 3));
-        lom.add(newMatrix(3, 1));
+        lom.add(newMatrix(2, 2));
+        lom.add(newMatrix(2, 1));
 		if (!str.equals(OTPConsts.ACTIVE)) {
 			String[] strs = str.split(",");
-			for (int i = 0; i < 3; i++) {
-				for (int j = 0; j < 3; j++) {
-                    lom.get(0)[i][j] = Double.parseDouble(strs[3 * i + j]);
+			for (int i = 0; i < 2; i++) {
+				for (int j = 0; j < 2; j++) {
+                    lom.get(0)[i][j] = Double.parseDouble(strs[2 * i + j]);
 				}
 			}
-            for (int i = 0; i < 3; i++) {
-                lom.get(1)[i][0] = Double.parseDouble(strs[9 + i]);
+            for (int i = 0; i < 2; i++) {
+                lom.get(1)[i][0] = Double.parseDouble(strs[4 + i]);
             }
 		}
         return lom;

@@ -157,13 +157,13 @@ fi
 if [ "$1" = '-pd' ]; then
 	clean
 	pd
-	process_output
+	# process_output
 fi
 
 if [ "$1" = '-emr' ]; then
 	clean
 	emr
-	process_output
+	# process_output
 fi
 
 # report

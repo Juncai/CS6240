@@ -1,16 +1,12 @@
 package analysis;
 
-import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import utils.DataPreprocessor;
 import utils.OTPConsts;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class FittingReducer extends Reducer<Text, Text, Text, Text> {
@@ -21,13 +17,19 @@ public class FittingReducer extends Reducer<Text, Text, Text, Text> {
 
         // check if this carrier is still active in 2015
         if (!DataPreprocessor.isActiveCarrier(values)) return;
-//        double[][] xtx = {{.0, .0}, {.0, .0}};
-//        double[][] xty = {{.0, .0}, {.0, .0}};
-        List<Double[][]> rlom = DataPreprocessor.getNewLOM();
+        List<Double[][]> rlomD = DataPreprocessor.getNewLOM();
+        List<Double[][]> rlomT = DataPreprocessor.getNewLOM();
         List<Double[][]> lom;
         for (Text val : values) {
-            lom = DataPreprocessor.deserializeMatrices(val.toString());
-            DataPreprocessor.updateMatrices(rlom, lom);
+            String valString = val.toString();
+            if (valString.equals(OTPConsts.ACTIVE)) continue;
+            lom = DataPreprocessor.deserializeMatrices(valString.split(" ")[1]);
+            if (valString.startsWith("D ")) {
+                DataPreprocessor.updateMatrices(rlomD, lom);
+            }
+            if (valString.startsWith("T ")) {
+                DataPreprocessor.updateMatrices(rlomT, lom);
+            }
 //            for (int i = 0; i < 2; i++) {
 //                for (int j = 0; j < 2; j++) {
 //                    xtx[i][j] += lom.get(0)[i][j];
@@ -35,9 +37,12 @@ public class FittingReducer extends Reducer<Text, Text, Text, Text> {
 //                }
 //            }
         }
-        double[][] theta = DataPreprocessor.fit(rlom);
-        context.write(key, new Text(DataPreprocessor.serializeMatrix(theta)));
-//        context.write(key, new Text(DataPreprocessor.serializeMatrices(rlom)));
+        double[][] thetaD = DataPreprocessor.fit(rlomD);
+        double[][] thetaT = DataPreprocessor.fit(rlomT);
+        context.write(key, new Text("D," + DataPreprocessor.serializeMatrix(thetaD)));
+        context.write(key, new Text("T," + DataPreprocessor.serializeMatrix(thetaT)));
+//        context.write(key, new Text(DataPreprocessor.serializeMatrices(rlomD)));
+//        context.write(key, new Text(DataPreprocessor.serializeMatrices(rlomT)));
     }
 }
 
