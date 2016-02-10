@@ -12,8 +12,6 @@ clean () {
 }
 
 rmpwd () {
-	export AWS_ACCESS_KEY=
-	export AWS_SECRET_KEY=
 	export AWS_DEFAULT_REGION=
 }
 
@@ -51,8 +49,8 @@ upload_data () {
 	hadoop fs -rm -r input
 	hadoop fs -put ${MR_INPUT} input
 	# upload the data files
-	aws s3 rm s3://${bucketname}/input --recursive
-	aws s3 sync ${MR_INPUT} s3://${bucketname}/input
+	# aws s3 rm s3://${bucketname}/input --recursive
+	# aws s3 sync ${MR_INPUT} s3://${bucketname}/input
 }
 
 stop_server () {
@@ -67,8 +65,8 @@ pd () {
 	hadoop fs -rm -r output
 
 	# run the job
-	# hadoop jar build/libs/ClusterAnalysis.jar ClusterAnalysis input output
-	hadoop jar build/libs/ClusterAnalysis.jar analysis.ClusterAnalysis input output ${task} 2>>hd_log
+	hadoop jar build/libs/LinearRegressionFit.jar analysis.LinearRegressionFit input output
+	# hadoop jar build/libs/ClusterAnalysis.jar analysis.ClusterAnalysis input output ${task} 2>>hd_log
 
 	# get the output
 	hadoop fs -get output output
@@ -79,8 +77,6 @@ pd () {
 
 emr () {
 	# set aws credentials
-	export AWS_ACCESS_KEY=
-	export AWS_SECRET_KEY=
 	export AWS_DEFAULT_REGION=us-west-2
 
 	# create s3 bucket
@@ -102,7 +98,7 @@ emr () {
 		--enable-debugging \
 		--release-label emr-4.3.0 \
 		--log-uri ${loguri} \
-		--steps '[{"Args":["analysis.ClusterAnalysis","s3://'${bucketname}'/'${input_path}'","s3://'${bucketname}'/output", "'${task}'"],"Type":"CUSTOM_JAR","ActionOnFailure":"CONTINUE","Jar":"s3://'${bucketname}'/ClusterAnalysis.jar","Properties":"","Name":"ClusterAnalysis"}]' \
+		--steps '[{"Args":["analysis.ClusterAnalysis","s3://'${bucketname}'/'${input_path}'","s3://'${bucketname}'/output"],"Type":"CUSTOM_JAR","ActionOnFailure":"CONTINUE","Jar":"s3://'${bucketname}'/LinearRegressionFit.jar","Properties":"","Name":"LinearRegressionFit"}]' \
 		--name 'Jun MR cluster' \
 		--instance-groups '[{"InstanceCount":1,"InstanceGroupType":"MASTER","InstanceType":"m1.medium","Name":"Master Instance Group"},{"InstanceCount":2,"InstanceGroupType":"CORE","InstanceType":"m1.medium","Name":"Core Instance Group"}]' \
 		--configurations '[{"Classification":"spark","Properties":{"maximizeResourceAllocation":"true"},"Configurations":[]}]' \
@@ -133,7 +129,7 @@ process_output () {
 }
 
 # check if need to upload data files to S3
-bucketname=
+bucketname=juncai001
 
 if [ $1 = '-clean' ]; then
 	clean
@@ -158,32 +154,16 @@ if [ "$MR_INPUT" == '/home/jon/Downloads/part' ]; then
 	input_path='inputSmall'
 fi
 
-task='mean'
-
-if [ $1 = '-mean' ]; then
-	task='mean'
-fi
-
-if [ $1 = '-median' ]; then
-	task='median'
-fi
-
-if [ $1 = '-fastmedian' ]; then
-	task='fastmedian'
-fi
-
-
-if [ "$2" = '-pd' ]; then
+if [ "$1" = '-pd' ]; then
 	clean
 	pd
 	process_output
 fi
 
-if [ "$2" = '-emr' ]; then
+if [ "$1" = '-emr' ]; then
 	clean
 	emr
 	process_output
 fi
 
 # report
-rmpwd

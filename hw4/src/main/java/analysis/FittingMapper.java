@@ -24,25 +24,29 @@ public class FittingMapper extends Mapper<LongWritable, Text, Text, Text> {
     private static List<Double[][]> lom = new ArrayList<Double[][]>();
     private static Map<String, List<Double[][]>> matricesMap;
     private static Map<String, Boolean> isActiveMap;
+//    private static int maps = 0;
 
     @Override
     protected void setup(Context ctx) {
         // initialize the matrices and isIn2015
-        Double[][] m1 = new Double[2][2];
-        Double[][] m2 = new Double[2][2];
-
+//        maps = 0;
+//        lom = DataPreprocessor.getNewLOM();
         lom = new ArrayList<Double[][]>();
-        lom.add(m1);
-        lom.add(m2);
-
+//        System.out.println("original lom:");
+//        System.out.println(DataPreprocessor.serializeMatrices(lom));
         matricesMap = new HashMap<String, List<Double[][]>>();
         isActiveMap = new HashMap<String, Boolean>();
     }
 
     @Override
     public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+//        if (maps > 1) return;
+//        maps++;
         String line = value.toString();
+//        System.out.println(line);
+        lom = new ArrayList<Double[][]>();
         boolean isActive = DataPreprocessor.processLine(line, carrier, lom);
+//        System.out.println(DataPreprocessor.serializeMatrices(lom));
         if (!carrier.toString().equals(OTPConsts.INVALID)) {
             if (isActive) {
                 if (!isActiveMap.containsKey(carrier.toString())) {
@@ -53,6 +57,8 @@ public class FittingMapper extends Mapper<LongWritable, Text, Text, Text> {
             if (!matricesMap.containsKey(carrier.toString())) {
                 matricesMap.put(carrier.toString(), DataPreprocessor.getNewLOM());
             }
+//            System.out.println(DataPreprocessor.serializeMatrices(lom));
+//            System.out.println(DataPreprocessor.serializeMatrices(matricesMap.get(carrier.toString())));
             DataPreprocessor.updateMatrices(matricesMap.get(carrier.toString()), lom);
         }
     }
@@ -64,6 +70,7 @@ public class FittingMapper extends Mapper<LongWritable, Text, Text, Text> {
             ctx.write(new Text(c), new Text(OTPConsts.ACTIVE));
         }
         for (String c : matricesMap.keySet()) {
+//            System.out.format("Carrier: %s, xtx: %s\n", c, DataPreprocessor.serializeMatrices(matricesMap.get(c)));
             ctx.write(new Text(c), new Text(DataPreprocessor.serializeMatrices(matricesMap.get(c))));
         }
     }

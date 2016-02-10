@@ -21,20 +21,23 @@ public class FittingReducer extends Reducer<Text, Text, Text, Text> {
 
         // check if this carrier is still active in 2015
         if (!DataPreprocessor.isActiveCarrier(values)) return;
-        double[][] xtx = new double[2][2];
-        double[][] xty = new double[2][2];
+//        double[][] xtx = {{.0, .0}, {.0, .0}};
+//        double[][] xty = {{.0, .0}, {.0, .0}};
+        List<Double[][]> rlom = DataPreprocessor.getNewLOM();
         List<Double[][]> lom;
         for (Text val : values) {
             lom = DataPreprocessor.deserializeMatrices(val.toString());
-            for (int i = 0; i < 2; i++) {
-                for (int j = 0; j < 2; j++) {
-                    xtx[i][j] += lom.get(0)[i][j];
-                    xty[i][j] += lom.get(1)[i][j];
-                }
-            }
+            DataPreprocessor.updateMatrices(rlom, lom);
+//            for (int i = 0; i < 2; i++) {
+//                for (int j = 0; j < 2; j++) {
+//                    xtx[i][j] += lom.get(0)[i][j];
+//                    xty[i][j] += lom.get(1)[i][j];
+//                }
+//            }
         }
-        double[][] theta = DataPreprocessor.fit(xtx, xty);
+        double[][] theta = DataPreprocessor.fit(rlom);
         context.write(key, new Text(DataPreprocessor.serializeMatrix(theta)));
+//        context.write(key, new Text(DataPreprocessor.serializeMatrices(rlom)));
     }
 }
 

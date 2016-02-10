@@ -1,8 +1,6 @@
 package utils;
 
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.MatrixUtils;
-import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.*;
 import org.apache.hadoop.io.Text;
 
 import java.io.*;
@@ -17,11 +15,13 @@ public class DataPreprocessor {
 
 
     public static boolean processLine(String line, Text carrier, List<Double[][]> matrices) throws IOException {
-        double[][] x = new double[1][2];
+        double[][] x = new double[1][3];
         double[][] y = new double[1][1];
         String date;
         int year;
 
+        matrices.add(newMatrix(3, 3));
+        matrices.add(newMatrix(3, 1));
 
         String[] values;
         values = parseCSVLine(line);
@@ -31,62 +31,85 @@ public class DataPreprocessor {
             carrier.set(values[OTPConsts.UNIQUE_CARRIER]);
             date = values[OTPConsts.FL_DATE];
             year = getYear(date);
+//            System.out.println(year);
             if (year == OTPConsts.ACTIVE_YEAR) {
                 return true;
             }
 
             if (year >= OTPConsts.TARGET_YEAR_START && year <= OTPConsts.TARGET_YEAR_END) {
                 y[0][0] = Double.parseDouble(values[OTPConsts.AVG_TICKET_PRICE]);
+//                System.out.println(values[OTPConsts.AVG_TICKET_PRICE]);
+//                System.out.println(y[0][0]);
                 x[0][0] = Double.parseDouble(values[OTPConsts.DISTANCE]);
+//                System.out.println(values[OTPConsts.DISTANCE]);
+//                System.out.println(x[0][0]);
                 x[0][1] = Double.parseDouble(values[OTPConsts.AIR_TIME]);
-                replaceMatrices(matrices, getXTY(x, x), getXTY(x, y));
-            } else {
-                resetMatrices(matrices);
+                x[0][2] = 1.0;
+//                System.out.println(values[OTPConsts.AIR_TIME]);
+//                System.out.println(y[0][1]);
+                matrices.clear();
+                matrices.add(dToD(getXTY(x, x)));
+                matrices.add(dToD(getXTY(x, y)));
+//                replaceMatrices(matrices, getXTY(x, x), getXTY(x, y));
             }
         }
         return false;
     }
-
-     public static void resetMatrices(List<Double[][]> lom) {
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 2; j++) {
-                lom.get(0)[i][j] = 0.0;
-                lom.get(1)[i][j] = 0.0;
-            }
-        }
-    }
-
-    public static void replaceMatrices(List<Double[][]> lom, double[][] m1, double[][] m2) {
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 2; j++) {
-                lom.get(0)[i][j] = m1[i][j];
-                lom.get(1)[i][j] = m2[i][j];
-            }
-        }
-    }
+//
+//     public static void resetMatrices(List<Double[][]> lom) {
+//        for (int i = 0; i < 2; i++) {
+//            for (int j = 0; j < 2; j++) {
+//                lom.get(0)[i][j] = 0.0;
+//                lom.get(1)[i][j] = 0.0;
+//            }
+//        }
+//    }
+//
+//    public static void replaceMatrices(List<Double[][]> lom, double[][] m1, double[][] m2) {
+//        for (int i = 0; i < 2; i++) {
+//            for (int j = 0; j < 2; j++) {
+//                lom.get(0)[i][j] = m1[i][j];
+//                lom.get(1)[i][j] = m2[i][j];
+//            }
+//        }
+//    }
 
     public static void updateMatrices(List<Double[][]> lom1, List<Double[][]> lom2) {
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 2; j++) {
-                lom1.get(0)[i][j] += lom2.get(0)[i][j];
-                lom1.get(1)[i][j] += lom2.get(1)[i][j];
+        for (int h = 0; h < lom1.size(); h++) {
+            for (int i = 0; i < lom1.get(h).length; i++) {
+                for (int j = 0; j < lom1.get(h)[0].length; j++) {
+                    lom1.get(h)[i][j] += lom2.get(h)[i][j];
+                }
             }
         }
     }
-
 
     public static List<Double[][]> getNewLOM() {
         List<Double[][]> res = new ArrayList<Double[][]>();
-        res.add(getEmptyMatrix());
-        res.add(getEmptyMatrix());
+        res.add(newMatrix(3, 3));
+        res.add(newMatrix(3, 1));
         return res;
     }
 
-    public static Double[][] getEmptyMatrix() {
-        Double[][] res = {{.0, .0}, {.0, .0}};
+    public static Double[][] newMatrix(int r, int c) {
+        Double[][] res = new Double[r][c];
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                res[i][j] = .0;
+            }
+        }
         return res;
     }
 
+    public static void initLOM(List<Double[][]> lom) {
+        for (int h = 0; h < lom.size(); h++) {
+            for (int i = 0; i < lom.get(h).length; i++) {
+                for (int j = 0; j < lom.get(h)[0].length; j++) {
+                    lom.get(h)[i][j] = .0;
+                }
+            }
+        }
+    }
 
    /**
      * Parse a line in CSV format
@@ -180,6 +203,8 @@ public class DataPreprocessor {
             String carrier = values[OTPConsts.UNIQUE_CARRIER];
             if (carrier.isEmpty()) return false;
             double avgTicketPrice = Double.parseDouble(values[OTPConsts.AVG_TICKET_PRICE]);
+            String airTime = values[OTPConsts.AIR_TIME];
+            double airTimeVal = Double.parseDouble(airTime);
 
         } catch (Exception ex) {
             // ex.printStackTrace();
@@ -261,12 +286,37 @@ public class DataPreprocessor {
         return Double.parseDouble(value.toString().split(" ")[1]);
     }
 
-    public static double[][] getXTY(double[][] x, double[][] y) {
+//    public static double[][] getXTY(double[][] x, double[][] y) {
+//        double[][] xt = transpose(x);
+//        return matrixMultiply(xt, y);
+//    }
+
+   public static double[][] getXTY(double[][] x, double[][] y) {
         double[][] xt = transpose(x);
         return matrixMultiply(xt, y);
     }
 
-    public static double[][] matrixMultiply(double[][] a, double[][] b) {
+    public static Double[][] dToD(double[][] x) {
+        Double[][] res = new Double[x.length][x[0].length];
+        for (int i = 0; i < x.length; i++) {
+            for (int j = 0; j < x[0].length; j++) {
+                res[i][j] = x[i][j];
+            }
+        }
+        return res;
+    }
+
+    public static double[][] dFromD(Double[][] x) {
+        double[][] res = new double[x.length][x[0].length];
+        for (int i = 0; i < x.length; i++) {
+            for (int j = 0; j < x[0].length; j++) {
+                res[i][j] = x[i][j];
+            }
+        }
+        return res;
+    }
+
+   public static double[][] matrixMultiply(double[][] a, double[][] b) {
         double[][] res = new double[a.length][b[0].length];
         double ijVal;
         for (int i = 0; i < a.length; i++) {
@@ -282,10 +332,10 @@ public class DataPreprocessor {
     }
 
     public static double[][] transpose(double[][] x) {
-        double[][] res = new double[x.length][x[0].length];
+        double[][] res = new double[x[0].length][x.length];
         for (int i = 0; i < x.length; i++) {
             for (int j = 0; j < x[0].length; j++) {
-                res[i][j] = x[j][i];
+                res[j][i] = x[i][j];
             }
         }
         return res;
@@ -293,9 +343,9 @@ public class DataPreprocessor {
 
     public static String serializeMatrices(List<Double[][]> lom) {
         StringBuilder sb = new StringBuilder();
-        for (int h = 0; h < 2; h++) {
-            for (int i = 0; i < 2; i++) {
-                for (int j = 0; j < 2; j++) {
+        for (int h = 0; h < lom.size(); h++) {
+            for (int i = 0; i < lom.get(h).length; i++) {
+                for (int j = 0; j < lom.get(h)[0].length; j++) {
                     sb.append(lom.get(h)[i][j]);
                     sb.append(',');
                 }
@@ -318,17 +368,20 @@ public class DataPreprocessor {
     }
 
     public static List<Double[][]> deserializeMatrices(String str) {
-        String[] strs = str.split(" ");
         List<Double[][]> lom = new ArrayList<Double[][]>();
-        lom.add(new Double[2][2]);
-        lom.add(new Double[2][2]);
-        for (int h = 0; h < 2; h++) {
-            for (int i = 0; i < 2; i++) {
-                for (int j = 0; j < 2; j++) {
-                    lom.get(h)[i][j] = Double.parseDouble(strs[4 * h + 2 * i + j]);
-                }
+        lom.add(newMatrix(3, 3));
+        lom.add(newMatrix(3, 1));
+		if (!str.equals(OTPConsts.ACTIVE)) {
+			String[] strs = str.split(",");
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+                    lom.get(0)[i][j] = Double.parseDouble(strs[3 * i + j]);
+				}
+			}
+            for (int i = 0; i < 3; i++) {
+                lom.get(1)[i][0] = Double.parseDouble(strs[9 + i]);
             }
-        }
+		}
         return lom;
     }
 
@@ -339,8 +392,17 @@ public class DataPreprocessor {
         return false;
     }
 
-    public static double[][] fit(double[][] xtx, double[][] xty) {
+//    public static double[][] fit(double[][] xtx, double[][] xty) {
+//        // first calculate xtx^-1
+//        double[][] xtx_inv = inverse(xtx);
+//        double[][] theta = matrixMultiply(xtx_inv, xty);
+//        return theta;
+//    }
+
+    public static double[][] fit(List<Double[][]> lom) {
         // first calculate xtx^-1
+        double[][] xtx = dFromD(lom.get(0));
+        double[][] xty = dFromD(lom.get(1));
         double[][] xtx_inv = inverse(xtx);
         double[][] theta = matrixMultiply(xtx_inv, xty);
         return theta;
@@ -348,8 +410,12 @@ public class DataPreprocessor {
 
     public static double[][] inverse(double[][] m) {
         RealMatrix rm = new Array2DRowRealMatrix(m);
-        RealMatrix inv = MatrixUtils.inverse(rm);
-        return inv.getData();
+        DecompositionSolver ds = new LUDecomposition(rm).getSolver();
+        if (ds.isNonSingular()) {
+            RealMatrix inv = ds.getInverse();
+            return inv.getData();
+        }
+        return new double[3][1];
     }
 
 }
