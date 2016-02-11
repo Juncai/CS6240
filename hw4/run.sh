@@ -100,8 +100,7 @@ emr () {
 	loguri=s3n://${BUCKET_NAME}/log/
 		
 	cid=$(aws emr create-cluster --applications Name=Hadoop \
-
-		--ec2-attributes 'InstanceProfile=EMR_EC2_DefaultRole,AvailabilityZone=us-west-2a' \
+		--ec2-attributes '{"InstanceProfile":"EMR_EC2_DefaultRole"}' \
 		--service-role EMR_DefaultRole \
 		--enable-debugging \
 		--release-label emr-4.3.0 \
