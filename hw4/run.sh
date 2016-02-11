@@ -100,7 +100,8 @@ emr () {
 	loguri=s3n://${BUCKET_NAME}/log/
 		
 	cid=$(aws emr create-cluster --applications Name=Hadoop \
-		--ec2-attributes '{"KeyName":"jon_ec2_key","InstanceProfile":"EMR_EC2_DefaultRole","SubnetId":"subnet-49105b10","EmrManagedSlaveSecurityGroup":"sg-1011ee77","EmrManagedMasterSecurityGroup":"sg-1111ee76"}'\
+
+		--ec2-attributes 'InstanceProfile=EMR_EC2_DefaultRole,AvailabilityZone=us-west-2a' \
 		--service-role EMR_DefaultRole \
 		--enable-debugging \
 		--release-label emr-4.3.0 \
@@ -181,6 +182,7 @@ if [ "$1" = '-full-pd' ]; then
 	stop_server
 # process result by R
 	process_output
+	report
 fi
 
 if [ "$1" = '-full-emr' ]; then
@@ -191,6 +193,7 @@ if [ "$1" = '-full-emr' ]; then
 	emr
 # process result by R
 	process_output
+	report
 fi
 
 # report

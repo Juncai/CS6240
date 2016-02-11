@@ -28,6 +28,7 @@ n_carriers <- length(carriers)
 
 # plot the fitting graph
 # loop through top carriers and plot the mean prices for each month
+pdf("PricePredictions.pdf")
 plot_counter <- 0
 opar <- par(no.readonly=TRUE)
 par(mfrow=c(3, 2))
