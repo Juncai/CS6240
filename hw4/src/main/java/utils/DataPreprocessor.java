@@ -423,7 +423,7 @@ public class DataPreprocessor {
             RealMatrix inv = ds.getInverse();
             return inv.getData();
         }
-        return new double[3][1];
+        return new double[2][1];
     }
 
     public static double[] getStats(Path p) {

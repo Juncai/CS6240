@@ -91,7 +91,7 @@ emr () {
 	# aws s3 mb s3://${bucketname}
 	# clean the files
 	aws s3 rm s3://${bucketname}/output --recursive
-	aws s3 rm s3://${bucketname}/ClusterAnalysis.jar
+	aws s3 rm s3://${bucketname}/Job.jar
 
 	# upload jar file
 	aws s3 cp build/libs/LinearRegressionFit.jar s3://${bucketname}/Job.jar
@@ -105,7 +105,7 @@ emr () {
 		--enable-debugging \
 		--release-label emr-4.3.0 \
 		--log-uri ${loguri} \
-		--steps '[{"Args":["analysis.LinearRegressionFit","s3://'${bucketname}'/'${input_path}'","s3://'${bucketname}'/output", "s3://'${bucketname}'/tmp/stats"],"Type":"CUSTOM_JAR","ActionOnFailure":"CONTINUE","Jar":"s3://'${bucketname}'/Job.jar","Properties":"","Name":"LinearRegressionFit"}]' \
+		--steps '[{"Args":["analysis.LinearRegressionFit","s3://'${bucketname}'/input","s3://'${bucketname}'/output", "s3://'${bucketname}'/tmp/stats"],"Type":"CUSTOM_JAR","ActionOnFailure":"CONTINUE","Jar":"s3://'${bucketname}'/Job.jar","Properties":"","Name":"LinearRegressionFit"}]' \
 		--name 'Jun MR cluster' \
 		--instance-groups '[{"InstanceCount":1,"InstanceGroupType":"MASTER","InstanceType":"m1.medium","Name":"Master Instance Group"},{"InstanceCount":2,"InstanceGroupType":"CORE","InstanceType":"m1.medium","Name":"Core Instance Group"}]' \
 		--configurations '[{"Classification":"spark","Properties":{"maximizeResourceAllocation":"true"},"Configurations":[]}]' \
@@ -161,10 +161,6 @@ fi
 
 
 input_path='input'
-
-if [ "$MR_INPUT" == '/home/jon/Downloads/part' ]; then
-	input_path='inputSmall'
-fi
 
 if [ "$1" = '-pd' ]; then
 	clean
