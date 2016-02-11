@@ -16,6 +16,7 @@ Prereuisites:
 		2. Pandoc: (apt-get install pandoc is not enough, need version 1.12.3 or up)
 		3. Latex: sudo apt-get install texlive-full
 		4. Fonts: sudo apt-get install texlive-fonts-recommended
+		5. 'plyr' package for R
 
 Build and run the code:
 	0. Have correct hadoop paths(both /bin and /sbin folder), setting in PATH environment variable.

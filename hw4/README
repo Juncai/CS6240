@@ -1,3 +1,15 @@
+Prereuisites:
+	For the Mapreduce:
+		1. AWS CLI package (for configuring and running jobs on AWS)
+		2. R
+		3. Java
+	For generating report:
+		1. Kintr
+		2. Pandoc: (apt-get install pandoc is not enough, need version 1.12.3 or up)
+		3. Latex: sudo apt-get install texlive-full
+		4. Fonts: sudo apt-get install texlive-fonts-recommended
+		5. 'plyr' package for R
+
 Running the code:
   Pseudo-distributed mode:
 	1. Set environment variable MR_INPUT to the directory which contains the data files.

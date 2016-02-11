@@ -182,6 +182,7 @@ if [ "$1" = '-full-pd' ]; then
 	pd
 	stop_server
 # process result by R
+	process_output
 fi
 
 if [ "$1" = '-full-emr' ]; then
@@ -191,7 +192,7 @@ if [ "$1" = '-full-emr' ]; then
 	upload_data_emr
 	emr
 # process result by R
+	process_output
 fi
-
 
 # report
