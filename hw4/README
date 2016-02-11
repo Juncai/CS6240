@@ -3,6 +3,7 @@ Prereuisites:
 		1. AWS CLI package (for configuring and running jobs on AWS)
 		2. R
 		3. Java
+		4. Gradle
 	For generating report:
 		1. Kintr
 		2. Pandoc: (apt-get install pandoc is not enough, need version 1.12.3 or up)
@@ -12,10 +13,13 @@ Prereuisites:
 
 Running the code:
   Pseudo-distributed mode:
-	1. Set environment variable MR_INPUT to the directory which contains the data files.
-	2. Run '. ./env.sh' to set the HADOOP_CONF_DIR to ./.hadoop
+  	0. We assument you have correct hadoop pseudo-distributed mode configuration on the machine.
+	1. Set environment variable MR_INPUT in the env.sh to the directory which contains the data files.
+	2. Run '. ./env.sh' to set the environment variables
 	3. Use './run.sh -full-pd' to run the code.
 
   EMR mode:
-	1. Set environment variable MR_INPUT to the directory which contains the data files.
-	2. Use './run.sh -full-emr' to run the code.
+	1. Set environment variable MR_INPUT int the env.sh to the directory which contains the data files.
+	2. Set AWS_ACCESS_KEY_ID ,AWS_SECRET_ACCESS_KEY and BUCKET_NAME in the env.sh
+	3. Run '. ./env.sh' to set the environment variables
+	4. Use './run.sh -full-emr' to run the code.

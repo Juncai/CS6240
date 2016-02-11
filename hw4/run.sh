@@ -54,10 +54,10 @@ upload_data_pd () {
 
 upload_data_emr() {
 	# upload the data files
-	aws s3 rm s3://${bucketname}/input --recursive
-	aws s3 rm s3://${bucketname}/tmp --recursive
-	aws s3 sync ${MR_INPUT} s3://${bucketname}/input
-	aws s3 sync tmp s3://${bucketname}/tmp
+	aws s3 rm s3://${BUCKET_NAME}/input --recursive
+	aws s3 rm s3://${BUCKET_NAME}/tmp --recursive
+	aws s3 sync ${MR_INPUT} s3://${BUCKET_NAME}/input
+	aws s3 sync tmp s3://${BUCKET_NAME}/tmp
 }
 
 stop_server () {
@@ -87,17 +87,17 @@ emr () {
 	export AWS_DEFAULT_REGION=us-west-2
 
 	# create s3 bucket
-	# aws s3 rb s3://${bucketname} --force
-	# aws s3 mb s3://${bucketname}
+	# aws s3 rb s3://${BUCKET_NAME} --force
+	# aws s3 mb s3://${BUCKET_NAME}
 	# clean the files
-	aws s3 rm s3://${bucketname}/output --recursive
-	aws s3 rm s3://${bucketname}/Job.jar
+	aws s3 rm s3://${BUCKET_NAME}/output --recursive
+	aws s3 rm s3://${BUCKET_NAME}/Job.jar
 
 	# upload jar file
-	aws s3 cp build/libs/LinearRegressionFit.jar s3://${bucketname}/Job.jar
+	aws s3 cp build/libs/LinearRegressionFit.jar s3://${BUCKET_NAME}/Job.jar
 
 	# configure EMR
-	loguri=s3n://${bucketname}/log/
+	loguri=s3n://${BUCKET_NAME}/log/
 		
 	cid=$(aws emr create-cluster --applications Name=Hadoop \
 		--ec2-attributes '{"KeyName":"jon_ec2_key","InstanceProfile":"EMR_EC2_DefaultRole","SubnetId":"subnet-49105b10","EmrManagedSlaveSecurityGroup":"sg-1011ee77","EmrManagedMasterSecurityGroup":"sg-1111ee76"}'\
@@ -105,7 +105,7 @@ emr () {
 		--enable-debugging \
 		--release-label emr-4.3.0 \
 		--log-uri ${loguri} \
-		--steps '[{"Args":["analysis.LinearRegressionFit","s3://'${bucketname}'/input","s3://'${bucketname}'/output", "s3://'${bucketname}'/tmp/stats"],"Type":"CUSTOM_JAR","ActionOnFailure":"CONTINUE","Jar":"s3://'${bucketname}'/Job.jar","Properties":"","Name":"LinearRegressionFit"}]' \
+		--steps '[{"Args":["analysis.LinearRegressionFit","s3://'${BUCKET_NAME}'/input","s3://'${BUCKET_NAME}'/output", "s3://'${BUCKET_NAME}'/tmp/stats"],"Type":"CUSTOM_JAR","ActionOnFailure":"CONTINUE","Jar":"s3://'${BUCKET_NAME}'/Job.jar","Properties":"","Name":"LinearRegressionFit"}]' \
 		--name 'Jun MR cluster' \
 		--instance-groups '[{"InstanceCount":1,"InstanceGroupType":"MASTER","InstanceType":"m1.medium","Name":"Master Instance Group"},{"InstanceCount":2,"InstanceGroupType":"CORE","InstanceType":"m1.medium","Name":"Core Instance Group"}]' \
 		--configurations '[{"Classification":"spark","Properties":{"maximizeResourceAllocation":"true"},"Configurations":[]}]' \
@@ -122,7 +122,7 @@ emr () {
 	done
 
 	# get the output
-	aws s3 sync s3://${bucketname}/output output --delete
+	aws s3 sync s3://${BUCKET_NAME}/output output --delete
 }
 
 get_stats () {
@@ -138,8 +138,6 @@ report () {
 process_output () {
 	Rscript processOutput.R
 }
-
-bucketname=juncai001
 
 if [ $1 = '-clean' ]; then
 	clean
