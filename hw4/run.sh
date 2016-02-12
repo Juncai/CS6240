@@ -114,7 +114,7 @@ emr () {
 
 	# waiting for job to complete
 	tmstate='            "State": "TERMINATED",'
-	output=$(aws emr describe-cluster --cluster-id "$cid" | grep -oh '^[[:space:]]\{12\}"State": "TERMINATED",')
+	output=$(aws emr describe-cluster --output json --cluster-id "$cid" | grep -oh '^[[:space:]]\{12\}"State": "TERMINATED",')
 	while [ "$output" != "$tmstate" ]; do
 		output=$(aws emr describe-cluster --cluster-id "$cid" | grep -oh '^[[:space:]]\{12\}"State": "TERMINATED",')
 		echo Waiting for job completion...

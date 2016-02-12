@@ -96,7 +96,26 @@ Where the title of each plot is the carrier's name. The left column is for the r
 
 ### Conclusions
 #### Comparing the Features
-We think the distance is a better feature than air time when predicting the ticket price. From all the coefficients above, we can see that $\theta_{1}$ is always much larger then the $\theta_{0}$ which means the features always contribute much more to the result rather than the contstant does. The other observation is that, the $\theta_{1}$ for distance is always larger than $\theta_{1}$ for air time model; and the $\theta_{0}$ for distance model is always smaller than $\theta_{0}$ for the air time model from which we conclude that distance is a better explanatory varialble here.
+From all the coefficients above, we can see that $\theta_{1}$ is always much larger then the $\theta_{0}$ which means the features always contribute much more to the result rather than the contstant does. 
+In order to find out which feature is better for predicting the average ticket price, we calculate the MSE for each regression. 
+We think the distance is a better feature because for most carriers, the MSE of regression with distance is better than that with air time. So the distance can give us a more accurate prediction of the ticket price.
+
+Carriers | MSE for Regression with Distance | MSE for Regression with Air Time
+---------|----------------------------------|----------------------------------
+EV|119416.625|108508.326
+HA|151595.237|177144.706
+MQ|114820.834|104138.244
+OO|117750.206|105643.573
+B6|201054.329|240822.089
+DL|303487.411|337597.071
+NK|274066.014|274066.014
+UA|587859.835|755985.014
+US|300724.435|339529.608
+VX|301370.967|388672.229
+WN|24717.913|25185.605
+AA|204990.616|238818.965
+AS|42374.216|50237.479
+F9|27895.279|28162.002
 
 #### Cheapest Carrier
 We think the cheapest carrier is AS since it has the smallest model parameters among all the carriers.

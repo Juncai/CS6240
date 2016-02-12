@@ -32,7 +32,6 @@ pdf("PricePredictions.pdf")
 plot_counter <- 0
 opar <- par(no.readonly=TRUE)
 par(mfrow=c(3, 2))
-# get min and max price, then config the y-axis
 colcolors <- rainbow(10)
 
 x_d <- seq(min_d, max_d, length.out=5)
