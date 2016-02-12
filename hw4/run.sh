@@ -125,6 +125,10 @@ emr () {
 	aws s3 sync s3://${BUCKET_NAME}/output output --delete
 }
 
+get_output_emr () {
+	aws s3 sync s3://${BUCKET_NAME}/output output --delete
+}
+
 get_stats () {
 	rm -rf tmp
 	mkdir tmp
@@ -194,5 +198,13 @@ if [ "$1" = '-full-emr' ]; then
 	process_output
 	report
 fi
+
+if [ "$1" = '-continue' ]; then
+	get_output_emr
+# process result by R
+	process_output
+	report
+fi
+
 
 # report
