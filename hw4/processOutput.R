@@ -51,8 +51,8 @@ for (i in 1:n_carriers)
 		 xlim=c(0, 6000),
 		 ylim=c(0, 1200))
 	text(x_d, y_d, round(y_d, 2))
-	text(1000, 1100, paste(c("theta_0:", round(ct0, 2)), collapse=" "))
-	text(1150, 950, paste(c("theta_1:", round(ct1, 2)), collapse=" "))
+	text(100, 1100, substitute(paste(theta[0], ": ", rct), list(rct=round(ct0, 2))), adj=0)
+	text(100, 930, substitute(paste(theta[1], ": ", rct), list(rct=round(ct1, 2))), adj=0)
 
 	ct0 <- thetas[thetas$carrier == carriers[i] & thetas$feature == "T", 3]
 	ct1 <- thetas[thetas$carrier == carriers[i] & thetas$feature == "T", 4]
@@ -64,7 +64,7 @@ for (i in 1:n_carriers)
 		 xlim=c(0, 800),
 		 ylim=c(0, 1200))
 	text(x_t, y_t, round(y_t, 2))
-	text(100, 1100, paste(c("theta_0:", round(ct0, 2)), collapse=" "))
-	text(110, 950, paste(c("theta_1:", round(ct1, 2)), collapse=" "))
+	text(10, 1100, substitute(paste(theta[0], ": ", rct), list(rct=round(ct0, 2))), adj=0)
+	text(10, 930, substitute(paste(theta[1], ": ", rct), list(rct=round(ct1, 2))), adj=0)
 }
 par(opar)

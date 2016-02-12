@@ -7,16 +7,19 @@ output: pdf_document
 
 This document describes an implementation of Mapreduce instance with Hadoop doing ticket price analysis on the OTP (On-Time Performance) dataset. The purpose of the application is to perform a simple linear regression on the ticket price. The features we used are distance and air time. The label is average ticket price. For each carrier whic is active in 2015, we finished two simple linear regression for it. One between distance and average ticket price. The other one between air time and average ticket price.
 
-<h3>Implementation</h3>
-<h4>Data Normalization</h4>
+### Implementation
+#### Data Normalization
 In order to get a good regression results, the features should be normalized. We normalized the data so that they have zero mean and one variance. A R script is used to go over all the data and find out the mean and standard deviation of the distance as well as the air time. Then these information is provided to Mapper along with the dataset. Mapper will normalize the features in map phrase.
 
-<h4>Calculation of Normal Equation</h4>
-We use normal equation to solve the linear regression problem. 
+#### Model and Normal Equation
+For a simple linear regression, there is only one explanatory variable which in our case is either distance or air time. So the model will simply be $$y=\theta_{0} + \theta_{1}x$$ where $y$ is the average ticket price and $x$ is distance or air time of the flight. $\theta_{0}$ and $\theta{1}$ are two model parameters which can be estimated from linear regression. In this implementation, we use normal equation to solve the linear regression problem. $$\theta=(X^{T}X)^{-1}X^{T}Y$$ In order to calculate the normal equation in Mapreduce, we divide the computation into three steps: 
+1. Compute $X_{i}^{T}X_{i}$ and $X_{i}^{T}Y_{i}$ for each observation and combine the results for each carrier in the mapper. 
+2. Compute the actual $X^{T}X$ and $X^{T}Y$ in the reducer by summing up all $X_{i}^{T}X_{i}$ and $X_{i}^{T}Y_{i}$ for each carrier. 
+3. Compute $\theta=(X^{T}X)^{-1}X^{T}Y$ for each carrier.
 
-<h3>Regression Results</h3>
+### Regression Results
 
-Following is the result graph created by R script. 
+Following is the regression results created by R. 
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
 options(warn=-1)
@@ -71,8 +74,8 @@ for (i in 1:n_carriers)
 		 xlim=c(0, 6000),
 		 ylim=c(0, 1200))
 	text(x_d, y_d, round(y_d, 2))
-	text(1000, 1100, paste(c("theta_0:", round(ct0, 2)), collapse=" "))
-	text(1150, 950, paste(c("theta_1:", round(ct1, 2)), collapse=" "))
+	text(100, 1100, substitute(paste(theta[0], ": ", rct), list(rct=round(ct0, 2))), adj=0)
+	text(100, 930, substitute(paste(theta[1], ": ", rct), list(rct=round(ct1, 2))), adj=0)
 
 	ct0 <- thetas[thetas$carrier == carriers[i] & thetas$feature == "T", 3]
 	ct1 <- thetas[thetas$carrier == carriers[i] & thetas$feature == "T", 4]
@@ -84,13 +87,16 @@ for (i in 1:n_carriers)
 		 xlim=c(0, 800),
 		 ylim=c(0, 1200))
 	text(x_t, y_t, round(y_t, 2))
-	text(100, 1100, paste(c("theta_0:", round(ct0, 2)), collapse=" "))
-	text(110, 950, paste(c("theta_1:", round(ct1, 2)), collapse=" "))
+	text(10, 1100, substitute(paste(theta[0], ": ", rct), list(rct=round(ct0, 2))), adj=0)
+	text(10, 930, substitute(paste(theta[1], ": ", rct), list(rct=round(ct1, 2))), adj=0)
 }
 par(opar)
 ```
-Where the title of each plot is the carrier's name. The left column is for the regression using distance as the feature and the right column is for that using air time. Coefficients for each regression are also given in the plots as "theta_0" and "theta_1". "theta_0" is the coefficient of the constant, and "theta_1" is the coefficient of the feature. 
+Where the title of each plot is the carrier's name. The left column is for the regression using distance as the feature and the right column is for that using air time. Model parameters for each regression are also given in the plots as $\theta_{0}$ and $\theta_{1}$.
 
-<h3>Conclusions</h3>
-<h4>Comparing the Features</h4>
-We think the distance is a better feature than air time when predicting the ticket price. From all the coefficients above, we can see that "theta_1" is always much larger then the "theta_0" which means the features always contribute much more to the result rather than the contstant does. The other observation is that, when both comparing to constant, distance is more important than air time. For example, the regression result for 'AA'
+### Conclusions
+#### Comparing the Features
+We think the distance is a better feature than air time when predicting the ticket price. From all the coefficients above, we can see that $\theta_{1}$ is always much larger then the $\theta_{0}$ which means the features always contribute much more to the result rather than the contstant does. The other observation is that, the $\theta_{1}$ for distance is always larger than $\theta_{1}$ for air time model; and the $\theta_{0}$ for distance model is always smaller than $\theta_{0}$ for the air time model from which we conclude that distance is a better explanatory varialble here.
+
+#### Cheapest Carrier
+We think the cheapest carrier is AS since it has the smallest model parameters among all the carriers.
