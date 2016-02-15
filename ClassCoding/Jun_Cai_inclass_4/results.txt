@@ -1,0 +1,41 @@
+sbt package
+[0m[[0minfo[0m] [0mSet current project to Demo (in build file:/home/jon/Downloads/Week3/partitioner/)[0m
+[0m[[0minfo[0m] [0mCompiling 1 Scala source to /home/jon/Downloads/Week3/partitioner/target/scala-2.10/classes...[0m
+[0m[[0minfo[0m] [0mPackaging /home/jon/Downloads/Week3/partitioner/target/scala-2.10/demo_2.10-1.0.jar ...[0m
+[0m[[0minfo[0m] [0mDone packaging.[0m
+[0m[[32msuccess[0m] [0mTotal time: 5 s, completed Feb 5, 2016 4:09:55 PM[0m
+cp target/scala-*/demo_*.jar Demo.jar
+rm -rf out
+sbt run
+[0m[[0minfo[0m] [0mSet current project to Demo (in build file:/home/jon/Downloads/Week3/partitioner/)[0m
+[0m[[0minfo[0m] [0mRunning main.Demo [0m
+Demo: startup
+DemoMapper.setup
+DemoMapper.cleanup
+DemoMapper maps: 3735
+DemoMapper outputs: 30633
+DemoCombiner.setup
+DemoCombiner.cleanup
+Reduces: 807
+DemoCombiner.setup
+DemoCombiner.cleanup
+Reduces: 4694
+DemoCombiner.setup
+DemoCombiner.cleanup
+Reduces: 516
+DemoReducer.setup
+DemoReducer.cleanup
+Reduces: 807
+Vals seen: 807
+There are 807 words starting with letters like [A-Z]
+DemoReducer.setup
+DemoReducer.cleanup
+Reduces: 4694
+Vals seen: 4694
+There are 4694 words starting with letters like [a-z]
+DemoReducer.setup
+DemoReducer.cleanup
+Reduces: 516
+Vals seen: 516
+There are 516 words starting with letters like [!@#]
+[0m[[32msuccess[0m] [0mTotal time: 6 s, completed Feb 5, 2016 4:10:06 PM[0m
