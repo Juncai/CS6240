@@ -37,6 +37,7 @@ public class ConnectionInfo {
     }
 
     public void processCoverRangesInReducer() {
+        if (coverRanges.size() == 0) return;
         Collections.sort(coverRanges, new Comparator<Date[]>() {
             @Override
             public int compare(Date[] d1, Date[] d2) {
@@ -69,6 +70,10 @@ public class ConnectionInfo {
 
     public List<Date> getArrTSs() {
         filterArr();
+        return arrTSs;
+    }
+
+    public List<Date> getRawArrTSs() {
         return arrTSs;
     }
 
@@ -108,6 +113,8 @@ public class ConnectionInfo {
 
         mergeCoverRanges();
 
+        if (arrTSs.size() == 0 || coverRanges.size() == 0) return;
+
         List<Date> coveredArrs = new ArrayList<Date>();
 
         // filter out the flights which is already covered
@@ -119,15 +126,15 @@ public class ConnectionInfo {
         while (arrInd < arrTSs.size()) {
             if (cArr.getTime() < cCover[0].getTime()) {
                 if (++arrInd < arrTSs.size()) {
-                    cArr = arrTSs.get(++arrInd);
+                    cArr = arrTSs.get(arrInd);
                 }
             } else if (cArr.getTime() <= cCover[1].getTime()) {
                 coveredArrs.add(cArr);
                 if (++arrInd < arrTSs.size()) {
-                    cArr = arrTSs.get(++arrInd);
+                    cArr = arrTSs.get(arrInd);
                 }
             } else if (++coverInd < coverRanges.size()) {
-                    cCover = coverRanges.get(++coverInd);
+                    cCover = coverRanges.get(coverInd);
             } else {
                 break;
             }

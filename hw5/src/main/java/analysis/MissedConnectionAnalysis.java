@@ -18,13 +18,13 @@ import utils.OTPConsts;
  * Created by Jun Cai on 2/14/2016
  */
 
-public class MissingConnectionAnalysis extends Configured implements Tool {
+public class MissedConnectionAnalysis extends Configured implements Tool {
 
     public int run (String[] args) throws Exception {
 
         Job job = Job.getInstance();
-        job.setJarByClass(MissingConnectionAnalysis.class);
-        job.setJobName("MissingConnectionAnalysis");
+        job.setJarByClass(MissedConnectionAnalysis.class);
+        job.setJobName("MissedConnectionAnalysis");
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
@@ -45,6 +45,6 @@ public class MissingConnectionAnalysis extends Configured implements Tool {
     }
 
 	public static void main(String[] args) throws Exception {
-		System.exit(ToolRunner.run(new MissingConnectionAnalysis(), args));
+		System.exit(ToolRunner.run(new MissedConnectionAnalysis(), args));
 	}
 }

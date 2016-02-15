@@ -47,17 +47,13 @@ start_server () {
 
 upload_data_pd () {
 	hadoop fs -rm -r input
-	hadoop fs -rm -r tmp
 	hadoop fs -put ${MR_INPUT} input
-	hadoop fs -put tmp tmp 
 }
 
 upload_data_emr() {
 	# upload the data files
 	aws s3 rm s3://${BUCKET_NAME}/input --recursive
-	aws s3 rm s3://${BUCKET_NAME}/tmp --recursive
 	aws s3 sync ${MR_INPUT} s3://${BUCKET_NAME}/input
-	aws s3 sync tmp s3://${BUCKET_NAME}/tmp
 }
 
 stop_server () {
@@ -72,14 +68,10 @@ pd () {
 	hadoop fs -rm -r output
 
 	# run the job
-	hadoop jar build/libs/LinearRegressionFit.jar analysis.LinearRegressionFit input output tmp/stats
-	# hadoop jar build/libs/ClusterAnalysis.jar analysis.ClusterAnalysis input output ${task} 2>>hd_log
+	hadoop jar build/libs/Job.jar analysis.MissedConnectionAnalysis input output
 
 	# get the output
 	hadoop fs -get output output
-
-	# use R to process the output
-
 }
 
 emr () {
@@ -94,7 +86,7 @@ emr () {
 	aws s3 rm s3://${BUCKET_NAME}/Job.jar
 
 	# upload jar file
-	aws s3 cp build/libs/LinearRegressionFit.jar s3://${BUCKET_NAME}/Job.jar
+	aws s3 cp build/libs/Job.jar s3://${BUCKET_NAME}/Job.jar
 
 	# configure EMR
 	loguri=s3n://${BUCKET_NAME}/log/
@@ -105,7 +97,7 @@ emr () {
 		--enable-debugging \
 		--release-label emr-4.3.0 \
 		--log-uri ${loguri} \
-		--steps '[{"Args":["analysis.LinearRegressionFit","s3://'${BUCKET_NAME}'/input","s3://'${BUCKET_NAME}'/output", "s3://'${BUCKET_NAME}'/tmp/stats"],"Type":"CUSTOM_JAR","ActionOnFailure":"CONTINUE","Jar":"s3://'${BUCKET_NAME}'/Job.jar","Properties":"","Name":"LinearRegressionFit"}]' \
+		--steps '[{"Args":["analysis.MissedConnectionAnalysis","s3://'${BUCKET_NAME}'/input","s3://'${BUCKET_NAME}'/output"],"Type":"CUSTOM_JAR","ActionOnFailure":"CONTINUE","Jar":"s3://'${BUCKET_NAME}'/Job.jar","Properties":"","Name":"LinearRegressionFit"}]' \
 		--name 'Jun MR cluster' \
 		--instance-groups '[{"InstanceCount":1,"InstanceGroupType":"MASTER","InstanceType":"m1.medium","Name":"Master Instance Group"},{"InstanceCount":2,"InstanceGroupType":"CORE","InstanceType":"m1.medium","Name":"Core Instance Group"}]' \
 		--configurations '[{"Classification":"spark","Properties":{"maximizeResourceAllocation":"true"},"Configurations":[]}]' \
@@ -127,12 +119,6 @@ emr () {
 
 get_output_emr () {
 	aws s3 sync s3://${BUCKET_NAME}/output output --delete
-}
-
-get_stats () {
-	rm -rf tmp
-	mkdir tmp
-	Rscript mean_std.R
 }
 
 report () {
@@ -178,14 +164,13 @@ fi
 if [ "$1" = '-full-pd' ]; then
 	clean
 	cmp
-	get_stats
 	start_server
 	upload_data_pd
 	pd
 	stop_server
 # process result by R
-	process_output
-	report
+#	process_output
+#	report
 fi
 
 if [ "$1" = '-full-emr' ]; then

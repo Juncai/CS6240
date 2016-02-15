@@ -28,8 +28,14 @@ public class AnalysisReducer extends Reducer<Text, Text, Text, IntWritable> {
         ConnectionInfo cci;
         for (Integer ap : acMap.keySet()) {
             cci = acMap.get(ap);
+            // for test
+//            context.write(new Text(key + " " + ap + "cr before"), new IntWritable(cci.getCoverRanges().size()));
+//            context.write(new Text(key + " " + ap + "ar before"), new IntWritable(cci.getRawArrTSs().size()));
             cci.processCoverRangesInReducer();
             missedCount += cci.getArrTSs().size();
+            // for test
+//            context.write(new Text(key + " " + ap + "cr after"), new IntWritable(cci.getCoverRanges().size()));
+//            context.write(new Text(key + " " + ap + "ar after"), new IntWritable(cci.getRawArrTSs().size()));
         }
 
         context.write(key, new IntWritable(missedCount));
