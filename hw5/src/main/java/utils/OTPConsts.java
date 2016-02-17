@@ -1,8 +1,16 @@
 package utils;
 
 public class OTPConsts {
+    // 2400
+    public final static String START_OF_NEW_DAY_OLD = "2400";
+    public final static String START_OF_NEW_DAY = "0000";
+
+    // Header start with
+    public final static String HEADER_START = "YEAR";
+
     // Date time format
     public final static String DATETIME_FORMAT = "yyyy-MM-dd HHmm";
+    public final static String DATEKEY_FORMAT = "yyyyMMddHH";
 
     // Stats variable name
     public final static String DISTANCE_MEAN = "DM";
@@ -14,14 +22,8 @@ public class OTPConsts {
     public final static int DISTANCE = 54;
     public final static int AIR_TIME = 52;
 
-    // constant for invalid record
-    public final static String INVALID = "INVALID";
-    public final static String ACTIVE = "A";
-    public final static int ACTIVE_YEAR = 2015;
-    public final static int TARGET_YEAR_START = 2010;
-    public final static int TARGET_YEAR_END = 2014;
-
     // constants for indices
+    public final static int YEAR = 0;
     public final static int FL_DATE = 5;
     public final static int CRS_ARR_TIME = 40;
     public final static int CRS_DEP_TIME = 29;
@@ -61,6 +63,7 @@ public class OTPConsts {
     public final static int ARR_TIME = 41;
     public final static int ACTUAL_ELAPSED_TIME = 51;
     public final static int ARR_DELAY = 42;
+    public final static int DEP_DELAY = 31;
     public final static int ARR_DELAY_NEW = 43;
     public final static int ARR_DEL15 = 44;
     public final static int UNIQUE_CARRIER = 6;

@@ -1,149 +1,126 @@
 package utils;
 
-import org.apache.commons.lang.time.DateUtils;
-
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import java.util.*;
 
-/**
- * Created by Jun Cai on 2/14/16.
- */
-
+// Authors: Jun Cai and Vikas Boddu
 public class ConnectionInfo {
-    private List<Date> arrTSs;
-    private List<Date> depTSs;
-    private List<Date[]> coverRanges;
-    private boolean crMerged; // cover range merged flag
-    private boolean arrFiltered; // arrive flights filtered flag
+    static private DateTimeFormatter sf = DateTimeFormat.forPattern(OTPConsts.DATEKEY_FORMAT);
 
-    public ConnectionInfo() {
-        arrTSs = new ArrayList<Date>();
-        depTSs = new ArrayList<Date>();
-        coverRanges = new ArrayList<Date[]>();
-        crMerged = false;
-        arrFiltered = false;
+    private List<DateTime[]> arrTSs;
+    private List<DateTime[]> depTSs;
+    private String[] possibleKeys;
+
+    static private String[] generatePossibleKeys(int year) {
+
+        int daysOfYear = 365;
+        String firstHourStr = year + "010100";
+        DateTime firstHour = sf.parseDateTime(firstHourStr);
+        if (firstHour.year().isLeap()) {
+            daysOfYear = 366;
+        }
+        String[] res = new String[daysOfYear * 24];
+        DateTime tmpH = firstHour;
+        for (int i = 0; i < res.length; i++) {
+            res[i] = tmpH.toString(sf);
+            tmpH = tmpH.plusHours(1);
+        }
+
+        return res;
     }
 
-    public void updateArr(Date ts) {
-        arrTSs.add(ts);
+    public ConnectionInfo(int year) {
+        arrTSs = new ArrayList<DateTime[]>();
+        depTSs = new ArrayList<DateTime[]>();
+        possibleKeys = generatePossibleKeys(year);
     }
 
-    public void updateDep(Date ts) {
-        depTSs.add(ts);
+    public void updateArr(DateTime scheduled, DateTime actual) {
+        DateTime[] newEntry = {scheduled, actual};
+        arrTSs.add(newEntry);
     }
 
-    public void updateCoverRanges(Date[] cover) {
-        crMerged = true;
-        coverRanges.add(cover);
+    public void updateDep(DateTime scheduled, DateTime actual) {
+        DateTime[] newEntry = {scheduled, actual};
+        depTSs.add(newEntry);
     }
 
-    public void processCoverRangesInReducer() {
-        if (coverRanges.size() == 0) return;
-        Collections.sort(coverRanges, new Comparator<Date[]>() {
-            @Override
-            public int compare(Date[] d1, Date[] d2) {
-                if (d1[0].getTime() < d2[0].getTime()) {
-                    return -1;
-                } else if (d1[0].getTime() == d2[0].getTime()) {
-                    return 0;
-                } else {
-                    return 1;
+    public int countMissedConnections() {
+
+        Map<String, List<DateTime[]>> depMap = new HashMap<String, List<DateTime[]>>();
+        Map<String, List<DateTime[]>> arrMap = new HashMap<String, List<DateTime[]>>();
+
+        fillConMap(depMap, depTSs);
+        fillConMap(arrMap, arrTSs);
+
+        return countMissedConnectionsHelper(depMap, arrMap);
+    }
+
+    public int countMissedConnectionsHelper(Map<String, List<DateTime[]>> depMap, Map<String, List<DateTime[]>> arrMap) {
+        int res = 0;
+        String cKey;
+        String[] pKeys;
+        for (int i = 0; i < possibleKeys.length; i++) {
+            cKey = possibleKeys[i];
+            if (arrMap.containsKey(cKey)) {
+                pKeys = possibleConKeys(i);
+                for (String k : pKeys) {
+                    if (depMap.containsKey(k)) {
+                        res += missedConBetweenLOD(depMap.get(k), arrMap.get(cKey));
+                    }
                 }
             }
-        });
+        }
+        return res;
+    }
 
-        // merge the cover ranges to a new list, then replace the old one
-        List<Date[]> newCR = new ArrayList<Date[]>();
-        Date[] newCover = coverRanges.get(0);
-        newCR.add(newCover);
-        Date[] cCover;
-        for (int i = 1; i < coverRanges.size(); i++) {
-            cCover = coverRanges.get(i);
-            if (cCover[0].getTime() <= newCover[1].getTime()) {
-                newCover[1] = cCover[1];
-            } else {
-                newCR.add(cCover);
-                newCover = cCover;
+    private int missedConBetweenLOD(List<DateTime[]> depLod, List<DateTime[]> arrLod) {
+        int res = 0;
+        for (DateTime[] arr : arrLod) {
+            for (DateTime[] dep : depLod) {
+                res += isMissedConnection(dep, arr);
             }
         }
-        coverRanges = newCR;
+        return res;
     }
 
-    public List<Date> getArrTSs() {
-        filterArr();
-        return arrTSs;
-    }
-
-    public List<Date> getRawArrTSs() {
-        return arrTSs;
-    }
-
-    public List<Date[]> getCoverRanges() {
-        mergeCoverRanges();
-        return coverRanges;
-    }
-
-    public void mergeCoverRanges() {
-        if (crMerged) return;
-        Date[] cover = null;
-        Date coverStart;
-        Date coverEnd;
-
-        Collections.sort(arrTSs);
-        Collections.sort(depTSs);
-
-        // first combine depTSs to coverRange
-        for (int i = 0; i < depTSs.size(); i++) {
-            coverStart = DateUtils.addHours(depTSs.get(i), -6);
-            coverEnd = DateUtils.addMinutes(depTSs.get(i), -30);
-            if (cover == null || coverStart.getTime() > cover[1].getTime()) {
-                cover = new Date[2];
-                cover[0] = coverStart;
-                cover[1] = coverEnd;
-                coverRanges.add(cover);
-            } else {
-                cover[1] = coverEnd;
+    private int isMissedConnection(DateTime[] dep, DateTime[] arr) {
+        // check if it's a valid connection
+        if (arr[0].plusMinutes(29).isBefore(dep[0])
+                && arr[0].plusMinutes(361).isAfter(dep[0])) {
+            if (arr[1].plusMinutes(30).isAfter(dep[1])) {
+                return 1;
             }
         }
-
-        crMerged = true;
+        return 0;
     }
 
-    public void filterArr() {
-        if (arrFiltered) return;
+    private String[] possibleConKeys(int ind) {
+        // since the key set is deterministic, it can be pre-computed!!
+        int numOfKeys = (possibleKeys.length - ind < 7) ? (possibleKeys.length - ind) : 7;
+        String[] res = new String[numOfKeys];
 
-        mergeCoverRanges();
+        for (int i = 0; i < res.length; i++) {
+            res[i] = possibleKeys[ind + i];
+        }
+        return res;
+    }
 
-        if (arrTSs.size() == 0 || coverRanges.size() == 0) return;
-
-        List<Date> coveredArrs = new ArrayList<Date>();
-
-        // filter out the flights which is already covered
-        int arrInd = 0;
-        int coverInd = 0;
-        Date cArr = arrTSs.get(arrInd);
-        Date[] cCover = coverRanges.get(coverInd);
-
-        while (arrInd < arrTSs.size()) {
-            if (cArr.getTime() < cCover[0].getTime()) {
-                if (++arrInd < arrTSs.size()) {
-                    cArr = arrTSs.get(arrInd);
-                }
-            } else if (cArr.getTime() <= cCover[1].getTime()) {
-                coveredArrs.add(cArr);
-                if (++arrInd < arrTSs.size()) {
-                    cArr = arrTSs.get(arrInd);
-                }
-            } else if (++coverInd < coverRanges.size()) {
-                    cCover = coverRanges.get(coverInd);
-            } else {
-                break;
+    private void fillConMap(Map<String, List<DateTime[]>> map, List<DateTime[]> lod) {
+        for (DateTime[] tss :
+                lod) {
+            DateTime scheduled = tss[0];
+            String dateKey = dateToKey(scheduled);
+            if (!map.containsKey(dateKey)) {
+                map.put(dateKey, new ArrayList<DateTime[]>());
             }
+            map.get(dateKey).add(tss);
         }
+    }
 
-        for (Date ca : coveredArrs) {
-            arrTSs.remove(ca);
-        }
-
-        arrFiltered = true;
+    private String dateToKey(DateTime d) {
+        return d.toString(sf);
     }
 }

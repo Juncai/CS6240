@@ -1,18 +1,12 @@
 package utils;
 
-import org.apache.commons.math3.linear.*;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.*;
-import org.apache.hadoop.io.Text;
-
-import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.lang.*;
 
 
-
+// Author: Jun Cai and Vikas Boddu
 public class DataPreprocessor {
 
     /**
@@ -141,54 +135,19 @@ public class DataPreprocessor {
         return values.toArray(new String[1]);
     }
 
-    public static void updateConnectionInfo(Map<Integer, ConnectionInfo> acMap, String s) {
+    public static void updateConnectionInfo(Map<Integer, ConnectionInfo> acMap, FlightInfo f, int year) {
         // parse the value string
-        String[] vals = s.split(" ");
-        int airportID = Integer.parseInt(vals[0]);
-        if (!acMap.containsKey(airportID)) {
-            acMap.put(airportID, new ConnectionInfo());
+        int original = f.getOriginalAirportId();
+        int dest = f.getDestAirportId();
+        if (!acMap.containsKey(original)) {
+            acMap.put(original, new ConnectionInfo(year));
         }
+        acMap.get(original).updateDep(f.getDepTimeScheduled(), f.getDepTimeActual());
 
-        if (vals.length == 2) { // this is a arrTime record
-            acMap.get(airportID).updateArr(new Date(Long.parseLong(vals[1])));
-        } else if (vals.length == 3) {  // this is a cover range
-            Date coverStart = new Date(Long.parseLong(vals[1]));
-            Date coverEnd = new Date(Long.parseLong(vals[2]));
-            Date[] cover = {coverStart, coverEnd};
-            acMap.get(airportID).updateCoverRanges(cover);
+        if (!acMap.containsKey(dest)) {
+            acMap.put(dest, new ConnectionInfo(year));
         }
-    }
-
-    public static void updateConnectionInfoMap(Map<String, Map<Integer, ConnectionInfo>> ciMap, FlightInfo flight) {
-        String carrier = flight.getCarrier();
-        updateConnectionInfoMap(ciMap, carrier, flight.getOriginalAirportId(), flight.getDepTime(), false);
-        updateConnectionInfoMap(ciMap, carrier, flight.getDestAirportId(), flight.getArrTime(), true);
-    }
-
-    public static void updateConnectionInfoMap(Map<String, Map<Integer, ConnectionInfo>> ciMap, String carrier,
-                                               int airPortID, Date ts, boolean isArr) {
-        Map<Integer, ConnectionInfo> acMap;
-        Calendar c = Calendar.getInstance();
-        c.setTime(ts);
-        int year = c.get(Calendar.YEAR);
-        String carrierYear = carrier + " " + year;
-
-        if (!ciMap.containsKey(carrierYear)) {
-            acMap = new HashMap<Integer, ConnectionInfo>();
-            ciMap.put(carrierYear, acMap);
-        }
-
-        acMap = ciMap.get(carrierYear);
-
-        if (!acMap.containsKey(airPortID)) {
-            acMap.put(airPortID, new ConnectionInfo());
-        }
-
-        if (isArr) {
-            acMap.get(airPortID).updateArr(ts);
-        } else {
-            acMap.get(airPortID).updateDep(ts);
-        }
+        acMap.get(dest).updateArr(f.getArrTimeScheduled(), f.getArrTimeActual());
     }
 
 }

@@ -68,7 +68,8 @@ pd () {
 	hadoop fs -rm -r output
 
 	# run the job
-	hadoop jar build/libs/Job.jar analysis.MissedConnectionAnalysis input output
+	# hadoop jar build/libs/Job.jar analysis.MissedConnectionAnalysis input output
+	hadoop jar build/libs/Job.jar input output
 
 	# get the output
 	hadoop fs -get output output
@@ -131,20 +132,18 @@ process_output () {
 
 if [ $1 = '-clean' ]; then
 	clean
-	rmpwd
 	stop_server
 fi
 
 if [ $1 = '-prepare' ]; then
 	clean
 	cmp
-	get_stats
 	start_server
 fi
 
 if [ $1 = '-data' ]; then
 	upload_data_pd
-	upload_data_emr
+	# upload_data_emr
 fi
 
 
@@ -176,12 +175,11 @@ fi
 if [ "$1" = '-full-emr' ]; then
 	clean
 	cmp
-	get_stats
 	upload_data_emr
 	emr
 # process result by R
-	process_output
-	report
+	# process_output
+	# report
 fi
 
 if [ "$1" = '-continue' ]; then
