@@ -40,31 +40,36 @@ public class FlightInfo {
         } else {
             year = Integer.parseInt(values[OTPConsts.YEAR]);
             String date = values[OTPConsts.FL_DATE];
+            String depTimeScheduledStr = values[OTPConsts.CRS_DEP_TIME];
             String depTimeActualStr = values[OTPConsts.DEP_TIME];
+            String arrTimeScheduledStr = values[OTPConsts.CRS_ARR_TIME];
             String arrTimeActualStr = values[OTPConsts.ARR_TIME];
-            // a hack to replace 2400
-            if (depTimeActualStr.equals(OTPConsts.START_OF_NEW_DAY_OLD)) {
-                depTimeActualStr = OTPConsts.START_OF_NEW_DAY;
-            }
-            if (arrTimeActualStr.equals(OTPConsts.START_OF_NEW_DAY_OLD)) {
-                arrTimeActualStr = OTPConsts.START_OF_NEW_DAY;
-            }
-            int arrDelay = ((Double)Double.parseDouble(values[OTPConsts.ARR_DELAY])).intValue();
-            int depDelay = ((Double)Double.parseDouble(values[OTPConsts.DEP_DELAY])).intValue();
-            carrier = values[OTPConsts.UNIQUE_CARRIER];
-            originalAirportId = Integer.parseInt(values[OTPConsts.ORIGIN_AIRPORT_ID]);
-            destAirportId = Integer.parseInt(values[OTPConsts.DEST_AIRPORT_ID]);
-            depTimeActual = sf.parseDateTime(date + " " + depTimeActualStr);
-            arrTimeActual = sf.parseDateTime(date + " " + arrTimeActualStr);
+
+            depTimeScheduled = getDateTime(date, depTimeScheduledStr);
+            depTimeActual = getDateTime(date, depTimeActualStr);
+            arrTimeScheduled = getDateTime(date, arrTimeScheduledStr);
+            arrTimeActual = getDateTime(date, arrTimeActualStr);
             // consider the case when arrive in a new day
+            if (arrTimeScheduled.isBefore(depTimeScheduled)) {
+                arrTimeScheduled = arrTimeScheduled.plusDays(1);
+            }
             if (arrTimeActual.isBefore(depTimeActual)) {
                 arrTimeActual = arrTimeActual.plusDays(1);
             }
-            arrTimeScheduled = arrTimeActual.minusMinutes(arrDelay);
-            depTimeScheduled = depTimeActual.minusMinutes(depDelay);
+
+            carrier = values[OTPConsts.UNIQUE_CARRIER];
+            originalAirportId = Integer.parseInt(values[OTPConsts.ORIGIN_AIRPORT_ID]);
+            destAirportId = Integer.parseInt(values[OTPConsts.DEST_AIRPORT_ID]);
         }
     }
 
+    private DateTime getDateTime(String dateStr, String timeStr) {
+        // a hack to replace 2400
+        if (timeStr.equals(OTPConsts.START_OF_NEW_DAY_OLD)) {
+            timeStr = OTPConsts.START_OF_NEW_DAY;
+        }
+        return sf.parseDateTime(dateStr + " " + timeStr);
+    }
     public String getCarrier() {
         return carrier;
     }

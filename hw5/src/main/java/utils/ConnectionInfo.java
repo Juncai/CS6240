@@ -58,7 +58,8 @@ public class ConnectionInfo {
         return countMissedConnectionsHelper(depMap, arrMap);
     }
 
-    public int countMissedConnectionsHelper(Map<String, List<DateTime[]>> depMap, Map<String, List<DateTime[]>> arrMap) {
+    public int countMissedConnectionsHelper(Map<String, List<DateTime[]>> depMap,
+                                            Map<String, List<DateTime[]>> arrMap) {
         int res = 0;
         String cKey;
         String[] pKeys;

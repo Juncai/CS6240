@@ -12,12 +12,6 @@ public class OTPConsts {
     public final static String DATETIME_FORMAT = "yyyy-MM-dd HHmm";
     public final static String DATEKEY_FORMAT = "yyyyMMddHH";
 
-    // Stats variable name
-    public final static String DISTANCE_MEAN = "DM";
-    public final static String DISTANCE_STD = "DS";
-    public final static String AIR_TIME_MEAN = "TM";
-    public final static String AIR_TIME_STD = "TS";
-
     // for flight time and distance
     public final static int DISTANCE = 54;
     public final static int AIR_TIME = 52;
