@@ -21,10 +21,9 @@ public class AnalysisReducer extends Reducer<Text, Text, Text, IntWritable> {
         throws IOException, InterruptedException {
         Map<Integer, ConnectionInfo> acMap = new HashMap<Integer, ConnectionInfo>(); // key: airportID, value: connection info
         FlightInfo flight;
-        int year = Integer.parseInt(key.toString().split(" ")[1]);
+        int year = Integer.parseInt(key.toString().split(",")[1]);
 
         for (Text v : values) {
-//            DataPreprocessor.updateConnectionInfo(acMap, v.toString());
             flight = new FlightInfo(v);
             DataPreprocessor.updateConnectionInfo(acMap, flight, year);
         }
@@ -33,13 +32,7 @@ public class AnalysisReducer extends Reducer<Text, Text, Text, IntWritable> {
         ConnectionInfo cci;
         for (Integer ap : acMap.keySet()) {
             cci = acMap.get(ap);
-            // for test
-//            context.write(new Text(key + " " + ap + "cr before"), new IntWritable(cci.getCoverRanges().size()));
-//            context.write(new Text(key + " " + ap + "ar before"), new IntWritable(cci.getRawArrTSs().size()));
             missedCount += cci.countMissedConnections();
-            // for test
-//            context.write(new Text(key + " " + ap + "cr after"), new IntWritable(cci.getCoverRanges().size()));
-//            context.write(new Text(key + " " + ap + "ar after"), new IntWritable(cci.getRawArrTSs().size()));
         }
 
         context.write(key, new IntWritable(missedCount));

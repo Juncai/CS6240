@@ -5,10 +5,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-
-/**
- * Created by jon on 2/14/16.
- */
+// Authors: Jun Cai and Vikas Boddu
 public class FlightInfo {
     static private DateTimeFormatter sf = DateTimeFormat.forPattern(OTPConsts.DATETIME_FORMAT);
     private String carrier;

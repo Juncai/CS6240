@@ -104,6 +104,7 @@ public class DataPreprocessor {
      * Parse a line in CSV format
      * @param line a string in CSV format
      * @return list of values as a string array
+     * Code modified from: AgilePro's reply on http://stackoverflow.com/questions/843997/csv-parsing-in-java-working-example
      */
     static String[] parseCSVLine(String line) {
         List<String> values = new ArrayList<String>();

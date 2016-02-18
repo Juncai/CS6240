@@ -29,7 +29,7 @@ public class AnalysisMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         if (flight.isValid()) {
 //            DataPreprocessor.updateConnectionInfoMap(connectionInfoMap, flight);
-            context.write(new Text(flight.getCarrier() + " " + flight.getYear()),
+            context.write(new Text(flight.getCarrier() + "," + flight.getYear()),
                     new Text(flight.getOriginalAirportId() + " "
                             + flight.getDepTimeScheduled().toDate().getTime() + " "
                             + flight.getDepTimeActual().toDate().getTime() + " "
