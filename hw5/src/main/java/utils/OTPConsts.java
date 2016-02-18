@@ -1,5 +1,7 @@
 package utils;
 
+
+// Authors: Jun Cai and Vikas Boddu
 public class OTPConsts {
     // 2400
     public final static String START_OF_NEW_DAY_OLD = "2400";

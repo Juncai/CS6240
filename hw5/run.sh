@@ -169,7 +169,7 @@ if [ "$1" = '-full-pd' ]; then
 	stop_server
 # process result by R
 #	process_output
-#	report
+	report
 fi
 
 if [ "$1" = '-full-emr' ]; then
@@ -179,13 +179,13 @@ if [ "$1" = '-full-emr' ]; then
 	emr
 # process result by R
 	# process_output
-	# report
+	report
 fi
 
 if [ "$1" = '-continue' ]; then
 	get_output_emr
 # process result by R
-	process_output
+	# process_output
 	report
 fi
 

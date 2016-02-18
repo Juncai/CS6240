@@ -4,20 +4,15 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
-import utils.DataPreprocessor;
-import utils.OTPConsts;
 
-/**
- * Created by Jun Cai on 2/14/2016
- */
 
+// Authors: Jun Cai and Vikas Boddu
 public class MissedConnectionAnalysis extends Configured implements Tool {
 
     public int run (String[] args) throws Exception {
@@ -31,6 +26,8 @@ public class MissedConnectionAnalysis extends Configured implements Tool {
 
         job.setMapperClass(AnalysisMapper.class);
         job.setReducerClass(AnalysisReducer.class);
+        job.setPartitionerClass(AnalysisPartitioner.class); // set custom partitioner
+//        job.setNumReduceTasks(2); // for test
 
 		job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);

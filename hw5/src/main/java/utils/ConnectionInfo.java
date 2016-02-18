@@ -9,9 +9,11 @@ import java.util.*;
 public class ConnectionInfo {
     static private DateTimeFormatter sf = DateTimeFormat.forPattern(OTPConsts.DATEKEY_FORMAT);
 
-    private List<DateTime[]> arrTSs;
-    private List<DateTime[]> depTSs;
+    private Map<String, List<DateTime[]>> depMap;
+    private Map<String, List<DateTime[]>> arrMap;
     private String[] possibleKeys;
+    List<DateTime[]> arrTSs;
+    List<DateTime[]> depTSs;
 
     static private String[] generatePossibleKeys(int year) {
 
@@ -29,6 +31,11 @@ public class ConnectionInfo {
         }
 
         return res;
+    }
+
+    public ConnectionInfo() {
+        arrTSs = new ArrayList<DateTime[]>();
+        depTSs = new ArrayList<DateTime[]>();
     }
 
     public ConnectionInfo(int year) {
@@ -49,13 +56,34 @@ public class ConnectionInfo {
 
     public int countMissedConnections() {
 
-        Map<String, List<DateTime[]>> depMap = new HashMap<String, List<DateTime[]>>();
-        Map<String, List<DateTime[]>> arrMap = new HashMap<String, List<DateTime[]>>();
+        depMap = new HashMap<String, List<DateTime[]>>();
+        arrMap = new HashMap<String, List<DateTime[]>>();
 
         fillConMap(depMap, depTSs);
         fillConMap(arrMap, arrTSs);
 
         return countMissedConnectionsHelper(depMap, arrMap);
+    }
+
+    public List<DateTime[]> firstDepartures() {
+        List<DateTime[]> res = new ArrayList<DateTime[]>();
+        for (int i = 0; i < 6; i++) {
+            if (depMap.containsKey(possibleKeys[i])) {
+                res.addAll(depMap.get(possibleKeys[i]));
+            }
+        }
+        return res;
+    }
+
+    public List<DateTime[]> lastArrivals() {
+        List<DateTime[]> res = new ArrayList<DateTime[]>();
+        int len = possibleKeys.length;
+        for (int i = len - 6; i < len; i++) {
+            if (arrMap.containsKey(possibleKeys[i])) {
+                res.addAll(arrMap.get(possibleKeys[i]));
+            }
+        }
+        return res;
     }
 
     public int countMissedConnectionsHelper(Map<String, List<DateTime[]>> depMap,
@@ -77,7 +105,7 @@ public class ConnectionInfo {
         return res;
     }
 
-    private int missedConBetweenLOD(List<DateTime[]> depLod, List<DateTime[]> arrLod) {
+    int missedConBetweenLOD(List<DateTime[]> depLod, List<DateTime[]> arrLod) {
         int res = 0;
         for (DateTime[] arr : arrLod) {
             for (DateTime[] dep : depLod) {

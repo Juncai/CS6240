@@ -1,121 +1,49 @@
 ---
-title: "Flight Ticket Price Analysis with Linear Regression"
+title: "Missed Connection Analysis on OTP Flights Dataset"
 author: "Jun Cai, Vikas Boddu"
-date: February 11, 2016
-output: pdf_document
+date: February 18, 2016
+output: html_document
 ---
 
-This document describes an implementation of Mapreduce instance with Hadoop doing ticket price analysis on the OTP (On-Time Performance) dataset. The purpose of the application is to perform a simple linear regression on the ticket price. The features we used are distance and air time. The label is average ticket price. For each carrier whic is active in 2015, we finished two simple linear regression for it. One between distance and average ticket price. The other one between air time and average ticket price.
+This document describes an implementation of Mapreduce instance with Hadoop doing missed connection analysis on the OTP (On-Time Performance) dataset. The purpose of the application is to find out how many missed connections happened for each carrier for each year. 
+
+### High-level Design
+To find out all the missed connections, a join between flights arrived and departed from the same airport. For two reasons, we are using the Reducer-side join approach. The first reason is that since we can't garantee that all the records for the same carrier for the same airport and the same year will be processed in one Mapper instance. So by doing a Mapper-only join we might get an incomplete join. The second reason is to reduce the data trasfer between the Mapper and the Reducer. The size of the joined data may be as large as O(N^2) where N is the number of flights. So in the Mapper, we just extract related information about each flights from the input data. Then in Reducer, we compare (arrived flight, departed flight) from the same carrier, for the same airpot to compute the number of missed connections, in a very careful way (will be discussed in the Implementation chapter). 
+
+For the cross year missed connections, we include them in the previous year's result (i.e. a connection across 2012 and 2013 will belong to year 2012). The concern is that the flight schduled in the previous year is most likely be responsible for that missed connection. 
 
 ### Implementation
-#### Data Normalization
-In order to get a good regression results, the features should be normalized. We normalized the data so that they have zero mean and one variance. A R script is used to go over all the data and find out the mean and standard deviation of the distance as well as the air time. Then these information is provided to Mapper along with the dataset. Mapper will normalize the features in map phase.
+#### Mapper
+The output of the Mapper is a (Text, Text) pair for each flight seen, where the key contains carrier ID and year of the flight. The value contains airport ID of both origin and destination airports, the scheduled and actual timestamps of both arrival and departure. 
 
-#### Model and Normal Equation
-For a simple linear regression, there is only one explanatory variable which in our case is either distance or air time. So the model will simply be $$y=\theta_{0} + \theta_{1}x$$ where $y$ is the average ticket price and $x$ is distance or air time of the flight. $\theta_{0}$ and $\theta{1}$ are two model parameters which can be estimated from linear regression. In this implementation, we use normal equation to solve the linear regression problem. $$\theta=(X^{T}X)^{-1}X^{T}Y$$ In order to calculate the normal equation in Mapreduce, we divide the computation into three steps: 
-1. Compute $X_{i}^{T}X_{i}$ and $X_{i}^{T}Y_{i}$ for each observation and combine the results for each carrier in the mapper. 
-2. Compute the actual $X^{T}X$ and $X^{T}Y$ in the reducer by summing up all $X_{i}^{T}X_{i}$ and $X_{i}^{T}Y_{i}$ for each carrier. 
-3. Compute $\theta=(X^{T}X)^{-1}X^{T}Y$ for each carrier.
+#### Partitioner
+To calculate cross year missed connections, we need to ensure that all records for the same carrier are processed by the same Reducer instance. As mentioned, the key of the Mapper output is a string contains not only the carrier but also the year when the flight is scheduled. A custom Partitioner is implement in our solution to send the key-value pair to a certain Reducer based only on the hash code of the carrier ID (ignore the year).
 
-### Regression Results
+#### Reducer
+In Reducer, we first create a collection for each airport where all the arrived and departed flights for that airport reside. For each collection, there are two lists. One for arrived flights and one for departed flights. In order to reduce the computation, we split each list into 8760 (or 8748 depends on if it was a leap year; this is the number of hours in that year) sublists. Since a connection is always within 6 hours, so comparing each flight withup to 7 sublists of flights is enough for missed connection calculation. In this way, we optimize the performance of our solution.
 
-Following is the regression results created by R. 
+The first and last 6 hours' flights for each year are also stored in a static map structure in the Reducer class for cross year missed connection calculation in the cleanup phase.
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+### Results
+
+Following is the missed connection analysis results for each carrier for each year.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 options(warn=-1)
-suppressMessages(library(plyr))
-
-# load stats
-stats <- read.csv(file="tmp/stats", head=FALSE, row.names=NULL)
-mean_d <- stats[1, 1]
-mean_t <- stats[1, 2]
-std_d <- stats[2, 1]
-std_t <- stats[2, 2]
-min_d <- stats[3, 1]
-min_t <- stats[3, 2]
-max_d <- stats[4, 1]
-max_t <- stats[4, 2]
 
 # load MR output
-thetas <- data.frame(carrier=character(),
-					 feature=character(),
-					 t0=double(),
-					 t1=double(),
+res <- data.frame(carrier=character(),
+					 year=integer(),
+					 missedConnections=integer(),
 					 stringsAsFactors=FALSE)
 input_path <- "output"
 filenames <- list.files(input_path, pattern="part-r-*", full.names=TRUE)
 for (i in 1:length(filenames))
-	thetas <- rbind(thetas, read.csv(file=filenames[i], head=FALSE, row.names=NULL))
-names(thetas) <- c("carrier", "feature", "t1", "t0")
-carriers <- unique(thetas$carrier)
-n_carriers <- length(carriers)
+	res <- rbind(res, read.csv(file=filenames[i], head=FALSE, row.names=NULL))
+names(res) <- c("carrier", "year", "missedConnections")
 
-# plot the fitting graph
-# loop through top carriers and plot the mean prices for each month
-plot_counter <- 0
-opar <- par(no.readonly=TRUE)
-par(mfrow=c(3, 2))
-# get min and max price, then config the y-axis
-colcolors <- rainbow(10)
-
-x_d <- seq(min_d, max_d, length.out=5)
-x_t <- seq(min_t, max_t, length.out=5)
-for (i in 1:n_carriers)
-{
-	plot_counter <- plot_counter + 1
-	ct0 <- thetas[thetas$carrier == carriers[i] & thetas$feature == "D", 3]
-	ct1 <- thetas[thetas$carrier == carriers[i] & thetas$feature == "D", 4]
-	y_d <- ct1 * ((x_d - mean_d) / std_d) + ct0
-
-	plot(x_d, y_d, type="l",
-		 main=carriers[i],
-		 xlab="Distance/mile", ylab="Mean Ticket Price",
-		 col="blue",
-		 xlim=c(0, 6000),
-		 ylim=c(0, 1200))
-	text(x_d, y_d, round(y_d, 2))
-	text(100, 1100, substitute(paste(theta[0], ": ", rct), list(rct=round(ct0, 2))), adj=0)
-	text(100, 930, substitute(paste(theta[1], ": ", rct), list(rct=round(ct1, 2))), adj=0)
-
-	ct0 <- thetas[thetas$carrier == carriers[i] & thetas$feature == "T", 3]
-	ct1 <- thetas[thetas$carrier == carriers[i] & thetas$feature == "T", 4]
-	y_t <- ct1 * ((x_t - mean_t) / std_t) + ct0
-	plot(x_t, y_t, type="l",
-		 main=carriers[i],
-		 xlab="Air Time/minute", ylab="Mean Ticket Price",
-		 col="green",
-		 xlim=c(0, 800),
-		 ylim=c(0, 1200))
-	text(x_t, y_t, round(y_t, 2))
-	text(10, 1100, substitute(paste(theta[0], ": ", rct), list(rct=round(ct0, 2))), adj=0)
-	text(10, 930, substitute(paste(theta[1], ": ", rct), list(rct=round(ct1, 2))), adj=0)
-}
-par(opar)
+attach(res)
+sorted_res <- res[order(carrier, year),]
+print(sorted_res, row.names=FALSE)
+detach(res)
 ```
-Where the title of each plot is the carrier's name. The left column is for the regression using distance as the feature and the right column is for that using air time. Model parameters for each regression are also given in the plots as $\theta_{0}$ and $\theta_{1}$.
-
-### Conclusions
-#### Comparing the Features
-From all the coefficients above, we can see that $\theta_{1}$ is always much larger then the $\theta_{0}$ which means the features always contribute much more to the result rather than the contstant does. 
-In order to find out which feature is better for predicting the average ticket price, we calculate the MSE for each regression. 
-We think the distance is a better feature because for most carriers, the MSE of regression with distance is better than that with air time. So the distance can give us a more accurate prediction of the ticket price.
-
-Carriers | MSE for Regression with Distance | MSE for Regression with Air Time
----------|----------------------------------|----------------------------------
-EV|119416.625|108508.326
-HA|151595.237|177144.706
-MQ|114820.834|104138.244
-OO|117750.206|105643.573
-B6|201054.329|240822.089
-DL|303487.411|337597.071
-NK|274066.014|274066.014
-UA|587859.835|755985.014
-US|300724.435|339529.608
-VX|301370.967|388672.229
-WN|24717.913|25185.605
-AA|204990.616|238818.965
-AS|42374.216|50237.479
-F9|27895.279|28162.002
-
-#### Cheapest Carrier
-We think the cheapest carrier is AS since it has the smallest model parameters among all the carriers.
