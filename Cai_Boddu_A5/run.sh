@@ -11,6 +11,10 @@ clean () {
 	rm -rf log
 }
 
+rmpwd () {
+	export AWS_DEFAULT_REGION=
+}
+
 cmp () {
 	# building the code
 	gradle clean
@@ -20,6 +24,10 @@ cmp () {
 start_server () {
 	# clean the tmp folder
 	rm -rf /tmp/hadoop-${USER}
+	# set hadoop configure file path
+	export HADOOP_CONF_DIR=${PWD}/.hadoop/
+	export HADOOP_LOG_DIR=${PWD}/log/
+	export HADOOP_CLASSPATH=
 
 	# format
 	hdfs namenode -format

@@ -1,0 +1,44 @@
+val aliceFile = sc.textFile("alice.txt")
+
+// What's an RDD?
+// Distributed collection.
+// Can use s3n:// URIs for S3 *if* you have the AWS libraries set up.
+
+
+aliceFile.first
+// Just like MapReduce, it gives a line of text at a time by default.
+
+aliceFile.count
+
+aliceFile.collect
+// Once you've got small data, you can get a simple array and process
+// things the boring way.
+
+val words = aliceFile.flatMap(line => line.split(" ").map(word => (word, 1)))
+// flatMap is like a map method from MapReduce. It expects the function passed
+// in to produce an array, and then flattens those arrays into one RDD.
+
+val counts = words.reduceByKey((a, b) => a + b)
+// reduceByKey is like a simplified reduce method from MapReduce. It expects an RDD of
+// 2-tuples, and reduces within the same key.
+
+counts.filter(p => { val (k, v) = p; k == "Alice"; }).collect
+counts.filter(p => { val (k, v) = p; k == "the"; }).collect
+
+val grouped = words.groupByKey
+grouped.collect
+// This is an explicit shuffle step, producing the same collection that we'd get in MapReduce.
+// (Key, [Array-of Value])
+
+val counts = grouped.map(p => { val (k, vs) = p; val n = vs.reduce((a, b) => a + b); (k, n) } )
+counts.collect
+counts.filter(p => { val (k, v) = p; k == "Alice"; }).collect
+// This is an explicit reduce step. Note that we have access to the key and control over
+// exactly what we output.
+
+counts.saveAsTextFile("out")
+// We get the same sort of output as MapReduce
+// The default behavior is to give tuples - if we want a different format,
+// we can do another map to produce strings before we save.
+
+
