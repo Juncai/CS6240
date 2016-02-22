@@ -47,6 +47,7 @@ public class FlightInfo {
             arrTimeScheduled = getDateTime(date, arrTimeScheduledStr);
             arrTimeActual = getDateTime(date, arrTimeActualStr);
             // consider the case when arrive in a new day
+			// TODO: fix bug when depTimeActual is in a different day of depTimeScheduled
             if (arrTimeScheduled.isBefore(depTimeScheduled)) {
                 arrTimeScheduled = arrTimeScheduled.plusDays(1);
             }
@@ -62,6 +63,7 @@ public class FlightInfo {
 
     private DateTime getDateTime(String dateStr, String timeStr) {
         // a hack to replace 2400
+		// TODO fix bug which didn't increase the date when encounter 2400
         if (timeStr.equals(OTPConsts.START_OF_NEW_DAY_OLD)) {
             timeStr = OTPConsts.START_OF_NEW_DAY;
         }

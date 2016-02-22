@@ -1,5 +1,6 @@
 package analysis
 
+import org.joda.time.{DateTime, LocalDate}
 import org.scalatest._
 /**
   * Created by phoenix on 2/21/16.
@@ -13,4 +14,11 @@ class DataProcessorSpec extends FunSuite {
     if (valid) println("valid line")
   }
 
+  test("increment hour in key") {
+    val kv = ("F9,12345,2005010100", (new DateTime(), new DateTime()))
+    val hourNew = DataProcessor.incOneHourToString("2005010100")
+    val kvNew = DataProcessor.incTSInKeyByOneHour(kv)
+    println(hourNew)
+    println(kvNew._1)
+  }
 }

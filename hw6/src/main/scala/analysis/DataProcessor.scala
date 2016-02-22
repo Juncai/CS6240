@@ -3,6 +3,7 @@ package analysis
 import java.text.SimpleDateFormat
 
 import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 
 import scala.collection.mutable
 
@@ -10,8 +11,86 @@ import scala.collection.mutable
 
 object DataProcessor {
 
-  def mapFlights(flight : Array[String], isDep : Boolean) : Tuple2[String, Array[DateTime]] = {
+  val sf_dt = DateTimeFormat.forPattern(Consts.DATETIME_FORMAT)
+  val sf_dk = DateTimeFormat.forPattern(Consts.DATEKEY_FORMAT)
+  val sf_year = DateTimeFormat.forPattern(Consts.YEAR_FORMAT)
 
+  def mapMissedConnection(kvs : (String, ((DateTime, DateTime), (DateTime, DateTime)))) : (String, Int) = {
+    val (k, vs) = kvs
+    val (arrTSs, depTSs) = vs
+    val (arrScheduled, arrActual) = arrTSs
+    val (depScheduled, depActual) = depTSs
+    val carrier = k.split(",")(0)
+
+    // check if it's a connection
+    var numMissedCon = 0
+    if (arrScheduled.plusMinutes(29).isBefore(depScheduled)
+      && arrScheduled.plusMinutes(361).isAfter(depScheduled)) {
+        if (arrActual.plusMinutes(30).isAfter(depActual)) {
+          numMissedCon = 1
+        }
+    }
+    (carrier + "," + getYearString(depScheduled), numMissedCon)
+  }
+
+  def getYearString(dt : DateTime) : String = {
+    dt.toString(sf_year)
+  }
+
+  def incTSInKeyByOneHour(kv : (String, (DateTime, DateTime))) : (String, (DateTime, DateTime)) = {
+    val (k, v) = kv
+    val kStrs = k.split(",")
+    kStrs(2) = incOneHourToString(kStrs(2))
+//    val dtStr = kStrs(2)
+//    val newKey = kStrs(0) + "," + kStrs(1) + "," + incOneHourToString(kStrs(2))
+//    (newKey, v)
+    (kStrs.mkString(","), v)
+  }
+
+  def incOneHourToString(dtStr : String) : String = {
+    val dt = sf_dk.parseDateTime(dtStr)
+    dt.plusHours(1).toString(sf_dk)
+//    dt.toString(sf_dk)
+  }
+
+  def mapFlights(flight : Array[String], isDep : Boolean) : (String, (DateTime, DateTime)) = {
+    val carrier = flight(Consts.F_CARRIER)
+    val flDate = flight(Consts.F_FL_DATE)
+    val originAirport = flight(Consts.F_O_AIRPORT)
+    val destAirport = flight(Consts.F_D_AIRPORT)
+    val depScheduledStr = flight(Consts.F_CRS_DEP)
+    val depActualStr = flight(Consts.F_DEP)
+    val arrScheduledStr = flight(Consts.F_CRS_ARR)
+    val arrActualStr = flight(Consts.F_ARR)
+    val depScheduled = getDateTime(flDate, depScheduledStr)
+    val depActual = getDateTime(flDate, depActualStr)
+    val arrScheduled = getDateTime(flDate, arrScheduledStr)
+    val arrActual = getDateTime(flDate, arrActualStr)
+
+    // handle cross day flights
+    if (depActual.isBefore(depScheduled)) depActual.plusDays(1)
+
+    if (isDep) {
+      (carrier + "," + originAirport + "," + dateToKey(depScheduled), (depScheduled, depActual))
+    } else {
+      if (arrScheduled.isBefore(depScheduled)) arrScheduled.plusDays(1)
+      if (arrActual.isBefore(depActual)) arrActual.plusDays(1)
+
+      (carrier + "," + destAirport + "," + dateToKey(arrScheduled), (arrScheduled, arrActual))
+    }
+  }
+
+  def dateToKey(d : DateTime) : String = {
+    d.toString(sf_dk)
+  }
+
+  def getDateTime(dateStr : String , timeStr : String ) : DateTime = {
+    // a hack to replace 2400
+    if (timeStr.equals(Consts.START_OF_NEW_DAY_OLD)) {
+      sf_dt.parseDateTime(dateStr + " " + Consts.START_OF_NEW_DAY).plusDays(1)
+    } else {
+      sf_dt.parseDateTime(dateStr + " " + timeStr)
+    }
   }
 
   //static boolean sanityCheck(String[] values) {
@@ -20,35 +99,35 @@ object DataProcessor {
       if (values.length != 110) return false
 
       // check not 0
-      for (i <- OTPConsts.NOTZERO) {
+      for (i <- Consts.NOTZERO) {
         if (values(i).toDouble == 0) return false
       }
 
-      val timeZone = getMinDiff(values(OTPConsts.CRS_ARR_TIME), values(OTPConsts.CRS_DEP_TIME)) - values(OTPConsts.CRS_ELAPSED_TIME).toDouble
+      val timeZone = getMinDiff(values(Consts.CRS_ARR_TIME), values(Consts.CRS_DEP_TIME)) - values(Consts.CRS_ELAPSED_TIME).toDouble
       val residue = timeZone % 60
       if (residue != 0) return false
 
 
       // check larger than 0
-      for (i <- OTPConsts.LARGERTHANZERO) {
+      for (i <- Consts.LARGERTHANZERO) {
         if (values(i).toDouble <= 0) return false
       }
 
       // check not empty
-      for (i <- OTPConsts.NOTEMPTY) {
+      for (i <- Consts.NOTEMPTY) {
         if (values(i).isEmpty) return false
       }
 
       // for flights not canceled
-      val isCanceled = values(OTPConsts.CANCELLED).toDouble == 1
+      val isCanceled = values(Consts.CANCELLED).toDouble == 1
 
       // ArrTime -  DepTime - ActualElapsedTime - timeZone should be zero
       if (!isCanceled) {
-        val timeDiff = getMinDiff(values(OTPConsts.ARR_TIME), values(OTPConsts.DEP_TIME)) - values(OTPConsts.ACTUAL_ELAPSED_TIME).toDouble - timeZone
+        val timeDiff = getMinDiff(values(Consts.ARR_TIME), values(Consts.DEP_TIME)) - values(Consts.ACTUAL_ELAPSED_TIME).toDouble - timeZone
         if (timeDiff != 0) return false
 
-        val arrDelay = values(OTPConsts.ARR_DELAY).toDouble
-        val arrDelayNew = values(OTPConsts.ARR_DELAY_NEW).toDouble;
+        val arrDelay = values(Consts.ARR_DELAY).toDouble
+        val arrDelayNew = values(Consts.ARR_DELAY_NEW).toDouble;
         // if ArrDelay > 0 then ArrDelay should equal to ArrDelayMinutes
         if (arrDelay > 0) {
           if (arrDelay != arrDelayNew) return false
@@ -59,17 +138,17 @@ object DataProcessor {
           if (arrDelayNew != 0) return false
         }
         // if ArrDelayMinutes >= 15 then ArrDel15 should be false
-        val arrDel15 = values(OTPConsts.ARR_DEL15).toDouble == 1
+        val arrDel15 = values(Consts.ARR_DEL15).toDouble == 1
         if (arrDelayNew >= 15 && !arrDel15) return false
       }
 
       // finally, check the carrier field and price field
-      val carrier = values(OTPConsts.UNIQUE_CARRIER)
+      val carrier = values(Consts.UNIQUE_CARRIER)
       if (carrier.isEmpty) return false
-      val avgTicketPrice = values(OTPConsts.AVG_TICKET_PRICE).toDouble
-      val airTime = values(OTPConsts.AIR_TIME)
+      val avgTicketPrice = values(Consts.AVG_TICKET_PRICE).toDouble
+      val airTime = values(Consts.AIR_TIME)
       val airTimeVal = airTime.toDouble
-      val distance = values(OTPConsts.DISTANCE).toDouble
+      val distance = values(Consts.DISTANCE).toDouble
 
     } catch {
       case e : Exception => return false
