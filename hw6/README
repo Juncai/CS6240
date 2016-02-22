@@ -1,3 +1,8 @@
 How to run:
-	* Copy 'Baseball' data to 'most_hr_per_dollar' and 'best_batting_average' folders.
-	* Go into the 'most_hr_per_dollar' or 'best_batting_average' directory, then use command 'make run' to compile and run the code.
+	Modify the input and output path in 'src/main/scala/analysis/MissedConnections.scala'
+	make run
+
+TODOs:
+	Correctness
+	Take input and output paths from the command line
+	Make code run on EMR
