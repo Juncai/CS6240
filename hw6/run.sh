@@ -85,7 +85,7 @@ process_output () {
 
 if [ $1 = '-clean' ]; then
 	clean
-	stop_server
+	# stop_server
 fi
 
 if [ $1 = '-prepare' ]; then
