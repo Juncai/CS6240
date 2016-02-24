@@ -16,7 +16,7 @@ object MissedConnections {
     val flights = sc.textFile(args(0)).
 //    val flights = sc.textFile("/home/jon/Downloads/OTP/part").
       map (DataProcessor.parseCSVLine).
-//      filter(DataProcessor.sanityCheck).
+      filter(DataProcessor.sanityCheck).
       map (r => Array(r(Consts.UNIQUE_CARRIER), r(Consts.FL_DATE), r(Consts.ORIGIN_AIRPORT_ID),
         r(Consts.CRS_DEP_TIME), r(Consts.DEP_TIME), r(Consts.DEST_AIRPORT_ID),
         r(Consts.CRS_ARR_TIME), r(Consts.ARR_TIME), r(Consts.DEP_DELAY)))
@@ -25,6 +25,8 @@ object MissedConnections {
     val depFlight = flights.
       map(DataProcessor.mapFlights(_, isDep = true))
 //      cache()
+
+//    println(depFlight.count) // for testing
 
     val arrFlight = flights.
 //      map(DataProcessor.mapFlights(_, isDep = false)).

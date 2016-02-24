@@ -30,7 +30,7 @@ object DataProcessor {
           numMissedCon = 1
         }
     }
-    (carrier + "," + getYearString(depScheduled), numMissedCon)
+    (carrier + "," + getYearString(arrScheduled), numMissedCon)
   }
 
   def getYearString(dt : DateTime) : String = {
@@ -62,20 +62,20 @@ object DataProcessor {
     val arrScheduledStr = flight(Consts.F_CRS_ARR)
     val arrActualStr = flight(Consts.F_ARR)
     val depScheduled = getDateTime(flDate, depScheduledStr)
-    val depActual = getDateTime(flDate, depActualStr)
-    val arrScheduled = getDateTime(flDate, arrScheduledStr)
-    val arrActual = getDateTime(flDate, arrActualStr)
+    var depActual = getDateTime(flDate, depActualStr)
+    var arrScheduled = getDateTime(flDate, arrScheduledStr)
+    var arrActual = getDateTime(flDate, arrActualStr)
     val depDelay = flight(Consts.F_DEP_DELAY).toDouble
 
     // handle cross day flights
     // bug fix: check if the flight depart earlier than scheduled
-    if (depActual.isBefore(depScheduled) && depDelay > 0) depActual.plusDays(1)
+    if (depActual.isBefore(depScheduled) && depDelay > 0) depActual = depActual.plusDays(1)
 
     if (isDep) {
       Array((carrier + "," + originAirport + "," + dateToKey(depScheduled), (depScheduled, depActual)))
     } else {
-      if (arrScheduled.isBefore(depScheduled)) arrScheduled.plusDays(1)
-      if (arrActual.isBefore(depActual)) arrActual.plusDays(1)
+      if (arrScheduled.isBefore(depScheduled)) arrScheduled = arrScheduled.plusDays(1)
+      if (arrActual.isBefore(arrScheduled)) arrActual = arrActual.plusDays(1)
 
       val resBuffer = mutable.ArrayBuffer.empty[(String, (DateTime, DateTime))]
       val originTS = dateToKey(arrScheduled)
@@ -101,20 +101,20 @@ object DataProcessor {
     val arrScheduledStr = flight(Consts.F_CRS_ARR)
     val arrActualStr = flight(Consts.F_ARR)
     val depScheduled = getDateTime(flDate, depScheduledStr)
-    val depActual = getDateTime(flDate, depActualStr)
-    val arrScheduled = getDateTime(flDate, arrScheduledStr)
-    val arrActual = getDateTime(flDate, arrActualStr)
+    var depActual = getDateTime(flDate, depActualStr)
+    var arrScheduled = getDateTime(flDate, arrScheduledStr)
+    var arrActual = getDateTime(flDate, arrActualStr)
     val depDelay = flight(Consts.F_DEP_DELAY).toDouble
 
     // handle cross day flights
     // bug fix: check if the flight depart earlier than scheduled
-    if (depActual.isBefore(depScheduled) && depDelay > 0) depActual.plusDays(1)
+    if (depActual.isBefore(depScheduled) && depDelay > 0) depActual = depActual.plusDays(1)
 
     if (isDep) {
       (carrier + "," + originAirport + "," + dateToKey(depScheduled), (depScheduled, depActual))
     } else {
-      if (arrScheduled.isBefore(depScheduled)) arrScheduled.plusDays(1)
-      if (arrActual.isBefore(depActual)) arrActual.plusDays(1)
+      if (arrScheduled.isBefore(depScheduled)) arrScheduled = arrScheduled.plusDays(1)
+      if (arrActual.isBefore(arrScheduled)) arrActual = arrActual.plusDays(1)
 
       (carrier + "," + destAirport + "," + dateToKey(arrScheduled), (arrScheduled, arrActual))
     }

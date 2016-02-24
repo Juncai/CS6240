@@ -30,4 +30,24 @@ class DataProcessorSpec extends FunSuite {
     println(dKey)
     println(dKeyPlusOneHour)
   }
+
+  test("test missed connection check") {
+    val arrScheduled = new DateTime().plusHours(10).plusMinutes(10).minusDays(55)
+    val depScheduled = arrScheduled.plusMinutes(30)
+    val arrActual = arrScheduled.plusMinutes(20)
+    val depActual = arrScheduled.plusMinutes(50)
+    val key = "E8,12345,2016"
+    val isMissed = DataProcessor.mapMissedConnection((key, ((arrScheduled, arrActual), (depScheduled, depActual))))
+    println(isMissed)
+  }
+
+  test("test parse flight info") {
+    val str = """2012,1,2,20,3,2012-12-31,9E,20363,9E,N904XJ,3322,13244,1324401,33244,MEM,"Memphis, TN",TN,47,Tennessee,54,10721,1072101,30721,BOS,"Boston, MA",MA,25,Massachusetts,13,0825,0819,-6,0,0,-1,0800-0859,15,0834,1159,7,2350,0306,14,0,0,-1,1200-1259,0,,0,175,167,145,1,1139,5,,,,,,,,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,434"""
+    val r = DataProcessor.parseCSVLine(str)
+    val info = Array(r(Consts.UNIQUE_CARRIER), r(Consts.FL_DATE), r(Consts.ORIGIN_AIRPORT_ID),
+        r(Consts.CRS_DEP_TIME), r(Consts.DEP_TIME), r(Consts.DEST_AIRPORT_ID),
+        r(Consts.CRS_ARR_TIME), r(Consts.ARR_TIME), r(Consts.DEP_DELAY))
+    val f = DataProcessor.flatMapFlights(info, isDep = false)
+    println(f)
+  }
 }

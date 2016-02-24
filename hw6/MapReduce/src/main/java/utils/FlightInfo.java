@@ -57,7 +57,7 @@ public class FlightInfo {
                 arrTimeScheduled = arrTimeScheduled.plusDays(1);
             }
 
-            if (arrTimeActual.isBefore(depTimeActual)) {
+            if (arrTimeActual.isBefore(arrTimeScheduled)) {
                 arrTimeActual = arrTimeActual.plusDays(1);
             }
 
