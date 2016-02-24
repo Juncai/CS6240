@@ -1,0 +1,9 @@
+http://spark.apache.org/docs/latest/quick-start.html
+
+http://spark.apache.org/docs/latest/programming-guide.html#rdd-operations
+ - Working with Key-Value pairs.
+ - cogroup
+ - pipe
+ - countByKey
+ - Accumulators (talk about Map-Reduce counters, draw the steps diagram)
+ - Caching & Storage

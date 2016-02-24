@@ -1,20 +1,20 @@
 package analysis
 
-import org.apache.spark.SparkContext
-import org.apache.spark.SparkConf
+import org.apache.spark._
 
 
 // Author: Jun Cai and Vikas Boddu
 object MissedConnections {
   def main(args: Array[String]) {
-    val conf = new SparkConf().
-      setAppName("Missed Connections Analysis").
-      setMaster("local") // for testing locally
+    val conf = new SparkConf().setAppName("Missed Connections Analysis")
+    if (args.length == 3) {
+      conf.setMaster("local") // for running locally
+    }
     val sc = new SparkContext(conf)
 
     // Input
-//    val flights = sc.textFile(args(0)).
-    val flights = sc.textFile("/home/jon/Downloads/OTP/part").
+    val flights = sc.textFile(args(0)).
+//    val flights = sc.textFile("/home/jon/Downloads/OTP/part").
       map (DataProcessor.parseCSVLine).
       filter(DataProcessor.sanityCheck).
       map (r => Array(r(Consts.UNIQUE_CARRIER), r(Consts.FL_DATE), r(Consts.ORIGIN_AIRPORT_ID),
@@ -23,10 +23,12 @@ object MissedConnections {
 
     // key = {carrier, airport_id, scheduled_dep/arr_in_hour_precision}, value = {scheduled_dep/arr, actual_dep/arr}
     val depFlight = flights.
-      map(DataProcessor.mapFlights(_, isDep = true))
+      map(DataProcessor.mapFlights(_, isDep = true)).
+      cache()
 
     val arrFlight = flights.
-      map(DataProcessor.mapFlights(_, isDep = false))
+      map(DataProcessor.mapFlights(_, isDep = false)).
+      cache()
 
     val connections = arrFlight.join(depFlight)
 
@@ -42,8 +44,8 @@ object MissedConnections {
       map(DataProcessor.mapMissedConnection).
       reduceByKey(_ + _)
 
-//    res.saveAsTextFile(args(1))
-    res.saveAsTextFile("out")
+    res.saveAsTextFile(args(1))
+//    res.saveAsTextFile("out")
 
     // Shut down Spark, avoid errors
     sc.stop()
