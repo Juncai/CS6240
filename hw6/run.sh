@@ -7,7 +7,7 @@ sanityCheck () {
 }
 
 clean () {
-	rm -rf output project target
+	rm -rf output target
 	rm -rf log
 	sbt clean clean-cache clean-lib clean-plugins
 }
