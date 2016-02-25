@@ -1,13 +1,14 @@
 package utils;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import java.util.*;
 
 // Authors: Jun Cai and Vikas Boddu
 public class ConnectionInfo {
-    static private DateTimeFormatter sf = DateTimeFormat.forPattern(OTPConsts.DATEKEY_FORMAT);
+    static private DateTimeFormatter sf = DateTimeFormat.forPattern(OTPConsts.DATEKEY_FORMAT).withZone(DateTimeZone.UTC);
 
     private Map<String, List<DateTime[]>> depMap;
     private Map<String, List<DateTime[]>> arrMap;

@@ -2,7 +2,7 @@ package analysis
 
 import java.text.SimpleDateFormat
 
-import org.joda.time.DateTime
+import org.joda.time.{DateTimeZone, DateTime}
 import org.joda.time.format.DateTimeFormat
 
 import scala.collection.mutable
@@ -11,9 +11,9 @@ import scala.collection.mutable
 
 object DataProcessor {
 
-  val sf_dt = DateTimeFormat.forPattern(Consts.DATETIME_FORMAT)
-  val sf_dk = DateTimeFormat.forPattern(Consts.DATEKEY_FORMAT)
-  val sf_year = DateTimeFormat.forPattern(Consts.YEAR_FORMAT)
+  val sf_dt = DateTimeFormat.forPattern(Consts.DATETIME_FORMAT).withZone(DateTimeZone.UTC)
+  val sf_dk = DateTimeFormat.forPattern(Consts.DATEKEY_FORMAT).withZone(DateTimeZone.UTC)
+  val sf_year = DateTimeFormat.forPattern(Consts.YEAR_FORMAT).withZone(DateTimeZone.UTC)
 
   def mapMissedConnection(kvs : (String, ((DateTime, DateTime), (DateTime, DateTime)))) : (String, Int) = {
     val (k, vs) = kvs

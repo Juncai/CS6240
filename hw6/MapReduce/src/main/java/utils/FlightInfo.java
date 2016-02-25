@@ -2,12 +2,13 @@ package utils;
 
 import org.apache.hadoop.io.Text;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 // Authors: Jun Cai and Vikas Boddu
 public class FlightInfo {
-    static private DateTimeFormatter sf = DateTimeFormat.forPattern(OTPConsts.DATETIME_FORMAT);
+    static private DateTimeFormatter sf = DateTimeFormat.forPattern(OTPConsts.DATETIME_FORMAT).withZone(DateTimeZone.UTC);
     private String carrier;
     private int year;
     private int originalAirportId;

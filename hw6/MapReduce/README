@@ -1,5 +1,10 @@
 Prereuisites:
 	For the Mapreduce:
+	<property>
+		<name>mapred.child.java.opts</name>
+		<value>-Xmx1024m</value>
+    </property>
+
 		1. AWS CLI package (for configuring and running jobs on AWS)
 		2. R
 		3. Java
