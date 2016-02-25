@@ -14,7 +14,6 @@ object MissedConnections {
 
     // Input
     val flights = sc.textFile(args(0)).
-//    val flights = sc.textFile("/home/jon/Downloads/OTP/part").
       map (DataProcessor.parseCSVLine).
       filter(DataProcessor.sanityCheck).
       map (r => Array(r(Consts.UNIQUE_CARRIER), r(Consts.FL_DATE), r(Consts.ORIGIN_AIRPORT_ID),
@@ -23,36 +22,17 @@ object MissedConnections {
 
     // key = {carrier, airport_id, scheduled_dep/arr_in_hour_precision}, value = {scheduled_dep/arr, actual_dep/arr}
     val depFlight = flights.
-      map(DataProcessor.mapFlights(_, isDep = true))
-//      cache()
-
-//    println(depFlight.count) // for testing
+      flatMap(DataProcessor.flatMapFlightsLong(_, isDep = true))
 
     val arrFlight = flights.
-//      map(DataProcessor.mapFlights(_, isDep = false)).
-      flatMap(DataProcessor.flatMapFlights(_, isDep = false))
-//      cache()
+      flatMap(DataProcessor.flatMapFlightsLong(_, isDep = false))
 
     val connections = arrFlight.
       join(depFlight).
-      map(DataProcessor.mapMissedConnection).
+      map(DataProcessor.mapMissedConnectionLong).
       reduceByKey(_ + _)
 
-//    var i = 0
-//    for (i <- 0 until 6) {
-//      val newArr = arrFlight
-//        .map(DataProcessor.incTSInKeyByOneHour)
-//      val newConnections = newArr.join(depFlight)
-//      connections.++(newConnections)
-//    }
-
-//    val res = connections.
-//      map(DataProcessor.mapMissedConnection).
-//      reduceByKey(_ + _)
-
-//    res.saveAsTextFile(args(1))
     connections.saveAsTextFile(args(1))
-//    res.saveAsTextFile("out")
 
     // Shut down Spark, avoid errors
     sc.stop()

@@ -1,0 +1,35 @@
+Prereuisites:
+	1. Our MapReduce implementation is memory intensive, when run in pseudo-distributed mode make sure the child nodes have enough memory by adding the following property in your 'mapred-site.xml' configuration file. 
+
+		<property>
+			<name>mapred.child.java.opts</name>
+			<value>-Xmx1024m</value>
+		</property>
+
+	2. AWS CLI package (for configuring and running jobs on AWS)
+	3. Java
+	4. Gradle
+	5. Scala
+	6. Spark
+	7. Set environment variable MR_INPUT int the env.sh to the directory which contains the data files.
+	8. Set AWS_ACCESS_KEY_ID ,AWS_SECRET_ACCESS_KEY and BUCKET_NAME in the env.sh
+	9. Source the environment variables by
+		. env.sh
+	10. Make sure the AWS CLI output format is configured to json.
+
+Running the code:
+	Run all the configurations:
+		./run.sh -all
+	Run each configuration at a time:
+		./run.sh [-spark_local | -spark_emr | -mr_pd | -mr_emr]
+
+Getting the running time:
+	1. For EMR job, please go the AWS console, on EMR cluster detail page find the running time of the application step.
+	2. For Spark local mode, the running time will be in the STDOUT leading by '[success]' tag.
+	3. For MapReduce pseudo-distributed mode, the running time is measured by 'time' function call. The results will be recorded in 'mr_pd_runtime' in the current folder.
+
+Approximate running time:
+	Spark local: 21 min
+	Spark EMR: 18 min
+	MapReduce PD: 8 min
+	MapReduce EMR: 8 min

@@ -17,8 +17,7 @@ cmp () {
 	sbt assembly
 }
 
-upload_data_emr() {
-	# upload the data files
+upload_data_emr() { # upload the data files
 	aws s3 rm s3://${BUCKET_NAME}/input --recursive
 	aws s3 sync ${MR_INPUT} s3://${BUCKET_NAME}/input
 }

@@ -1,58 +1,71 @@
 package analysis
 
 import java.text.SimpleDateFormat
-
 import org.joda.time.{DateTimeZone, DateTime}
 import org.joda.time.format.DateTimeFormat
-
 import scala.collection.mutable
 
 // Authors: Jun Cai and Vikas Boddu
-
 object DataProcessor {
 
   val sf_dt = DateTimeFormat.forPattern(Consts.DATETIME_FORMAT).withZone(DateTimeZone.UTC)
   val sf_dk = DateTimeFormat.forPattern(Consts.DATEKEY_FORMAT).withZone(DateTimeZone.UTC)
   val sf_year = DateTimeFormat.forPattern(Consts.YEAR_FORMAT).withZone(DateTimeZone.UTC)
 
-  def mapMissedConnection(kvs : (String, ((DateTime, DateTime), (DateTime, DateTime)))) : (String, Int) = {
+
+  def dateTimeToLong(dt: DateTime): Long = {
+    dt.withZone(DateTimeZone.UTC).toDate().getTime()
+  }
+
+  def longToDateTime(l: Long): DateTime = {
+    new DateTime(l, DateTimeZone.UTC)
+  }
+
+  def mapMissedConnectionLong(kvs: (String, ((Long, Long), (Long, Long)))): (String, Int) = {
     val (k, vs) = kvs
     val (arrTSs, depTSs) = vs
-    val (arrScheduled, arrActual) = arrTSs
-    val (depScheduled, depActual) = depTSs
+    val (arrScheduledLong, arrActualLong) = arrTSs
+    val (depScheduledLong, depActualLong) = depTSs
     val carrier = k.split(",")(0)
+
+    val arrScheduled = longToDateTime(arrScheduledLong)
 
     // check if it's a connection
     var numMissedCon = 0
-    if (arrScheduled.plusMinutes(29).isBefore(depScheduled)
-      && arrScheduled.plusMinutes(361).isAfter(depScheduled)) {
-        if (arrActual.plusMinutes(30).isAfter(depActual)) {
-          numMissedCon = 1
-        }
+    if (arrScheduledLong + 30 * 60 * 1000 <= depScheduledLong
+      && arrScheduledLong + 360 * 60 * 1000 >= depScheduledLong) {
+      if (arrActualLong + 30 * 60 * 1000 > depActualLong) {
+        numMissedCon = 1
+      }
     }
+
     (carrier + "," + getYearString(arrScheduled), numMissedCon)
   }
 
-  def getYearString(dt : DateTime) : String = {
+  def getYearString(dt: DateTime): String = {
     dt.toString(sf_year)
   }
 
-  def incTSInKeyByOneHour(kv : (String, (DateTime, DateTime))) : (String, (DateTime, DateTime)) = {
+  def incTSInKeyByOneHourLong(kv: (String, (Long, Long))): (String, (Long, Long)) = {
     val (k, v) = kv
     val kStrs = k.split(",")
     kStrs(2) = incOneHourToString(kStrs(2))
-//    val dtStr = kStrs(2)
-//    val newKey = kStrs(0) + "," + kStrs(1) + "," + incOneHourToString(kStrs(2))
-//    (newKey, v)
     (kStrs.mkString(","), v)
   }
 
-  def incOneHourToString(dtStr : String) : String = {
+  def incTSInKeyByOneHour(kv: (String, (DateTime, DateTime))): (String, (DateTime, DateTime)) = {
+    val (k, v) = kv
+    val kStrs = k.split(",")
+    kStrs(2) = incOneHourToString(kStrs(2))
+    (kStrs.mkString(","), v)
+  }
+
+  def incOneHourToString(dtStr: String): String = {
     val dt = sf_dk.parseDateTime(dtStr)
     dt.plusHours(1).toString(sf_dk)
-//    dt.toString(sf_dk)
   }
-  def flatMapFlights(flight : Array[String], isDep : Boolean) : Array[(String, (DateTime, DateTime))] = {
+
+  def flatMapFlightsLong(flight: Array[String], isDep: Boolean): Array[(String, (Long, Long))] = {
     val carrier = flight(Consts.F_CARRIER)
     val flDate = flight(Consts.F_FL_DATE)
     val originAirport = flight(Consts.F_O_AIRPORT)
@@ -72,14 +85,14 @@ object DataProcessor {
     if (depActual.isBefore(depScheduled) && depDelay > 0) depActual = depActual.plusDays(1)
 
     if (isDep) {
-      Array((carrier + "," + originAirport + "," + dateToKey(depScheduled), (depScheduled, depActual)))
+      Array((carrier + "," + originAirport + "," + dateToKey(depScheduled), (dateTimeToLong(depScheduled), dateTimeToLong(depActual))))
     } else {
       if (arrScheduled.isBefore(depScheduled)) arrScheduled = arrScheduled.plusDays(1)
       if (arrActual.isBefore(arrScheduled)) arrActual = arrActual.plusDays(1)
 
-      val resBuffer = mutable.ArrayBuffer.empty[(String, (DateTime, DateTime))]
+      val resBuffer = mutable.ArrayBuffer.empty[(String, (Long, Long))]
       val originTS = dateToKey(arrScheduled)
-      val value = (arrScheduled, arrActual)
+      val value = (dateTimeToLong(arrScheduled), dateTimeToLong(arrActual))
       var cTS = originTS
       var i = 0
       resBuffer += ((carrier + "," + destAirport + "," + cTS, value))
@@ -91,40 +104,11 @@ object DataProcessor {
     }
   }
 
-  def mapFlights(flight : Array[String], isDep : Boolean) : (String, (DateTime, DateTime)) = {
-    val carrier = flight(Consts.F_CARRIER)
-    val flDate = flight(Consts.F_FL_DATE)
-    val originAirport = flight(Consts.F_O_AIRPORT)
-    val destAirport = flight(Consts.F_D_AIRPORT)
-    val depScheduledStr = flight(Consts.F_CRS_DEP)
-    val depActualStr = flight(Consts.F_DEP)
-    val arrScheduledStr = flight(Consts.F_CRS_ARR)
-    val arrActualStr = flight(Consts.F_ARR)
-    val depScheduled = getDateTime(flDate, depScheduledStr)
-    var depActual = getDateTime(flDate, depActualStr)
-    var arrScheduled = getDateTime(flDate, arrScheduledStr)
-    var arrActual = getDateTime(flDate, arrActualStr)
-    val depDelay = flight(Consts.F_DEP_DELAY).toDouble
-
-    // handle cross day flights
-    // bug fix: check if the flight depart earlier than scheduled
-    if (depActual.isBefore(depScheduled) && depDelay > 0) depActual = depActual.plusDays(1)
-
-    if (isDep) {
-      (carrier + "," + originAirport + "," + dateToKey(depScheduled), (depScheduled, depActual))
-    } else {
-      if (arrScheduled.isBefore(depScheduled)) arrScheduled = arrScheduled.plusDays(1)
-      if (arrActual.isBefore(arrScheduled)) arrActual = arrActual.plusDays(1)
-
-      (carrier + "," + destAirport + "," + dateToKey(arrScheduled), (arrScheduled, arrActual))
-    }
-  }
-
-  def dateToKey(d : DateTime) : String = {
+  def dateToKey(d: DateTime): String = {
     d.toString(sf_dk)
   }
 
-  def getDateTime(dateStr : String , timeStr : String ) : DateTime = {
+  def getDateTime(dateStr: String, timeStr: String): DateTime = {
     // a hack to replace 2400
     if (timeStr.equals(Consts.START_OF_NEW_DAY_OLD)) {
       sf_dt.parseDateTime(dateStr + " " + Consts.START_OF_NEW_DAY).plusDays(1)
@@ -191,7 +175,7 @@ object DataProcessor {
       val distance = values(Consts.DISTANCE).toDouble
 
     } catch {
-      case e : Exception => return false
+      case e: Exception => return false
     }
 
     true
@@ -210,12 +194,11 @@ object DataProcessor {
   }
 
 
-
-  def parseCSVLine(line : String) : Array[String] = {
+  def parseCSVLine(line: String): Array[String] = {
     val values = mutable.ArrayBuffer.empty[String]
     var sb = new StringBuffer()
     var inQuote = false
-      for (c <- line) {
+    for (c <- line) {
       if (inQuote) {
         if (c == '"') {
           inQuote = false
@@ -233,7 +216,7 @@ object DataProcessor {
         }
       }
     }
-    values += sb.toString  // last field
+    values += sb.toString // last field
 
     values.toArray
   }

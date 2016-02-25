@@ -12,7 +12,7 @@ To find out all the missed connections, a join between flights arrived and depar
 
 For the cross year missed connections, we include them in the previous year's result (i.e. a connection across 2012 and 2013 will belong to year 2012). The concern is that the flight schduled in the previous year is most likely be responsible for that missed connection. 
 
-### Implementation
+### Implementation: MapReduce
 #### Mapper
 The output of the Mapper is a (Text, Text) pair for each flight seen, where the key contains carrier ID and year of the flight. The value contains airport ID of both origin and destination airports, the scheduled and actual timestamps of both arrival and departure. 
 
@@ -24,26 +24,15 @@ In Reducer, we first create a collection for each airport where all the arrived 
 
 The first and last 6 hours' flights for each year are also stored in a static map structure in the Reducer class for cross year missed connection calculation in the cleanup phase.
 
-### Results
+### Implementation: Spark
 
-Following is the missed connection analysis results for each carrier for each year.
+### Performance Discussion
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-options(warn=-1)
+Configuration | Running Time(s)
+--------------|--------------
+Spark (Local) | 1268
+Spark (EMR) | 1080
+MapReduce (Local) | 433
+MapReduce (EMR) | 480
 
-# load MR output
-res <- data.frame(carrier=character(),
-					 year=integer(),
-					 missedConnections=integer(),
-					 stringsAsFactors=FALSE)
-input_path <- "output"
-filenames <- list.files(input_path, pattern="part-r-*", full.names=TRUE)
-for (i in 1:length(filenames))
-	res <- rbind(res, read.csv(file=filenames[i], head=FALSE, row.names=NULL))
-names(res) <- c("carrier", "year", "missedConnections")
 
-attach(res)
-sorted_res <- res[order(carrier, year),]
-print(sorted_res, row.names=FALSE)
-detach(res)
-```
