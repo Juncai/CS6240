@@ -1,9 +1,0 @@
-How to run:
-	Modify the input and output path in 'src/main/scala/analysis/MissedConnections.scala'
-	make run
-
-TODOs:
-	Correctness
-	Performance optimization
-	Take input and output paths from the command line
-	Make code run on EMR
