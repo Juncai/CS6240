@@ -31,9 +31,6 @@ emr () {
 	# set aws credentials
 	export AWS_DEFAULT_REGION=us-west-2
 
-	# create s3 bucket
-	# aws s3 rb s3://${BUCKET_NAME} --force
-	# aws s3 mb s3://${BUCKET_NAME}
 	# clean the files
 	aws s3 rm s3://${BUCKET_NAME}/output --recursive
 	aws s3 rm s3://${BUCKET_NAME}/Job.jar
@@ -74,30 +71,9 @@ get_output_emr () {
 	aws s3 sync s3://${BUCKET_NAME}/output output --delete
 }
 
-report () {
-	Rscript -e "rmarkdown::render('report.Rmd')"
-}
-
-process_output () {
-	Rscript processOutput.R
-}
-
-if [ $1 = '-clean' ]; then
-	clean
-	# stop_server
-fi
-
-if [ $1 = '-prepare' ]; then
-	clean
+if [ $1 = '-cmp' ]; then
 	cmp
-	start_server
 fi
-
-if [ $1 = '-data' ]; then
-	upload_data_pd
-	# upload_data_emr
-fi
-
 
 input_path='input'
 
@@ -108,16 +84,7 @@ if [ "$1" = '-local' ]; then
 fi
 
 if [ "$1" = '-emr' ]; then
-	# clean
 	emr
-	# process_output
-fi
-if [ "$1" = '-full-local' ]; then
-	clean
-	local_mode
-# process result by R
-#	process_output
-	report
 fi
 
 if [ "$1" = '-full-emr' ]; then
@@ -125,17 +92,5 @@ if [ "$1" = '-full-emr' ]; then
 	cmp
 	upload_data_emr
 	emr
-# process result by R
-	# process_output
-	# report
 fi
 
-if [ "$1" = '-continue' ]; then
-	get_output_emr
-# process result by R
-	# process_output
-	report
-fi
-
-
-# report

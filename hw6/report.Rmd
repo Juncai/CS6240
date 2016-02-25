@@ -29,7 +29,7 @@ The first and last 6 hours' flights for each year are also stored in a static ma
 ### Performance Discussion
 
 Configuration | Running Time(s)
---------------|--------------
+--------------|----------------
 Spark (Local) | 1268
 Spark (EMR) | 1080
 MapReduce (Local) | 433
