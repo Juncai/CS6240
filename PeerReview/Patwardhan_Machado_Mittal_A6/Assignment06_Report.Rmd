@@ -1,0 +1,41 @@
+---
+title: "Assignment 06"
+author: "Neha Patwardhan, Joy Machado"
+date: "February 25, 2016"
+output: pdf_document
+---
+
+## Assignment 06 Report
+
+This is the markdown created to compare the time taken to calculated the missed connections between flights on hadoop distributed system and spark distributed system.
+
+The programs were run in psuedo mode and on the EMR to find the time taken to calculate the number of missed connections
+
+The R script is written to compare the taken to run all the programs on various modes
+
+This is the time taken to run file 55.csv on all the modes
+
+```{r,}
+require(ggplot2)
+require(dplyr)
+
+args <- commandArgs(TRUE) 
+srcFile <- args[1] 
+data <- read.csv(srcFile,header =FALSE,sep="\t")
+names(data) <- c("TypeOfProgram","Time")
+```
+
+## The Plot to compare the time taken by the program to run
+
+```{r , echo=FALSE}
+ggplot(data=data, aes(x=data$TypeOfProgram, y=data$Time)) +
+ geom_bar(stat="identity",fill="green",colour="black") + ggtitle("Time comparison of MR and Spark") +
+ labs(x="Types of program",y="Execution time")
+
+```
+
+## Conclusion
+
+As you can see, it took us a large amount of time to run the program on EMR and psuedo distributed
+
+However Spark reduces the over head by a very very large amount and is a much better distributed system to run large amounts of data
