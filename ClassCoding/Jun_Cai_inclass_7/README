@@ -1,3 +1,14 @@
+Fast-Query with Spark
+
+Author: Jun Cai
+
+
 How to run:
-	* Copy 'Baseball' data to 'most_hr_per_dollar' and 'best_batting_average' folders.
-	* Go into the 'most_hr_per_dollar' or 'best_batting_average' directory, then use command 'make run' to compile and run the code.
+	* Copy 'Baseball' data to 'Indexing/'.
+	* Build the index: './run.sh index'
+	* Query: './run.sh query PLAYER_ID' where PLAYER_ID is the player ID you are interested in.
+	* The query results will be in the console output.
+
+Implementation:
+	The Indexing program first reads and parse the 'batting.csv' file, build the index. The index is actually a HashMap which contains key-value pairs where the key is playerID and the value is a list of (yearID, teamID) tuples. 
+	When doing a query, the index file is loaded into memory, then the given player ID is used to retrieve the (yearID, teamID) list from the HashMap.

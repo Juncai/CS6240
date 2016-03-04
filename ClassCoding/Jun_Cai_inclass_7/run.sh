@@ -8,15 +8,23 @@ index () {
 
 query () {
 	cd Query
-	make run
-	# rm -rf out
-	# sbt "run index ${pid} out"
-	# sbt "run index ${pid} out"
+	# make run
+	rm -rf out
+	# sbt "run index bowlebr01 out"
+
+	sbt "run index ${pid} out"
 	cd ..
 }
 
 
-# pid=$1
+pid=$2
+# echo $pid
+if [ "$1" = 'index' ]; then
+	index
+fi
 
-index
-query
+if [ "$1" = 'query' ]; then
+	query
+fi
+
+

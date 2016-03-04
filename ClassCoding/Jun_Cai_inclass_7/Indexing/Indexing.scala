@@ -1,12 +1,9 @@
-
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
-
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.util.Sorting
 
-//Write a Spark program that finds the (player, year) that hit the most home runs per dollar of salary.
 
 // Author: Jun Cai
 object Indexing {
@@ -19,14 +16,13 @@ object Indexing {
       setMaster("local")
     val sc = new SparkContext(conf)
 
-    // Input
-
+    // Building index
     val batting = sc.textFile("baseball/Batting.csv").
       map {
         _.split(",")
       }.
       filter(a => {
-        a(PLAYER_ID) != "playerID" && a.length == 22 && !a(11).isEmpty
+        a(PLAYER_ID) != "playerID"
       }).
       map(a => {
         val ptMap : mutable.Map[String, ArrayBuffer[String]] = mutable.Map()
@@ -48,8 +44,8 @@ object Indexing {
         })
         nm
       }).
+      coalesce(1).
       saveAsObjectFile("out")
-//      saveAsTextFile("out")
 
     // Shut down Spark, avoid errors.
     sc.stop()
