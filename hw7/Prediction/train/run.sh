@@ -161,7 +161,7 @@ if [ "$1" = '-full-pd' ]; then
 	stop_server
 # process result by R
 #	process_output
-	report
+	# report
 fi
 
 if [ "$1" = '-full-emr' ]; then

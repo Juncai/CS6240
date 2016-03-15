@@ -3,6 +3,24 @@ package utils;
 
 // Authors: Jun Cai and Vikas Boddu
 public class OTPConsts {
+    public final static String COMMA = ",";
+    public final static String CSV_HEADER = "quarter" + COMMA
+                                            + "month" + COMMA
+                                            + "dayOfMonth" + COMMA
+                                            + "dayOfWeek" + COMMA
+                                            + "carrier" + COMMA
+                                            + "isHoliday" + COMMA
+                                            + "originAI" + COMMA
+                                            + "originCity" + COMMA
+                                            + "originState" + COMMA
+                                            + "destAI" + COMMA
+                                            + "destCity" + COMMA
+                                            + "destSate" + COMMA
+                                            + "distanceGroup" + COMMA
+                                            + "depHourOfDay" + COMMA
+                                            + "arrHourOfDay" + COMMA
+                                            + "elapsedTimeInHours" + COMMA
+                                            + "isDelay\n";
     // 2400
     public final static String START_OF_NEW_DAY_OLD = "2400";
     public final static String START_OF_NEW_DAY = "0000";

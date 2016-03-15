@@ -136,19 +136,4 @@ public class DataPreprocessor {
         return values.toArray(new String[1]);
     }
 
-    public static void updateConnectionInfo(Map<Integer, ConnectionInfo> acMap, FlightInfo f, int year) {
-        // parse the value string
-        int original = f.getOriginalAirportId();
-        int dest = f.getDestAirportId();
-        if (!acMap.containsKey(original)) {
-            acMap.put(original, new ConnectionInfo(year));
-        }
-        acMap.get(original).updateDep(f.getDepTimeScheduled(), f.getDepTimeActual());
-
-        if (!acMap.containsKey(dest)) {
-            acMap.put(dest, new ConnectionInfo(year));
-        }
-        acMap.get(dest).updateArr(f.getArrTimeScheduled(), f.getArrTimeActual());
-    }
-
 }

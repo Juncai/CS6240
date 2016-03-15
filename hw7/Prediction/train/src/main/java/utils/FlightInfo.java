@@ -94,7 +94,7 @@ public class FlightInfo {
             destStateFips = Integer.parseInt(values[OTPConsts.DEST_STATE_FIPS]);
             crsElapsedTime = Integer.parseInt(values[OTPConsts.CRS_ELAPSED_TIME]);
             distanceGroup = Integer.parseInt(values[OTPConsts.DISTANCE_GROUP]);
-            isDelayed = Integer.parseInt(values[OTPConsts.ARR_DELAY]) > 0;
+            isDelayed = Double.parseDouble(values[OTPConsts.ARR_DELAY]) > 0;
         }
     }
 
@@ -110,9 +110,50 @@ public class FlightInfo {
         return isValid;
     }
 
+    /*
+     public int quarter;
+    public int month;
+    public int dayOfMonth;
+    public int dayOfWeek;
+
+    public String carrier;
+//    private String flightNumber;
+    public DateTime flightDate;
+    public int originAirportId;
+    public int originCityMarket;
+    public int originStateFips;
+    public int destAirportId;
+    public int destCityMarket;
+    public int destStateFips;
+    public int distanceGroup;
+    public DateTime crsDepTime;
+    public DateTime crsArrTime;
+    public int crsElapsedTime;
+
+    quarter, month, dayOfMonth, dayOfWeek, carrier, isHoliday, originAI, originCity, originState,
+    destAI, destCity, destSate, distanceGroup, depHourOfDay, arrHourOfDay, elapsedTimeInHours, isDelay
+     */
     public String toString() {
         StringBuffer sb = new StringBuffer();
-        sb.append()
+        sb.append(quarter + OTPConsts.COMMA);
+        sb.append(month + OTPConsts.COMMA);
+        sb.append(dayOfMonth + OTPConsts.COMMA);
+        sb.append(dayOfWeek + OTPConsts.COMMA);
+        sb.append(carrier + OTPConsts.COMMA);
+        sb.append((isHolidy(flightDate) ? 1 : 0) + OTPConsts.COMMA);
+        sb.append(originAirportId + OTPConsts.COMMA);
+        sb.append(originCityMarket + OTPConsts.COMMA);
+        sb.append(originStateFips + OTPConsts.COMMA);
+        sb.append(destAirportId + OTPConsts.COMMA);
+        sb.append(destCityMarket + OTPConsts.COMMA);
+        sb.append(destStateFips + OTPConsts.COMMA);
+        sb.append(distanceGroup + OTPConsts.COMMA);
+        sb.append(crsDepTime.getHourOfDay() + OTPConsts.COMMA);
+        sb.append(crsArrTime.getHourOfDay() + OTPConsts.COMMA);
+        sb.append(crsElapsedTime / 60 + OTPConsts.COMMA);
+        sb.append((isDelayed ? 1 : 0) + "\n");
+
+        return sb.toString();
     }
 
     private boolean isHolidy(DateTime dt) {
@@ -124,11 +165,11 @@ public class FlightInfo {
             if ( dayOfMonth <= 8) return true;
         }
 
-        // Thanksgiving
+        // TODO Thanksgiving
 //        int weekOfNov =
-        if (month == 11 && ) {
-
-        }
+//        if (month == 11 && ) {
+//
+//        }
 
 
 
