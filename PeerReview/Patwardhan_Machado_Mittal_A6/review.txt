@@ -1,0 +1,52 @@
+Who are you?
+Jun Cai & Vikas Boddu
+
+Who's code are you reviewing?
+Neha Patwardhan & Joy Machado
+
+Is it clear how to run it?
+The instruction for running the code in local mode is pretty clear. However, how to run it with EMR is not mentioned.
+
+Could you get it to run? If not, why?
+Yes. The program runs well with the provided dataset. However, it will take a long time if we run it on the real dataset (i.e. we tried 225.csv.gz).
+
+Does it work?
+Yes. The program output the percentage of missed connection for the the carriers.
+
+Can you understand the code?
+Yes. 
+
+Is the organization and style of the code reasonable?
+The overall coding style is good. Though there are some improvements can be made: 
+    - Some of the indentations are incorrect;
+	- Indices of the column can be made into constants;
+	- Semicolons are used occasionally through the program;
+	- Making large inline function into a separate function might be a good idea;
+
+Does their submission constitute a reasonable solution to the problem?
+Yes. However how to run it on EMR is not mentioned.
+
+Does the solution make good use of Spark?
+Yes. 
+
+How does the overall design of the program differ from your solution?
+The overall designs of both solutions are similar. We both try to first construct separate RDDs for arrival flights and departure flights. Then join the two RDDs to check if there is a connection and missed connection in each record. Finally, the results are grouped/reduced by key to generate the statistics for each year for each airline.
+
+Which do you think is a better approach? Why?
+We think our approach is slightly better since we only read the input data files once and optimize the data processing by removing useless column in an earlier stage. Also, we reduce the number of joins by carefully manipulating the key of each record.
+
+What would you improve about the code?
+Some minor coding style issues can be avoided. Adding EMR support document will be appreciated. Also, the algorithm may be tuned for a better performance.
+
+Can you find any bugs? 
+No.
+
+Can you find any concurrency issues?
+No.
+
+Does the program take advantage of all of the available parallelism?
+Yes.
+
+
+Any comments on the report?
+It would be better if the R code for generating the graph was not showing in the report.

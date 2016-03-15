@@ -13,20 +13,20 @@ import org.apache.hadoop.util.ToolRunner;
 
 
 // Authors: Jun Cai and Vikas Boddu
-public class MissedConnectionAnalysis extends Configured implements Tool {
+public class MissedConnectionTraining extends Configured implements Tool {
 
     public int run (String[] args) throws Exception {
 
         Job job = Job.getInstance();
-        job.setJarByClass(MissedConnectionAnalysis.class);
-        job.setJobName("MissedConnectionAnalysis");
+        job.setJarByClass(MissedConnectionTraining.class);
+        job.setJobName("MissedConnectionTraining");
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
-        job.setMapperClass(AnalysisMapper.class);
-        job.setReducerClass(AnalysisReducer.class);
-        job.setPartitionerClass(AnalysisPartitioner.class); // set custom partitioner
+        job.setMapperClass(TrainingMapper.class);
+        job.setReducerClass(TrainingReducer.class);
+//        job.setPartitionerClass(TrainingPartitioner.class); // set custom partitioner
 //        job.setNumReduceTasks(2); // for test
 
 		job.setOutputKeyClass(Text.class);
@@ -42,6 +42,6 @@ public class MissedConnectionAnalysis extends Configured implements Tool {
     }
 
 	public static void main(String[] args) throws Exception {
-		System.exit(ToolRunner.run(new MissedConnectionAnalysis(), args));
+		System.exit(ToolRunner.run(new MissedConnectionTraining(), args));
 	}
 }

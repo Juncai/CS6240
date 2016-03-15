@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 // Authors: Jun Cai and Vikas Boddu
-public class AnalysisReducer extends Reducer<Text, Text, Text, IntWritable> {
+public class TrainingReducer extends Reducer<Text, Text, Text, IntWritable> {
     // (Carrier, (Year, connections across different years))
     // here the missed cross year connections will be counted in the previous year's stats.
     static private Map<String, Map<Integer, CrossYearConnectionInfo>> crossYearMap;

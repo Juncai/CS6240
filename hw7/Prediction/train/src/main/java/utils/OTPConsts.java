@@ -12,14 +12,20 @@ public class OTPConsts {
 
     // Date time format
     public final static String DATETIME_FORMAT = "yyyy-MM-dd HHmm";
+    public final static String FL_DATE_FORMAT = "yyyy-MM-dd";
     public final static String DATEKEY_FORMAT = "yyyyMMddHH";
 
     // for flight time and distance
     public final static int DISTANCE = 54;
+    public final static int DISTANCE_GROUP = 55;
     public final static int AIR_TIME = 52;
 
     // constants for indices
     public final static int YEAR = 0;
+    public final static int QUARTER = 1;
+    public final static int MONTH = 2;
+    public final static int DAY_OF_MONTH = 3;
+    public final static int DAY_OF_WEEK = 4;
     public final static int FL_DATE = 5;
     public final static int CRS_ARR_TIME = 40;
     public final static int CRS_DEP_TIME = 29;
@@ -28,8 +34,12 @@ public class OTPConsts {
 
     // ORIGIN_AIRPORT_ID 11
     public final static int ORIGIN_AIRPORT_ID = 11;
+    public final static int ORIGIN_CITY_MARKET_ID = 13;
+    public final static int ORIGIN_STATE_FIPS = 17;
     // DEST_AIRPORT_ID 20 (do we need DIV_AIRPORT_ID?)
     public final static int DEST_AIRPORT_ID = 20;
+    public final static int DEST_CITY_MARKET_ID = 22;
+    public final static int DEST_STATE_FIPS = 26;
 
 
     // ORIGIN_AIRPORT_ID 11
@@ -52,7 +62,7 @@ public class OTPConsts {
     // DEST_CITY_NAME 24
     // DEST_STATE_ABR 25
     // DEST_STATE_NM 27
-    public final static int[] NOTEMPTY = {14, 15, 16, 18, 23, 24, 25, 27};
+    public final static int[] NOTEMPTY = {14, 15, 16, 18, 23, 24, 25, 27, 55};
 
     public final static int CANCELLED = 47;
     public final static int DEP_TIME = 30;

@@ -9,7 +9,7 @@ import utils.OTPConsts;
 import java.io.IOException;
 
 // Authors: Jun Cai and Vikas Boddu
-public class AnalysisMapper extends Mapper<LongWritable, Text, Text, Text> {
+public class TrainingMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     @Override
     protected void setup(Context context) {
