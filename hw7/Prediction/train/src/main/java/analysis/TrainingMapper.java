@@ -41,7 +41,8 @@ public class TrainingMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     @Override
     protected void cleanup(Context context) throws IOException, InterruptedException {
-        File f = new File("/tmp/OTP_prediction_training_" + UUID.randomUUID().toString() + ".csv");
+        String fName = "/tmp/OTP_prediction_training_" + UUID.randomUUID().toString() + ".csv";
+        File f = new File(fName);
         f.createNewFile();
         FileWriter fw = new FileWriter(f, true);
         fw.write(OTPConsts.CSV_HEADER);
@@ -50,12 +51,18 @@ public class TrainingMapper extends Mapper<LongWritable, Text, Text, Text> {
         }
         fw.flush();
         fw.close();
-        // TODO call R script to get Random Forest
 
-        // TODO read Random Forest as string and write it to the context
-        String path = "/tmp/OTP_prediction.rf";
+        // TODO call R script to get Random Forest
+        String path = "/tmp/OTP_prediction_" + UUID.randomUUID().toString() + ".rf";
+        Runtime.getRuntime().exec("Rscript /tmp/rf.R " + fName + " " + path);
+
+        // read Random Forest as string and write it to the context
         byte[] b = Files.readAllBytes(Paths.get(path));
         String rfString = new String(b, Charset.defaultCharset());
         context.write(new Text("RandomForest"), new Text(rfString));
+
+        // Remove used file from tmp folder
+        Files.deleteIfExists(f.toPath());
+        Files.deleteIfExists(Paths.get(path));
     }
 }

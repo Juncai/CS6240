@@ -12,15 +12,15 @@
 #					 originCity=integer(),
 #					 originState=integer(),
 #					 stringsAsFactors=FALSE)
+args = commandArgs(trailingOnly=TRUE)
+input <- args[1]
+output <- args[2]
 input_path <- "/tmp"
 # filenames <- list.files(input_path, pattern="OTP_prediction_training_*.csv", full.names=TRUE)
-filenames <- dir(input_path, pattern="OTP_prediction_training_*", full.names=TRUE)
-tables <- lapply(filenames, read.csv)
-res <- do.call(rbind, tables)
-#length(unique(res$originAI))
-#length(unique(res$originCity))
-#length(unique(res$originState))
-#length(unique(res$carrier))
+#filenames <- dir(input_path, pattern="OTP_prediction_training_*", full.names=TRUE)
+#tables <- lapply(filenames, read.csv)
+#res <- do.call(rbind, tables)
+res <- read.csv(input);
 # use 'state' instead of airport or city
 res <- subset(res, select = -c(originAI, originCity, destAI, destCity))
 for (n in names(res)) {
@@ -43,4 +43,5 @@ fit <- randomForest(x, y=y, xtest=NULL, ytest=NULL, ntree=1, replace=TRUE, norm.
 #fit <- randomForest(x, y=y, xtest=x, ytest=y, ntree=10, replace=TRUE, norm.votes=FALSE, keep.forest=TRUE, maxnodes=1024)
 #print(fit.all)
 rfString <- rawToChar(serialize(fit, NULL, ascii=TRUE))
-write(rfString, file = "/tmp/OTP_prediction.rf")
+#write(rfString, file = "/tmp/OTP_prediction.rf")
+write(rfString, file = output)

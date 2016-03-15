@@ -23,13 +23,14 @@ package utils;
 
 import org.apache.hadoop.io.Text;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 // Authors: Jun Cai and Vikas Boddu
 public class FlightInfo {
-    static private DateTimeFormatter sf = DateTimeFormat.forPattern(OTPConsts.DATETIME_FORMAT);
-    static private DateTimeFormatter ff = DateTimeFormat.forPattern(OTPConsts.FL_DATE_FORMAT);
+    static private DateTimeFormatter sf = DateTimeFormat.forPattern(OTPConsts.DATETIME_FORMAT).withZone(DateTimeZone.UTC);
+    static private DateTimeFormatter ff = DateTimeFormat.forPattern(OTPConsts.FL_DATE_FORMAT).withZone(DateTimeZone.UTC);
     public int quarter;
     public int month;
     public int dayOfMonth;

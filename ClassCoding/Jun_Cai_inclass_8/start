@@ -1,0 +1,25 @@
+#!/bin/bash
+
+start_server () {
+
+	cd server
+
+	for ((i = 2; i <= $n; i++))
+	do
+		echo starting server $i
+		java -jar server.jar $i&
+	done
+
+	cd ..
+}
+
+# first clean and compile the code
+make clean
+make all
+
+n=$1
+if [ n > 1 ]; then
+	start_server
+fi
+
+
