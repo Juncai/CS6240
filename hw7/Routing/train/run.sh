@@ -7,8 +7,15 @@ sanityCheck () {
 }
 
 clean () {
-	rm -rf output
+	# rm -rf output
 	rm -rf log
+}
+
+upload_rscript () {
+	rm /tmp/rf.R
+	rm /tmp/combineRF.R
+	cp rf.R /tmp/
+	cp combineRF.R /tmp/
 }
 
 cmp () {
@@ -39,13 +46,13 @@ start_server () {
 
 upload_data_pd () {
 	hadoop fs -rm -r input
-	hadoop fs -put ${MR_INPUT} input
+	hadoop fs -put ${ROUTING_HISTORY_DIR} input
 }
 
 upload_data_emr() {
 	# upload the data files
 	aws s3 rm s3://${BUCKET_NAME}/input --recursive
-	aws s3 sync ${MR_INPUT} s3://${BUCKET_NAME}/input
+	aws s3 sync ${ROUTING_HISTORY_DIR} s3://${BUCKET_NAME}/input
 }
 
 stop_server () {
@@ -64,7 +71,12 @@ pd () {
 	hadoop jar build/libs/Job.jar input output
 
 	# get the output
+	rm -rf output
 	hadoop fs -get output output
+
+	# put final RF in the tmp folder
+	rm /tmp/final.rf
+	cp output/part-r-00000 /tmp/final.rf
 }
 
 emr () {
@@ -93,6 +105,9 @@ emr () {
 		--steps '[{"Args":["s3://'${BUCKET_NAME}'/input","s3://'${BUCKET_NAME}'/output"],"Type":"CUSTOM_JAR","ActionOnFailure":"CONTINUE","Jar":"s3://'${BUCKET_NAME}'/Job.jar","Properties":"","Name":"LinearRegressionFit"}]' \
 		--name 'Jun MR cluster' \
 		--instance-groups '[{"InstanceCount":1,"InstanceGroupType":"MASTER","InstanceType":"m1.medium","Name":"Master Instance Group"},{"InstanceCount":2,"InstanceGroupType":"CORE","InstanceType":"m1.medium","Name":"Core Instance Group"}]' \
+		--bootstrap-actions \
+			Name=emR_bootstrap,\
+			Path="s3://hw7bootstrapping/emR_bootstrap.sh" \
 		--configurations '[{"Classification":"spark","Properties":{"maximizeResourceAllocation":"true"},"Configurations":[]}]' \
 		--auto-terminate \
 		--region us-west-2 | grep -oh 'j-[0-9A-Z][0-9A-Z]*')
@@ -142,6 +157,7 @@ fi
 input_path='input'
 
 if [ "$1" = '-pd' ]; then
+	upload_rscript
 	clean
 	pd
 	# process_output
@@ -161,7 +177,7 @@ if [ "$1" = '-full-pd' ]; then
 	stop_server
 # process result by R
 #	process_output
-	report
+	# report
 fi
 
 if [ "$1" = '-full-emr' ]; then
