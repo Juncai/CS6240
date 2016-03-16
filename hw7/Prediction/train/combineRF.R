@@ -1,6 +1,10 @@
 library(randomForest)
 library(methods)
 
+args = commandArgs(trailingOnly=TRUE)
+#input <- args[1]
+output <- args[1]
+
 getForest <- function(path) {
 	rfString <- readChar(path, file.info(path)$size)
 	rf <- unserialize(charToRaw(rfString))
@@ -19,7 +23,8 @@ if (length(filenames) > 0) {
 		}
 	}
 	rfString <- rawToChar(serialize(rf, NULL, ascii=TRUE))
-	write(rfString, file = "/tmp/OTP_prediction_final.rf")
+	#write(rfString, file = "/tmp/OTP_prediction_final.rf")
+	write(rfString, file = output)
 }
 
 

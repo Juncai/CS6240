@@ -33,7 +33,7 @@ for (n in names(res)) {
 x <- subset(res, select = -c(isDelay))
 y <- res$isDelay
 #summary(y)
-#install.packages('randomForest', repos='http://cran.us.r-project.org')
+
 library(randomForest)
 set.seed(687)
 fit <- randomForest(x, y=y, xtest=NULL, ytest=NULL, ntree=1, replace=TRUE, norm.votes=FALSE, keep.forest=TRUE, maxnodes=1024)

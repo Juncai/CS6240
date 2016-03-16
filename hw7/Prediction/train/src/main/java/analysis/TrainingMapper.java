@@ -6,9 +6,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import utils.FlightInfo;
 import utils.OTPConsts;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -54,7 +52,30 @@ public class TrainingMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         // TODO call R script to get Random Forest
         String path = "/tmp/OTP_prediction_" + UUID.randomUUID().toString() + ".rf";
-        Runtime.getRuntime().exec("Rscript /tmp/rf.R " + fName + " " + path);
+        String comm = "Rscript /tmp/rf.R " + fName + " " + path;
+//        System.out.println(comm);
+        Process p = Runtime.getRuntime().exec(comm);
+
+//        InputStream stdout = p.getInputStream();
+//        InputStreamReader isr0 = new InputStreamReader(stdout);
+//        BufferedReader br0 = new BufferedReader(isr0);
+//        String line0 = null;
+//        System.out.println("<STD>");
+//        while ((line0 = br0.readLine()) != null)
+//            System.out.println(line0);
+//        System.out.println("</STD>");
+//
+//        InputStream stderr = p.getErrorStream();
+//        InputStreamReader isr = new InputStreamReader(stderr);
+//        BufferedReader br = new BufferedReader(isr);
+//        String line = null;
+//        System.out.println("<ERROR>");
+//        while ((line = br.readLine()) != null)
+//            System.out.println(line);
+//        System.out.println("</ERROR>");
+
+        int ret = p.waitFor();
+//        System.out.println("R script return with status: " + ret);
 
         // read Random Forest as string and write it to the context
         byte[] b = Files.readAllBytes(Paths.get(path));
