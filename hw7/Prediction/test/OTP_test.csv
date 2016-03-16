@@ -1,3 +1,0 @@
-quarter,month,dayOfMonth,dayOfWeek,carrier,isHoliday,originAI,originCity,originState,destAI,destCity,destSate,distanceGroup,depHourOfDay,arrHourOfDay,elapsedTimeInHours,flNum,flDate,crsDepTime,isDelay
-2,4,1,2,AA,0,10140,30140,35,11298,30140,48,3,10,13,1,806,1997-04-01,1053,1
-2,4,2,3,AA,0,10140,30140,35,11298,30140,48,3,10,13,1,806,1997-04-02,1053,0
