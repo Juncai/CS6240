@@ -93,6 +93,10 @@ emr () {
 		--steps '[{"Args":["s3://'${BUCKET_NAME}'/input","s3://'${BUCKET_NAME}'/output"],"Type":"CUSTOM_JAR","ActionOnFailure":"CONTINUE","Jar":"s3://'${BUCKET_NAME}'/Job.jar","Properties":"","Name":"LinearRegressionFit"}]' \
 		--name 'Jun MR cluster' \
 		--instance-groups '[{"InstanceCount":1,"InstanceGroupType":"MASTER","InstanceType":"m1.medium","Name":"Master Instance Group"},{"InstanceCount":2,"InstanceGroupType":"CORE","InstanceType":"m1.medium","Name":"Core Instance Group"}]' \
+		--bootstrap-actions \
+			Name=emR_bootstrap,\
+			Path="s3://hw7bootstrapping/emR_bootstrap.sh",\
+			Args=[--rhdfs] \
 		--configurations '[{"Classification":"spark","Properties":{"maximizeResourceAllocation":"true"},"Configurations":[]}]' \
 		--auto-terminate \
 		--region us-west-2 | grep -oh 'j-[0-9A-Z][0-9A-Z]*')
