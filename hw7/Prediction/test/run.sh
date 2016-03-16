@@ -7,7 +7,7 @@ sanityCheck () {
 }
 
 clean () {
-	rm -rf output
+	# rm -rf output
 	rm -rf log
 }
 
@@ -44,7 +44,11 @@ upload_rscript () {
 
 upload_data_pd () {
 	hadoop fs -rm -r input
-	hadoop fs -put ${MR_INPUT} input
+	# hadoop fs -mkdir input
+	# hadoop fs -cp ${PREDICTION_TEST_DIR}/* input
+	# hadoop fs -cp ${PREDICTION_VALIDATE_DIR}/* input
+	hadoop fs -put ${PREDICTION_TEST_DIR} input
+	hadoop fs -put ${PREDICTION_VALIDATE_DIR}/* input
 }
 
 upload_data_emr() {
@@ -69,6 +73,7 @@ pd () {
 	hadoop jar build/libs/Job.jar input output
 
 	# get the output
+	rm -rf output
 	hadoop fs -get output output
 }
 

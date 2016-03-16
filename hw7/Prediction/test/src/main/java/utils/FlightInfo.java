@@ -62,9 +62,9 @@ public class FlightInfo {
         values = DataPreprocessor.parseCSVLine(line, false);
 
         // skip sanity check for test data
-//        if (!isTest) {
+        if (!isTest) {
             isValid = DataPreprocessor.sanityCheck(values);
-//        }
+        }
 
         if (isValid) {
             flightDateStr = values[OTPConsts.FL_DATE];

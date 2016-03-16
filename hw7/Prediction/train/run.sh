@@ -7,7 +7,7 @@ sanityCheck () {
 }
 
 clean () {
-	rm -rf output
+	# rm -rf output
 	rm -rf log
 }
 
@@ -46,7 +46,7 @@ start_server () {
 
 upload_data_pd () {
 	hadoop fs -rm -r input
-	hadoop fs -put ${MR_INPUT} input
+	hadoop fs -put ${PREDICTION_HISTORY_DIR} input
 }
 
 upload_data_emr() {
@@ -71,6 +71,7 @@ pd () {
 	hadoop jar build/libs/Job.jar input output
 
 	# get the output
+	rm -rf output
 	hadoop fs -get output output
 
 	# put final RF in the tmp folder

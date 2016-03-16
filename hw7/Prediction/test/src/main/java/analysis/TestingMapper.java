@@ -85,8 +85,7 @@ public class TestingMapper extends Mapper<LongWritable, Text, Text, Text> {
         System.out.println("R script return with status: " + ret);
 
         // TODO read lines from the R output, write each line to the context
-        // R output format: [FL_NUM],[FL_DATE],[CRS_DEP_TIME],logical
-        // Mapper output format: [FL_NUM]_[FL_DATE]_[CRS_DEP_TIME],logical
+        // R output format: [FL_NUM]_[FL_DATE]_[CRS_DEP_TIME],logical
         File rOutput = new File(outPath);
         FileReader fr = new FileReader(rOutput);
         BufferedReader br = new BufferedReader(fr);
