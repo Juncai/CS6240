@@ -21,7 +21,6 @@
 //DISTANCE_GROUP
 package utils;
 
-import org.apache.hadoop.io.Text;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -37,8 +36,9 @@ public class FlightInfo {
     public int dayOfWeek;
 
     public String carrier;
-//    private String flightNumber;
+    private String flightNumber;
     public DateTime flightDate;
+    public String flightDateStr;
     public int originAirportId;
     public int originCityMarket;
     public int originStateFips;
@@ -47,34 +47,32 @@ public class FlightInfo {
     public int destStateFips;
     public int distanceGroup;
     public DateTime crsDepTime;
+    public String crsDepTimeStr;
     public DateTime crsArrTime;
     public int crsElapsedTime;
     public boolean isDelayed;
     private boolean isValid = true;
+    private boolean isTest = false;
 
-//    public FlightInfo(Text value) {
-//        String[] values = value.toString().split(" ");
-//        originalAirportId = Integer.parseInt(values[0]);
-//        depTimeScheduled = new DateTime(Long.parseLong(values[1]));
-//        depTimeActual = new DateTime(Long.parseLong(values[2]));
-//        destAirportId = Integer.parseInt(values[3]);
-//        arrTimeScheduled = new DateTime(Long.parseLong(values[4]));
-//        arrTimeActual = new DateTime(Long.parseLong(values[5]));
-//    }
-
-    public FlightInfo(String line) {
+    public FlightInfo(String line, boolean isTest) {
+        this.isTest = isTest;
 
         String[] values;
-        values = DataPreprocessor.parseCSVLine(line);
-        if (!DataPreprocessor.sanityCheck(values)) {
-            isValid = false;
-        } else {
-            flightDate = ff.parseDateTime(values[OTPConsts.FL_DATE]);
+        values = DataPreprocessor.parseCSVLine(line, true);
+
+        // skip sanity check for test data
+        if (!isTest) {
+            isValid = DataPreprocessor.sanityCheck(values);
+        }
+
+        if (isValid) {
+            flightDateStr = values[OTPConsts.FL_DATE];
+            flightDate = ff.parseDateTime(flightDateStr);
             String date = values[OTPConsts.FL_DATE];
-            String depTimeScheduledStr = values[OTPConsts.CRS_DEP_TIME];
+            crsDepTimeStr = values[OTPConsts.CRS_DEP_TIME];
             String arrTimeScheduledStr = values[OTPConsts.CRS_ARR_TIME];
 
-            crsDepTime = getDateTime(date, depTimeScheduledStr);
+            crsDepTime = getDateTime(date, crsDepTimeStr);
             crsArrTime = getDateTime(date, arrTimeScheduledStr);
 
             // consider the case when arrive in a new day
@@ -95,7 +93,12 @@ public class FlightInfo {
             destStateFips = Integer.parseInt(values[OTPConsts.DEST_STATE_FIPS]);
             crsElapsedTime = Integer.parseInt(values[OTPConsts.CRS_ELAPSED_TIME]);
             distanceGroup = Integer.parseInt(values[OTPConsts.DISTANCE_GROUP]);
-            isDelayed = Double.parseDouble(values[OTPConsts.ARR_DELAY]) > 0;
+            flightNumber = values[OTPConsts.FL_NUM];
+            if (!this.isTest) {
+                isDelayed = Double.parseDouble(values[OTPConsts.ARR_DELAY]) > 0;
+            } else {
+                isDelayed = false;
+            }
         }
     }
 
@@ -112,27 +115,9 @@ public class FlightInfo {
     }
 
     /*
-     public int quarter;
-    public int month;
-    public int dayOfMonth;
-    public int dayOfWeek;
-
-    public String carrier;
-//    private String flightNumber;
-    public DateTime flightDate;
-    public int originAirportId;
-    public int originCityMarket;
-    public int originStateFips;
-    public int destAirportId;
-    public int destCityMarket;
-    public int destStateFips;
-    public int distanceGroup;
-    public DateTime crsDepTime;
-    public DateTime crsArrTime;
-    public int crsElapsedTime;
-
     quarter, month, dayOfMonth, dayOfWeek, carrier, isHoliday, originAI, originCity, originState,
-    destAI, destCity, destSate, distanceGroup, depHourOfDay, arrHourOfDay, elapsedTimeInHours, isDelay
+    destAI, destCity, destState, distanceGroup, depHourOfDay, arrHourOfDay, elapsedTimeInHours, flNum,
+     fldate, crsDepTime, isDelay
      */
     public String toString() {
         StringBuffer sb = new StringBuffer();
@@ -152,6 +137,9 @@ public class FlightInfo {
         sb.append(crsDepTime.getHourOfDay() + OTPConsts.COMMA);
         sb.append(crsArrTime.getHourOfDay() + OTPConsts.COMMA);
         sb.append(crsElapsedTime / 60 + OTPConsts.COMMA);
+        sb.append(flightNumber + OTPConsts.COMMA);
+        sb.append(flightDateStr + OTPConsts.COMMA);
+        sb.append(crsDepTimeStr + OTPConsts.COMMA);
         sb.append((isDelayed ? 1 : 0) + "\n");
 
         return sb.toString();

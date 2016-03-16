@@ -106,12 +106,13 @@ public class DataPreprocessor {
      * @return list of values as a string array
      * Code modified from: AgilePro's reply on http://stackoverflow.com/questions/843997/csv-parsing-in-java-working-example
      */
-    static String[] parseCSVLine(String line) {
+    static String[] parseCSVLine(String line, boolean isTest) {
         List<String> values = new ArrayList<String>();
         StringBuffer sb = new StringBuffer();
         boolean inQuote = false;
         char curChar;
-        for (int i = 0; i < line.length(); i++) {
+        int startIndex = isTest ? 1 : 0;
+        for (int i = startIndex; i < line.length(); i++) {
             curChar = line.charAt(i);
             if (inQuote) {
                 if (curChar == '"') {
@@ -136,19 +137,12 @@ public class DataPreprocessor {
         return values.toArray(new String[1]);
     }
 
-    public static void updateConnectionInfo(Map<Integer, ConnectionInfo> acMap, FlightInfo f, int year) {
-        // parse the value string
-        int original = f.getOriginalAirportId();
-        int dest = f.getDestAirportId();
-        if (!acMap.containsKey(original)) {
-            acMap.put(original, new ConnectionInfo(year));
-        }
-        acMap.get(original).updateDep(f.getDepTimeScheduled(), f.getDepTimeActual());
-
-        if (!acMap.containsKey(dest)) {
-            acMap.put(dest, new ConnectionInfo(year));
-        }
-        acMap.get(dest).updateArr(f.getArrTimeScheduled(), f.getArrTimeActual());
-    }
+//    static public String[] parseROutput(String line) {
+//        String[] splits = line.split(",");
+//        String[] res = new String[2];
+//        res[0] = splits[0] + "_" + splits[1] + "_" + splits[2];
+//        res[1] = splits[3];
+//        return res;
+//    }
 
 }

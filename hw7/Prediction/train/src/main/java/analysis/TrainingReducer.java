@@ -1,5 +1,6 @@
 package analysis;
 
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -10,7 +11,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 // Authors: Jun Cai and Vikas Boddu
-public class TrainingReducer extends Reducer<Text, Text, Text, Text> {
+public class TrainingReducer extends Reducer<Text, Text, NullWritable, Text> {
     List<String> rfList;
 
     @Override
@@ -69,7 +70,7 @@ public class TrainingReducer extends Reducer<Text, Text, Text, Text> {
         // read final forest string and write it to the context
         byte[] b = Files.readAllBytes(Paths.get(finalRFPath));
         String rfString = new String(b, Charset.defaultCharset());
-        context.write(new Text("FinalRF"), new Text(rfString));
+        context.write(NullWritable.get(), new Text(rfString));
 
         // remove used files
         for (String path : rfPathList) {

@@ -11,6 +11,13 @@ clean () {
 	rm -rf log
 }
 
+upload_rscript () {
+	rm /tmp/rf.R
+	rm /tmp/combineRF.R
+	cp rf.R /tmp/
+	cp combineRF.R /tmp/
+}
+
 cmp () {
 	# building the code
 	gradle clean
@@ -65,6 +72,10 @@ pd () {
 
 	# get the output
 	hadoop fs -get output output
+
+	# put final RF in the tmp folder
+	rm /tmp/final.rf
+	cp output/part-r-00000 /tmp/final.rf
 }
 
 emr () {
@@ -142,6 +153,7 @@ fi
 input_path='input'
 
 if [ "$1" = '-pd' ]; then
+	upload_rscript
 	clean
 	pd
 	# process_output

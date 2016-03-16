@@ -22,7 +22,7 @@ if (length(filenames) > 0) {
 			forest <- combine(forest, nextForest)
 		}
 	}
-	rfString <- rawToChar(serialize(rf, NULL, ascii=TRUE))
+	rfString <- rawToChar(serialize(forest, NULL, ascii=TRUE))
 	#write(rfString, file = "/tmp/OTP_prediction_final.rf")
 	write(rfString, file = output)
 }

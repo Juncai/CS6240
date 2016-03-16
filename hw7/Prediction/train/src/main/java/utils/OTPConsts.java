@@ -5,22 +5,26 @@ package utils;
 public class OTPConsts {
     public final static String COMMA = ",";
     public final static String CSV_HEADER = "quarter" + COMMA
-                                            + "month" + COMMA
-                                            + "dayOfMonth" + COMMA
-                                            + "dayOfWeek" + COMMA
-                                            + "carrier" + COMMA
-                                            + "isHoliday" + COMMA
-                                            + "originAI" + COMMA
-                                            + "originCity" + COMMA
-                                            + "originState" + COMMA
-                                            + "destAI" + COMMA
-                                            + "destCity" + COMMA
-                                            + "destSate" + COMMA
-                                            + "distanceGroup" + COMMA
-                                            + "depHourOfDay" + COMMA
-                                            + "arrHourOfDay" + COMMA
-                                            + "elapsedTimeInHours" + COMMA
-                                            + "isDelay\n";
+            + "month" + COMMA
+            + "dayOfMonth" + COMMA
+            + "dayOfWeek" + COMMA
+            + "carrier" + COMMA
+            + "isHoliday" + COMMA
+            + "originAI" + COMMA
+            + "originCity" + COMMA
+            + "originState" + COMMA
+            + "destAI" + COMMA
+            + "destCity" + COMMA
+            + "destState" + COMMA
+            + "distanceGroup" + COMMA
+            + "depHourOfDay" + COMMA
+            + "arrHourOfDay" + COMMA
+            + "elapsedTimeInHours" + COMMA
+            + "flNum" + COMMA
+            + "flDate" + COMMA
+            + "crsDepTime" + COMMA
+            + "isDelay\n";
+
     // 2400
     public final static String START_OF_NEW_DAY_OLD = "2400";
     public final static String START_OF_NEW_DAY = "0000";
@@ -37,6 +41,7 @@ public class OTPConsts {
     public final static int DISTANCE = 54;
     public final static int DISTANCE_GROUP = 55;
     public final static int AIR_TIME = 52;
+    public final static int FL_NUM = 10;
 
     // constants for indices
     public final static int YEAR = 0;

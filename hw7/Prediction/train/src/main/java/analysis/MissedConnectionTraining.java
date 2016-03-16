@@ -4,6 +4,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -29,8 +30,8 @@ public class MissedConnectionTraining extends Configured implements Tool {
 //        job.setPartitionerClass(TrainingPartitioner.class); // set custom partitioner
 //        job.setNumReduceTasks(2); // for test
 
-		job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
+		job.setOutputKeyClass(NullWritable.class);
+        job.setOutputValueClass(Text.class);
 
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);

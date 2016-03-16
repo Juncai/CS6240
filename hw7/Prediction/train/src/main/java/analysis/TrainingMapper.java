@@ -30,7 +30,7 @@ public class TrainingMapper extends Mapper<LongWritable, Text, Text, Text> {
         // skip the header
         if (line.startsWith(OTPConsts.HEADER_START)) return;
 
-        FlightInfo flight = new FlightInfo(line);
+        FlightInfo flight = new FlightInfo(line, false);
 
         if (flight.isValid()) {
             infoList.add(flight);

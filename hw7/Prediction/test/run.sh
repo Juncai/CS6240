@@ -37,6 +37,11 @@ start_server () {
 	hadoop fs -rm -r output
 }
 
+upload_rscript () {
+	rm /tmp/validate.R
+	cp validate.R /tmp/
+}
+
 upload_data_pd () {
 	hadoop fs -rm -r input
 	hadoop fs -put ${MR_INPUT} input
@@ -142,6 +147,7 @@ fi
 input_path='input'
 
 if [ "$1" = '-pd' ]; then
+	upload_rscript
 	clean
 	pd
 	# process_output
@@ -161,7 +167,7 @@ if [ "$1" = '-full-pd' ]; then
 	stop_server
 # process result by R
 #	process_output
-	report
+	# report
 fi
 
 if [ "$1" = '-full-emr' ]; then
