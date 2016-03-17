@@ -85,7 +85,7 @@ public class TrainingMapper extends Mapper<LongWritable, Text, Text, Text> {
         context.write(new Text("RandomForest"), new Text(rfString));
 
         // Remove used file from tmp folder
-//        Files.deleteIfExists(f.toPath());
-//        Files.deleteIfExists(Paths.get(path));
+       Files.deleteIfExists(f.toPath());
+       Files.deleteIfExists(Paths.get(path));
     }
 }
