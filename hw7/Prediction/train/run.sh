@@ -106,7 +106,6 @@ emr () {
 		--name 'Jun MR cluster' \
 		--instance-groups '[{"InstanceCount":1,"InstanceGroupType":"MASTER","InstanceType":"m1.medium","Name":"Master Instance Group"},{"InstanceCount":2,"InstanceGroupType":"CORE","InstanceType":"m1.medium","Name":"Core Instance Group"}]' \
 		--bootstrap-actions \
-			Name=emR_bootstrap,\
 			Path="s3://hw7bootstrapping/emR_bootstrap.sh" \
 		--configurations '[{"Classification":"spark","Properties":{"maximizeResourceAllocation":"true"},"Configurations":[]}]' \
 		--auto-terminate \
