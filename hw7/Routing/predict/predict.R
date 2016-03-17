@@ -57,7 +57,7 @@ prediction <- predict(rf, x, type="response", norm.votes=TRUE, predict.all=FALSE
 #prediction <- c(1, 0)
 for (i in 1:length(rawRes$originAI)) {
 #	print(paste(paste(rawRes$originAI[i], rawRes$originCity[i], rawRes$destAI[i], sep="_", collapse=NULL), prediction[i], sep=",", collapse=NULL))
-	write(paste(rawRes$carrier[i], paste(rawRes$flDate[i], rawRes$depMS[i], prediction[i], sep="_", collapse=NULL), sep=",", collapse=NULL), file=output, append=TRUE)
+	write(paste(rawRes$carrier[i], paste(rawRes$flDate[i], rawRes$depMS[i], rawRes$arrMS[i], rawRes$originAI[i], rawRes$destAI[i], prediction[i], sep="_", collapse=NULL), sep=",", collapse=NULL), file=output, append=TRUE)
 }
 #rfString <- rawToChar(serialize(fit, NULL, ascii=TRUE))
 #write(rfString, file = "/tmp/OTP_prediction.rf")

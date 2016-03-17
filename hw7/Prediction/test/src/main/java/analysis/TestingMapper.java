@@ -16,11 +16,12 @@ import java.util.UUID;
 
 // Authors: Jun Cai and Vikas Boddu
 public class TestingMapper extends Mapper<LongWritable, Text, Text, Text> {
-    List<FlightInfo> infoList;
+//    List<FlightInfo> infoList;
+    List<String> infoStrList;
 
     @Override
     protected void setup(Context context) {
-        infoList = new ArrayList<FlightInfo>();
+        infoStrList = new ArrayList<String>();
     }
 
     @Override
@@ -38,7 +39,7 @@ public class TestingMapper extends Mapper<LongWritable, Text, Text, Text> {
             FlightInfo flight = new FlightInfo(line, true);
 
             if (flight.isValid()) {
-                infoList.add(flight);
+                infoStrList.add(flight.toString());
             }
         }
     }
@@ -46,14 +47,14 @@ public class TestingMapper extends Mapper<LongWritable, Text, Text, Text> {
     @Override
     protected void cleanup(Context context) throws IOException, InterruptedException {
         // this Mapper may deal with pure validate data
-        if (infoList.size() == 0) return;
+        if (infoStrList.size() == 0) return;
         String fName = "/tmp/OTP_prediction_testing_" + UUID.randomUUID().toString() + ".csv";
         File f = new File(fName);
         f.createNewFile();
         FileWriter fw = new FileWriter(f, true);
         fw.write(OTPConsts.CSV_HEADER);
-        for (FlightInfo i : infoList) {
-            fw.write(i.toString());
+        for (String s : infoStrList) {
+            fw.write(s);
         }
         fw.flush();
         fw.close();

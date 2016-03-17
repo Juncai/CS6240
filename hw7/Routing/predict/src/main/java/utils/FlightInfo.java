@@ -56,11 +56,13 @@ public class FlightInfo {
     private boolean isTest = false;
 
     public FlightInfo(Text value) {
-        String[] values = value.toString().split(" ");
-        originAirportId = Integer.parseInt(values[0]);
+        String[] values = value.toString().split("_");
+        flightDateStr = values[0];
         crsDepTime = new DateTime(Long.parseLong(values[1]));
-        destAirportId = Integer.parseInt(values[2]);
-        crsArrTime = new DateTime(Long.parseLong(values[3]));
+        crsArrTime = new DateTime(Long.parseLong(values[2]));
+        originAirportId = Integer.parseInt(values[3]);
+        destAirportId = Integer.parseInt(values[4]);
+        isDelayed = (values[5].equals("1"));
     }
 
     public FlightInfo(String line, boolean isTest) {

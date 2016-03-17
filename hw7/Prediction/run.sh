@@ -1,5 +1,5 @@
 cd train
-# ./run.sh -prepare
+./run.sh -prepare
 ./run.sh -data
 ./run.sh -pd
 cd ..

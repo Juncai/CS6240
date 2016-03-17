@@ -7,17 +7,9 @@ import java.io.*;
 
 // Authors: Jun Cai and Vikas Boddu
 public class PredictReducer extends Reducer<Text, Text, Text, Text> {
-    long truePos;
-    long trueNeg;
-    long falsePos;
-    long falseNeg;
 
     @Override
     protected void setup(Context ctx) {
-        truePos = 0;
-        trueNeg = 0;
-        falsePos = 0;
-        falseNeg = 0;
     }
 
     @Override

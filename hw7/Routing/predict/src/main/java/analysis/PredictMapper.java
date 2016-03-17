@@ -59,7 +59,7 @@ public class PredictMapper extends Mapper<LongWritable, Text, Text, Text> {
         // TODO call R script to make prediction on the test data
         String outPath = "/tmp/OTP_prediction_result_" + UUID.randomUUID().toString();
         String rfPath = "/tmp/final.rf";
-        String comm = "Rscript /tmp/validate.R " + fName + " " + rfPath + " " + outPath;
+        String comm = "Rscript /tmp/predict.R " + fName + " " + rfPath + " " + outPath;
 //        System.out.println(comm);
         Process p = Runtime.getRuntime().exec(comm);
 

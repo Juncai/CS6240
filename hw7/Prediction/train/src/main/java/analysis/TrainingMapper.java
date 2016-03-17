@@ -16,11 +16,12 @@ import java.util.UUID;
 
 // Authors: Jun Cai and Vikas Boddu
 public class TrainingMapper extends Mapper<LongWritable, Text, Text, Text> {
-    List<FlightInfo> infoList;
+//    List<FlightInfo> infoList;
+    List<String> infoStrList;
 
     @Override
     protected void setup(Context context) {
-        infoList = new ArrayList<FlightInfo>();
+        infoStrList = new ArrayList<String>();
     }
 
     @Override
@@ -33,7 +34,8 @@ public class TrainingMapper extends Mapper<LongWritable, Text, Text, Text> {
         FlightInfo flight = new FlightInfo(line, false);
 
         if (flight.isValid()) {
-            infoList.add(flight);
+            infoStrList.add(flight.toString());
+//            infoList.add(flight);
         }
     }
 
@@ -44,8 +46,8 @@ public class TrainingMapper extends Mapper<LongWritable, Text, Text, Text> {
         f.createNewFile();
         FileWriter fw = new FileWriter(f, true);
         fw.write(OTPConsts.CSV_HEADER);
-        for (FlightInfo i : infoList) {
-            fw.write(i.toString());
+        for (String s : infoStrList) {
+            fw.write(s);
         }
         fw.flush();
         fw.close();
@@ -83,7 +85,7 @@ public class TrainingMapper extends Mapper<LongWritable, Text, Text, Text> {
         context.write(new Text("RandomForest"), new Text(rfString));
 
         // Remove used file from tmp folder
-        Files.deleteIfExists(f.toPath());
-        Files.deleteIfExists(Paths.get(path));
+//        Files.deleteIfExists(f.toPath());
+//        Files.deleteIfExists(Paths.get(path));
     }
 }
