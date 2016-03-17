@@ -1,6 +1,6 @@
 cd train
 # ./run.sh -prepare
-./.run.sh -data
+./run.sh -data
 ./run.sh -pd
 cd ..
 

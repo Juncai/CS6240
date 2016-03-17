@@ -25,23 +25,29 @@ public class TestingReducer extends Reducer<Text, Text, Text, Text> {
         int count = 0;
         boolean delayActual = false;
         boolean delayPredict = false;
+        boolean hasActual = false;
+        boolean hasPredict = false;
         String vStr;
         for (Text v : values) {
             count++;
             vStr = v.toString();
             if (vStr.equals("TRUE")) {
                 delayActual = true;
+                hasActual = true;
             } else if (vStr.equals("FALSE")) {
                 delayActual = false;
+                hasActual = true;
             } else if (vStr.equals("1")) {
                 delayPredict = true;
+                hasPredict = true;
                 context.write(key, new Text("TRUE"));
             } else if (vStr.equals("0")) {
                 delayPredict = false;
+                hasPredict = true;
                 context.write(key, new Text("FALSE"));
             }
         }
-        if (count == 2) {
+        if (count == 2 && hasActual && hasPredict) {
             if (delayActual) {
                 if (delayPredict) {
                     truePos++;

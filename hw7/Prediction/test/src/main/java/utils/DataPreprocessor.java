@@ -111,8 +111,8 @@ public class DataPreprocessor {
         StringBuffer sb = new StringBuffer();
         boolean inQuote = false;
         char curChar;
-        int startIndex = isTest ? 1 : 0;
-        for (int i = startIndex; i < line.length(); i++) {
+        boolean start = !isTest;
+        for (int i = 0; i < line.length(); i++) {
             curChar = line.charAt(i);
             if (inQuote) {
                 if (curChar == '"') {
@@ -125,7 +125,11 @@ public class DataPreprocessor {
                 if (curChar == '"') {
                     inQuote = true;
                 } else if (curChar == ',') {
-                    values.add(sb.toString());
+                    if (start) {
+                        values.add(sb.toString());
+                    } else {
+                        start = true;
+                    }
                     sb = new StringBuffer();
                 } else {
                     sb.append(curChar);

@@ -58,8 +58,8 @@ public class FlightInfo {
         this.isTest = isTest;
 
         String[] values;
-//        values = DataPreprocessor.parseCSVLine(line, true);
-        values = DataPreprocessor.parseCSVLine(line, false);
+        values = DataPreprocessor.parseCSVLine(line, true);
+//        values = DataPreprocessor.parseCSVLine(line, false);
 
         // skip sanity check for test data
         if (!isTest) {

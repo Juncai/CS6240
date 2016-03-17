@@ -18,7 +18,9 @@ public class OTPConsts {
             + "destState" + COMMA
             + "distanceGroup" + COMMA
             + "depHourOfDay" + COMMA
+            + "depMS" + COMMA
             + "arrHourOfDay" + COMMA
+            + "arrMS" + COMMA
             + "elapsedTimeInHours" + COMMA
             + "flNum" + COMMA
             + "flDate" + COMMA

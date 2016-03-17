@@ -23,7 +23,7 @@ dependencies {
 jar {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest {
-        attributes 'Main-Class': 'analysis.MissedConnectionTesting'
+        attributes 'Main-Class': 'analysis.MissedConnectionPredict'
     }
 }
 

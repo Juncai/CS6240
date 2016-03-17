@@ -21,6 +21,7 @@
 //DISTANCE_GROUP
 package utils;
 
+import org.apache.hadoop.io.Text;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
@@ -53,6 +54,14 @@ public class FlightInfo {
     public boolean isDelayed;
     private boolean isValid = true;
     private boolean isTest = false;
+
+    public FlightInfo(Text value) {
+        String[] values = value.toString().split(" ");
+        originAirportId = Integer.parseInt(values[0]);
+        crsDepTime = new DateTime(Long.parseLong(values[1]));
+        destAirportId = Integer.parseInt(values[2]);
+        crsArrTime = new DateTime(Long.parseLong(values[3]));
+    }
 
     public FlightInfo(String line, boolean isTest) {
         this.isTest = isTest;
@@ -135,7 +144,9 @@ public class FlightInfo {
         sb.append(destStateFips + OTPConsts.COMMA);
         sb.append(distanceGroup + OTPConsts.COMMA);
         sb.append(crsDepTime.getHourOfDay() + OTPConsts.COMMA);
+        sb.append(crsDepTime.toDate().getTime() + OTPConsts.COMMA);
         sb.append(crsArrTime.getHourOfDay() + OTPConsts.COMMA);
+        sb.append(crsArrTime.toDate().getTime() + OTPConsts.COMMA);
         sb.append(crsElapsedTime / 60 + OTPConsts.COMMA);
         sb.append(flightNumber + OTPConsts.COMMA);
         sb.append(flightDateStr + OTPConsts.COMMA);

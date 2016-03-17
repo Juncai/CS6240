@@ -45,6 +45,8 @@ public class TestingMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     @Override
     protected void cleanup(Context context) throws IOException, InterruptedException {
+        // this Mapper may deal with pure validate data
+        if (infoList.size() == 0) return;
         String fName = "/tmp/OTP_prediction_testing_" + UUID.randomUUID().toString() + ".csv";
         File f = new File(fName);
         f.createNewFile();
