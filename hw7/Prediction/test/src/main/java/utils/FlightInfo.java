@@ -102,9 +102,10 @@ public class FlightInfo {
                     isDelayed = false;
                 }
             } catch (Exception e) {
+                isValid = false;
                 System.err.println(line);
                 e.printStackTrace();
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(line);
             }
 
         }

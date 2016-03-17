@@ -111,7 +111,10 @@ public class DataPreprocessor {
         StringBuffer sb = new StringBuffer();
         boolean inQuote = false;
         char curChar;
-        boolean start = !isTest;
+        boolean start = true;
+        if (isTest) {
+            start = !line.startsWith("\"");
+        }
         for (int i = 0; i < line.length(); i++) {
             curChar = line.charAt(i);
             if (inQuote) {
