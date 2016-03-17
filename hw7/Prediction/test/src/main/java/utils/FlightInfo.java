@@ -103,9 +103,9 @@ public class FlightInfo {
                 }
             } catch (Exception e) {
                 isValid = false;
-                System.err.println(line);
-                e.printStackTrace();
-                throw new IllegalArgumentException(line);
+//                System.err.println(line);
+//                e.printStackTrace();
+//                throw new IllegalArgumentException(line);
             }
 
         }
