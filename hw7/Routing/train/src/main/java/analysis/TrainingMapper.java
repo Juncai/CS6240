@@ -16,12 +16,16 @@ import java.util.UUID;
 
 // Authors: Jun Cai and Vikas Boddu
 public class TrainingMapper extends Mapper<LongWritable, Text, Text, Text> {
-//    List<FlightInfo> infoList;
+    //    List<FlightInfo> infoList;
     List<String> infoStrList;
+    String rInput = "/tmp/OTP_prediction_training_" + UUID.randomUUID().toString() + ".csv";
+    long recordCount;
 
     @Override
-    protected void setup(Context context) {
+    protected void setup(Context context) throws IOException {
+        recordCount = 0;
         infoStrList = new ArrayList<String>();
+        writeRecordsToFile(true);
     }
 
     @Override
@@ -35,26 +39,47 @@ public class TrainingMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         if (flight.isValid()) {
             infoStrList.add(flight.toString());
+            recordCount++;
 //            infoList.add(flight);
+        }
+        if (infoStrList.size() > 100000) {
+            writeRecordsToFile(false);
         }
     }
 
-    @Override
-    protected void cleanup(Context context) throws IOException, InterruptedException {
-        String fName = "/tmp/OTP_prediction_training_" + UUID.randomUUID().toString() + ".csv";
-        File f = new File(fName);
-        f.createNewFile();
+    private void writeRecordsToFile(boolean init) throws IOException {
+//        String path = "/tmp/OTP_prediction_testing_" + UUID.randomUUID().toString() + ".csv";
+//        rInputList.add(path);
+        File f = new File(rInput);
+        if (init) {
+            f.createNewFile();
+        }
         FileWriter fw = new FileWriter(f, true);
-        fw.write(OTPConsts.CSV_HEADER);
+        if (init) {
+            fw.write(OTPConsts.CSV_HEADER);
+        }
         for (String s : infoStrList) {
             fw.write(s);
         }
         fw.flush();
         fw.close();
+        infoStrList.clear();
+    }
+
+    @Override
+    protected void cleanup(Context context) throws IOException, InterruptedException {
+//        String fName = "/tmp/OTP_prediction_training_" + UUID.randomUUID().toString() + ".csv";
+        if (recordCount == 0) {
+            Files.deleteIfExists(Paths.get(rInput));
+            return;
+        }
+        if (infoStrList.size() > 0) {
+            writeRecordsToFile(false);
+        }
 
         // TODO call R script to get Random Forest
         String path = "/tmp/OTP_prediction_" + UUID.randomUUID().toString() + ".rf";
-        String comm = "Rscript /tmp/rf.R " + fName + " " + path;
+        String comm = "Rscript /tmp/rf.R " + rInput + " " + path;
 //        System.out.println(comm);
         Process p = Runtime.getRuntime().exec(comm);
 
@@ -85,7 +110,7 @@ public class TrainingMapper extends Mapper<LongWritable, Text, Text, Text> {
         context.write(new Text("RandomForest"), new Text(rfString));
 
         // Remove used file from tmp folder
-       Files.deleteIfExists(f.toPath());
-       Files.deleteIfExists(Paths.get(path));
+        Files.deleteIfExists(Paths.get(rInput));
+        Files.deleteIfExists(Paths.get(path));
     }
 }
