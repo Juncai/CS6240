@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 // Authors: Jun Cai and Vikas Boddu
-public class PredictReducer extends Reducer<Text, Text, Text, Text> {
+public class QueryReducer extends Reducer<Text, Text, Text, Text> {
 
     @Override
     protected void setup(Context ctx) {
@@ -58,7 +58,7 @@ public class PredictReducer extends Reducer<Text, Text, Text, Text> {
                                         // calculate the expected duration
                                         duration = expectedDuration(arr, dep);
                                         // write to context
-                                        // P,year,month,day,origin,dest,duration
+                                        // year,month,day,origin,dest,duration
                                         context.write(new Text(outputKeyFormatter(arr, dep)),
                                                 new Text(duration + ""));
                                     }
@@ -73,8 +73,7 @@ public class PredictReducer extends Reducer<Text, Text, Text, Text> {
     }
 
     private String outputKeyFormatter(SimpleFlightInfo arr, SimpleFlightInfo dep) {
-        return "P" + OTPConsts.COMMA
-                + arr.year + OTPConsts.COMMA
+        return arr.year + OTPConsts.COMMA
                 + arr.month + OTPConsts.COMMA
                 + arr.day + OTPConsts.COMMA
                 + arr.origin + OTPConsts.COMMA
