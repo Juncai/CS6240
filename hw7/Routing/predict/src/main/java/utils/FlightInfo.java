@@ -69,39 +69,43 @@ public class FlightInfo {
         }
 
         if (isValid) {
-            year = Integer.parseInt(values[OTPConsts.YEAR]);
-            flightDateStr = values[OTPConsts.FL_DATE];
-            flightDate = ff.parseDateTime(flightDateStr);
-            String date = values[OTPConsts.FL_DATE];
-            crsDepTimeStr = values[OTPConsts.CRS_DEP_TIME];
-            String arrTimeScheduledStr = values[OTPConsts.CRS_ARR_TIME];
+            try {
+                year = Integer.parseInt(values[OTPConsts.YEAR]);
+                flightDateStr = values[OTPConsts.FL_DATE];
+                flightDate = ff.parseDateTime(flightDateStr);
+                String date = values[OTPConsts.FL_DATE];
+                crsDepTimeStr = values[OTPConsts.CRS_DEP_TIME];
+                String arrTimeScheduledStr = values[OTPConsts.CRS_ARR_TIME];
 
-            crsDepTime = getDateTime(date, crsDepTimeStr);
-            crsArrTime = getDateTime(date, arrTimeScheduledStr);
+                crsDepTime = getDateTime(date, crsDepTimeStr);
+                crsArrTime = getDateTime(date, arrTimeScheduledStr);
 
-            // consider the case when arrive in a new day
-            if (crsArrTime.isBefore(crsDepTime)) {
-                crsArrTime = crsArrTime.plusDays(1);
-            }
+                // consider the case when arrive in a new day
+                if (crsArrTime.isBefore(crsDepTime)) {
+                    crsArrTime = crsArrTime.plusDays(1);
+                }
 
-            quarter = Integer.parseInt(values[OTPConsts.QUARTER]);
-            month = Integer.parseInt(values[OTPConsts.MONTH]);
-            dayOfMonth = Integer.parseInt(values[OTPConsts.DAY_OF_MONTH]);
-            dayOfWeek = Integer.parseInt(values[OTPConsts.DAY_OF_WEEK]);
-            carrier = values[OTPConsts.UNIQUE_CARRIER];
-            originAirportId = Integer.parseInt(values[OTPConsts.ORIGIN_AIRPORT_ID]);
-            origin = values[OTPConsts.ORIGIN];
-            originStateFips = Integer.parseInt(values[OTPConsts.ORIGIN_STATE_FIPS]);
-            destAirportId = Integer.parseInt(values[OTPConsts.DEST_AIRPORT_ID]);
-            dest = values[OTPConsts.DEST];
-            destStateFips = Integer.parseInt(values[OTPConsts.DEST_STATE_FIPS]);
-            crsElapsedTime = Integer.parseInt(values[OTPConsts.CRS_ELAPSED_TIME]);
-            distanceGroup = Integer.parseInt(values[OTPConsts.DISTANCE_GROUP]);
-            flightNumber = values[OTPConsts.FL_NUM];
-            if (!this.isTest) {
-                isDelayed = Double.parseDouble(values[OTPConsts.ARR_DELAY]) > 0;
-            } else {
-                isDelayed = false;
+                quarter = Integer.parseInt(values[OTPConsts.QUARTER]);
+                month = Integer.parseInt(values[OTPConsts.MONTH]);
+                dayOfMonth = Integer.parseInt(values[OTPConsts.DAY_OF_MONTH]);
+                dayOfWeek = Integer.parseInt(values[OTPConsts.DAY_OF_WEEK]);
+                carrier = values[OTPConsts.UNIQUE_CARRIER];
+                originAirportId = Integer.parseInt(values[OTPConsts.ORIGIN_AIRPORT_ID]);
+                origin = values[OTPConsts.ORIGIN];
+                originStateFips = Integer.parseInt(values[OTPConsts.ORIGIN_STATE_FIPS]);
+                destAirportId = Integer.parseInt(values[OTPConsts.DEST_AIRPORT_ID]);
+                dest = values[OTPConsts.DEST];
+                destStateFips = Integer.parseInt(values[OTPConsts.DEST_STATE_FIPS]);
+                crsElapsedTime = Integer.parseInt(values[OTPConsts.CRS_ELAPSED_TIME]);
+                distanceGroup = Integer.parseInt(values[OTPConsts.DISTANCE_GROUP]);
+                flightNumber = values[OTPConsts.FL_NUM];
+                if (!this.isTest) {
+                    isDelayed = Double.parseDouble(values[OTPConsts.ARR_DELAY]) > 0;
+                } else {
+                    isDelayed = false;
+                }
+            } catch (Exception ex) {
+                isValid = false;
             }
         }
     }
