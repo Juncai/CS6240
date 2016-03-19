@@ -1,6 +1,7 @@
 package utils;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -13,14 +14,14 @@ import java.util.Map;
 public class ConnectionInfo {
     static private DateTimeFormatter sf = DateTimeFormat.forPattern(OTPConsts.DATEKEY_FORMAT);
 
-    private Map<String, List<SimpleFlightInfo>> depMap;
-    private Map<String, List<SimpleFlightInfo>> arrMap;
-    private String[] possibleKeys;
+    public Map<String, List<SimpleFlightInfo>> depMap;
+    public Map<String, List<SimpleFlightInfo>> arrMap;
+//    private String[] possibleKeys;
     // flightNum, origin/dest, arr/dep TS, elapsedTime
-    List<SimpleFlightInfo> arrFlights;
-    List<SimpleFlightInfo> depFlights;
+    private List<SimpleFlightInfo> arrFlights;
+    private List<SimpleFlightInfo> depFlights;
 
-    static private String[] generatePossibleKeys(int year) {
+    public static String[] generatePossibleKeys(int year) {
 
         int daysOfYear = 365;
         String firstHourStr = year + "010100";
@@ -39,96 +40,48 @@ public class ConnectionInfo {
     }
 
     public ConnectionInfo(int year) {
-        arrFlights = new ArrayList<long[]>();
-        depFlights = new ArrayList<long[]>();
-        possibleKeys = generatePossibleKeys(year);
+        arrFlights = new ArrayList<SimpleFlightInfo>();
+        depFlights = new ArrayList<SimpleFlightInfo>();
+//        possibleKeys = generatePossibleKeys(year);
     }
 
     public void updateArr(SimpleFlightInfo f) {
-        long[] newEntry = {(long)f.flightNumber, (long)f.origin, f.crsArrTimeMS, (long)f.crsElapsedTime};
-        arrFlights.add(newEntry);
+//        long[] newEntry = {(long)f.flightNumber, (long)f.origin, f.crsArrTimeMS, (long)f.crsElapsedTime};
+        arrFlights.add(f);
     }
 
     public void updateDep(SimpleFlightInfo f) {
-        long[] newEntry = {(long)f.flightNumber, (long)f.dest, f.crsDepTimeMS, (long)f.crsElapsedTime};
-        depFlights.add(newEntry);
+//        long[] newEntry = {(long)f.flightNumber, (long)f.dest, f.crsDepTimeMS, (long)f.crsElapsedTime};
+        depFlights.add(f);
     }
 
-    public int countMissedConnections() {
+    public void prepareConnectionMaps() {
 
-        depMap = new HashMap<String, List<DateTime[]>>();
-        arrMap = new HashMap<String, List<DateTime[]>>();
+        depMap = new HashMap<String, List<SimpleFlightInfo>>();
+        arrMap = new HashMap<String, List<SimpleFlightInfo>>();
 
-        fillConMap(depMap, depFlights);
-        fillConMap(arrMap, arrFlights);
+        fillConMap(depMap, depFlights, false);
+        fillConMap(arrMap, arrFlights, true);
 
-        return countMissedConnectionsHelper(depMap, arrMap);
+//        return countMissedConnectionsHelper(depMap, arrMap);
     }
 
-    public List<DateTime[]> firstDepartures() {
-        List<DateTime[]> res = new ArrayList<DateTime[]>();
-        for (int i = 0; i < 6; i++) {
-            if (depMap.containsKey(possibleKeys[i])) {
-                res.addAll(depMap.get(possibleKeys[i]));
-            }
-        }
-        return res;
-    }
-
-    public List<DateTime[]> lastArrivals() {
-        List<DateTime[]> res = new ArrayList<DateTime[]>();
-        int len = possibleKeys.length;
-        for (int i = len - 6; i < len; i++) {
-            if (arrMap.containsKey(possibleKeys[i])) {
-                res.addAll(arrMap.get(possibleKeys[i]));
-            }
-        }
-        return res;
-    }
-
-    public int countMissedConnectionsHelper(Map<String, List<DateTime[]>> depMap,
-                                            Map<String, List<DateTime[]>> arrMap) {
-        int res = 0;
-        String cKey;
-        String[] pKeys;
-        for (int i = 0; i < possibleKeys.length; i++) {
-            cKey = possibleKeys[i];
-            if (arrMap.containsKey(cKey)) {
-                pKeys = possibleConKeys(i);
-                for (String k : pKeys) {
-                    if (depMap.containsKey(k)) {
-                        res += missedConBetweenLOD(depMap.get(k), arrMap.get(cKey));
-                    }
-                }
-            }
-        }
-        return res;
-    }
-
-    int missedConBetweenLOD(List<DateTime[]> depLod, List<DateTime[]> arrLod) {
-        int res = 0;
-        for (DateTime[] arr : arrLod) {
-            for (DateTime[] dep : depLod) {
-                res += isMissedConnection(dep, arr);
-            }
-        }
-        return res;
-    }
-
-    private int isMissedConnection(DateTime[] dep, DateTime[] arr) {
+    public static boolean isConnection(SimpleFlightInfo arr, SimpleFlightInfo dep) {
         // check if it's a valid connection
-        if (arr[0].plusMinutes(29).isBefore(dep[0])
-                && arr[0].plusMinutes(361).isAfter(dep[0])) {
-            if (arr[1].plusMinutes(30).isAfter(dep[1])) {
-                return 1;
-            }
+        if (arr.crsArrTimeMS + 30 * 60 * 1000 <= dep.crsDepTimeMS &&
+                arr.crsArrTimeMS + 60 * 60 * 1000 >= dep.crsDepTimeMS) {
+            return true;
         }
-        return 0;
+//        if (arr[0].plusMinutes(29).isBefore(dep[0])
+//                && arr[0].plusMinutes(61).isAfter(dep[0])) {
+//            return 1;
+//        }
+        return false;
     }
 
-    private String[] possibleConKeys(int ind) {
+    public static String[] possibleConKeys(String[] possibleKeys, int ind) {
         // since the key set is deterministic, it can be pre-computed!!
-        int numOfKeys = (possibleKeys.length - ind < 7) ? (possibleKeys.length - ind) : 7;
+        int numOfKeys = (possibleKeys.length - ind < 2) ? (possibleKeys.length - ind) : 2;
         String[] res = new String[numOfKeys];
 
         for (int i = 0; i < res.length; i++) {
@@ -137,15 +90,14 @@ public class ConnectionInfo {
         return res;
     }
 
-    private void fillConMap(Map<String, List<DateTime[]>> map, List<DateTime[]> lod) {
-        for (DateTime[] tss :
-                lod) {
-            DateTime scheduled = tss[0];
+    private void fillConMap(Map<String, List<SimpleFlightInfo>> map, List<SimpleFlightInfo> lod, boolean isArr) {
+        for (SimpleFlightInfo sf : lod) {
+            DateTime scheduled = new DateTime(isArr ? sf.crsArrTimeMS : sf.crsDepTimeMS).withZone(DateTimeZone.UTC);
             String dateKey = dateToKey(scheduled);
             if (!map.containsKey(dateKey)) {
-                map.put(dateKey, new ArrayList<DateTime[]>());
+                map.put(dateKey, new ArrayList<SimpleFlightInfo>());
             }
-            map.get(dateKey).add(tss);
+            map.get(dateKey).add(sf);
         }
     }
 
