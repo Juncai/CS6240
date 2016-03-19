@@ -89,8 +89,8 @@ getForest <- function(path) {
 
 input_path <- "/tmp"
 #filenames <- dir(input_path, pattern="OTP_prediction_forest_*", full.names=TRUE)
-#filenames <- list.files(input_path, pattern="OTP_prediction_forest_*", full.names=TRUE)
-filenames <- list.files(input_path, pattern="OTP_test_*", full.names=TRUE)
+filenames <- list.files(input_path, pattern="OTP_prediction_forest_*", full.names=TRUE)
+#filenames <- list.files(input_path, pattern="OTP_test_*", full.names=TRUE)
 if (length(filenames) > 0) {
 	forest <- getForest(filenames[1])
 	if (length(filenames) > 1) {
