@@ -51,7 +51,9 @@ res$isDelay <- factor(res$isDelay, levels=isDelayF, ordered=TRUE)
 #}
 #summary(res)
 
+res <- res[complete.cases(res),]
 x <- subset(res, select = -c(isDelay))
+#x <- x[complete.cases(x),]
 y <- res$isDelay
 #summary(y)
 #install.packages('randomForest', repos='http://cran.us.r-project.org')
