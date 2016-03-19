@@ -141,12 +141,12 @@ public class DataPreprocessor {
         int original = f.originAirportId;
         int dest = f.destAirportId;
         if (!acMap.containsKey(original)) {
-            acMap.put(original, new ConnectionInfo(f.getYear()));
+            acMap.put(original, new ConnectionInfo());
         }
         acMap.get(original).updateDep(f);
 
         if (!acMap.containsKey(dest)) {
-            acMap.put(dest, new ConnectionInfo(f.getYear()));
+            acMap.put(dest, new ConnectionInfo());
         }
         acMap.get(dest).updateArr(f);
     }

@@ -4,6 +4,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import utils.ConnectionInfo;
 import utils.DataPreprocessor;
+import utils.OTPConsts;
 import utils.SimpleFlightInfo;
 
 import java.io.*;
@@ -28,7 +29,7 @@ public class PredictReducer extends Reducer<Text, Text, Text, Text> {
         for (Text v : values) {
             flight = new SimpleFlightInfo(v);
             if (possibleKeys == null) {
-                possibleKeys = ConnectionInfo.generatePossibleKeys(flight.getYear());
+                possibleKeys = ConnectionInfo.generatePossibleKeys(flight.year);
             }
             DataPreprocessor.updateConnectionInfo(acMap, flight);
         }
@@ -36,8 +37,9 @@ public class PredictReducer extends Reducer<Text, Text, Text, Text> {
         ConnectionInfo cci;
         String cKey;
         String[] pKeys;
-        // TODO calculate the expected duration of each connection
-        // TODO then write to the context
+        int duration;
+        // calculate the expected duration of each connection
+        // then write to the context
         for (Integer ap : acMap.keySet()) {
             cci = acMap.get(ap);
             cci.prepareConnectionMaps();
@@ -54,9 +56,11 @@ public class PredictReducer extends Reducer<Text, Text, Text, Text> {
 //                                    res += isMissedConnection(dep, arr);
                                     if (ConnectionInfo.isConnection(arr, dep)) {
                                         // calculate the expected duration
-                                        int duration = expectedDuration(arr, dep);
+                                        duration = expectedDuration(arr, dep);
                                         // write to context
-                                        context.write(new Text(), new Text());
+                                        // year,month,day,origin,dest,duration
+                                        context.write(new Text(outputKeyFormatter(arr, dep)),
+                                                new Text(duration + ""));
                                     }
                                 }
                             }
@@ -66,6 +70,14 @@ public class PredictReducer extends Reducer<Text, Text, Text, Text> {
             }
         }
 
+    }
+
+    private String outputKeyFormatter(SimpleFlightInfo arr, SimpleFlightInfo dep) {
+        return arr.year + OTPConsts.COMMA
+                + arr.month + OTPConsts.COMMA
+                + arr.day + OTPConsts.COMMA
+                + arr.origin + OTPConsts.COMMA
+                + arr.dest;
     }
 
     private int expectedDuration(SimpleFlightInfo arr, SimpleFlightInfo dep) {

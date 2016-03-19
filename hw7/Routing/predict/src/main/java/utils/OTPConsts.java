@@ -4,7 +4,8 @@ package utils;
 // Authors: Jun Cai and Vikas Boddu
 public class OTPConsts {
     public final static String COMMA = ",";
-    public final static String CSV_HEADER = "quarter" + COMMA
+    public final static String CSV_HEADER = "year" + COMMA
+            + "quarter" + COMMA
             + "month" + COMMA
             + "dayOfMonth" + COMMA
             + "dayOfWeek" + COMMA
@@ -24,7 +25,6 @@ public class OTPConsts {
             + "elapsedTime" + COMMA
             + "elapsedTimeInHours" + COMMA
             + "flNum" + COMMA
-            + "flDate" + COMMA
             + "crsDepTimeMS" + COMMA
             + "isDelay\n";
 

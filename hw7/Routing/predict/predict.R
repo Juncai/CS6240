@@ -29,7 +29,7 @@ isDelayF <- c(0, 1)
 rawRes <- read.csv(input);
 # use 'state' instead of airport or city
 #x <- subset(rawRes, select = -c(originAI, originCity, destAI, destCity, isDelay))
-res <- subset(rawRes, select = -c(originAI, origin, destAI, dest, flNum, flDate, crsDepTime, elapsedTime, depMS, arrMS))
+res <- subset(rawRes, select = -c(originAI, origin, destAI, dest, year, flNum, crsDepTime, elapsedTime, depMS, arrMS))
 res$quarter <- factor(res$quarter, levels=quarterF, ordered=TRUE)
 res$month <- factor(res$month, levels=monthF, ordered=TRUE)
 res$dayOfMonth <- factor(res$dayOfMonth, levels=dayOfMonthF, ordered=TRUE)
@@ -57,7 +57,7 @@ prediction <- predict(rf, x, type="response", norm.votes=TRUE, predict.all=FALSE
 #prediction <- c(1, 0)
 for (i in 1:length(rawRes$originAI)) {
 #	print(paste(paste(rawRes$originAI[i], rawRes$originCity[i], rawRes$destAI[i], sep="_", collapse=NULL), prediction[i], sep=",", collapse=NULL))
-	write(paste(rawRes$carrier[i], paste(rawRes$flDate[i], rawRes$depMS[i], rawRes$arrMS[i], rawRes$originAI[i], rawRes$origin[i], rawRes$destAI[i], rawRes$dest[i], rawRes$flNum[i], rawRes$elapsedTime[i], prediction[i], sep="_", collapse=NULL), sep=",", collapse=NULL), file=output, append=TRUE)
+	write(paste(rawRes$carrier[i], paste(rawRes$year[i], rawRes$month[i], rawRes$dayOfMonth[i], rawRes$depMS[i], rawRes$arrMS[i], rawRes$originAI[i], rawRes$origin[i], rawRes$destAI[i], rawRes$dest[i], rawRes$flNum[i], rawRes$elapsedTime[i], prediction[i], sep="_", collapse=NULL), sep=",", collapse=NULL), file=output, append=TRUE)
 }
 #rfString <- rawToChar(serialize(fit, NULL, ascii=TRUE))
 #write(rfString, file = "/tmp/OTP_prediction.rf")

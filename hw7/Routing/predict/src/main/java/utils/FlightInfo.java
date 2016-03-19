@@ -31,6 +31,7 @@ import org.joda.time.format.DateTimeFormatter;
 public class FlightInfo {
     static private DateTimeFormatter sf = DateTimeFormat.forPattern(OTPConsts.DATETIME_FORMAT).withZone(DateTimeZone.UTC);
     static private DateTimeFormatter ff = DateTimeFormat.forPattern(OTPConsts.FL_DATE_FORMAT).withZone(DateTimeZone.UTC);
+    public int year;
     public int quarter;
     public int month;
     public int dayOfMonth;
@@ -68,6 +69,7 @@ public class FlightInfo {
         }
 
         if (isValid) {
+            year = Integer.parseInt(values[OTPConsts.YEAR]);
             flightDateStr = values[OTPConsts.FL_DATE];
             flightDate = ff.parseDateTime(flightDateStr);
             String date = values[OTPConsts.FL_DATE];
@@ -122,6 +124,7 @@ public class FlightInfo {
      */
     public String toString() {
         StringBuffer sb = new StringBuffer();
+        sb.append(year + OTPConsts.COMMA);
         sb.append(quarter + OTPConsts.COMMA);
         sb.append(month + OTPConsts.COMMA);
         sb.append(dayOfMonth + OTPConsts.COMMA);
@@ -142,7 +145,6 @@ public class FlightInfo {
         sb.append(crsElapsedTime + OTPConsts.COMMA);
         sb.append(crsElapsedTime / 60 + OTPConsts.COMMA);
         sb.append(flightNumber + OTPConsts.COMMA);
-        sb.append(flightDateStr + OTPConsts.COMMA);
         sb.append(crsDepTimeStr + OTPConsts.COMMA);
         sb.append((isDelayed ? 1 : 0) + "\n");
 

@@ -28,7 +28,7 @@ public class MissedConnectionPredict extends Configured implements Tool {
 
         job.setMapperClass(PredictMapper.class);
         job.setReducerClass(PredictReducer.class);
-        job.setPartitionerClass(PredictPartitioner.class); // set custom partitioner
+//        job.setPartitionerClass(PredictPartitioner.class); // set custom partitioner
 //        job.setNumReduceTasks(2); // for test
 
 		job.setOutputKeyClass(Text.class);

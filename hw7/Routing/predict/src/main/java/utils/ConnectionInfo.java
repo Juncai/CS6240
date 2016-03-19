@@ -39,7 +39,7 @@ public class ConnectionInfo {
         return res;
     }
 
-    public ConnectionInfo(int year) {
+    public ConnectionInfo() {
         arrFlights = new ArrayList<SimpleFlightInfo>();
         depFlights = new ArrayList<SimpleFlightInfo>();
 //        possibleKeys = generatePossibleKeys(year);
