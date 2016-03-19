@@ -13,11 +13,12 @@ import java.util.Map;
 public class ConnectionInfo {
     static private DateTimeFormatter sf = DateTimeFormat.forPattern(OTPConsts.DATEKEY_FORMAT);
 
-    private Map<String, List<DateTime[]>> depMap;
-    private Map<String, List<DateTime[]>> arrMap;
+    private Map<String, List<SimpleFlightInfo>> depMap;
+    private Map<String, List<SimpleFlightInfo>> arrMap;
     private String[] possibleKeys;
-    List<DateTime[]> arrFlights;
-    List<DateTime[]> depFlights;
+    // flightNum, origin/dest, arr/dep TS, elapsedTime
+    List<SimpleFlightInfo> arrFlights;
+    List<SimpleFlightInfo> depFlights;
 
     static private String[] generatePossibleKeys(int year) {
 
@@ -37,24 +38,19 @@ public class ConnectionInfo {
         return res;
     }
 
-    public ConnectionInfo() {
-        arrFlights = new ArrayList<DateTime[]>();
-        depFlights = new ArrayList<DateTime[]>();
-    }
-
     public ConnectionInfo(int year) {
-        arrFlights = new ArrayList<DateTime[]>();
-        depFlights = new ArrayList<DateTime[]>();
+        arrFlights = new ArrayList<long[]>();
+        depFlights = new ArrayList<long[]>();
         possibleKeys = generatePossibleKeys(year);
     }
 
-    public void updateArr(DateTime scheduled, DateTime actual) {
-        DateTime[] newEntry = {scheduled, actual};
+    public void updateArr(SimpleFlightInfo f) {
+        long[] newEntry = {(long)f.flightNumber, (long)f.origin, f.crsArrTimeMS, (long)f.crsElapsedTime};
         arrFlights.add(newEntry);
     }
 
-    public void updateDep(DateTime scheduled, DateTime actual) {
-        DateTime[] newEntry = {scheduled, actual};
+    public void updateDep(SimpleFlightInfo f) {
+        long[] newEntry = {(long)f.flightNumber, (long)f.dest, f.crsDepTimeMS, (long)f.crsElapsedTime};
         depFlights.add(newEntry);
     }
 

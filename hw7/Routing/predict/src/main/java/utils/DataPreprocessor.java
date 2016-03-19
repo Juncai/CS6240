@@ -136,19 +136,19 @@ public class DataPreprocessor {
 
         return values.toArray(new String[1]);
     }
-    public static void updateConnectionInfo(Map<Integer, ConnectionInfo> acMap, FlightInfo f, int year) {
+    public static void updateConnectionInfo(Map<Integer, ConnectionInfo> acMap, SimpleFlightInfo f) {
         // parse the value string
-        int original = f.getOriginalAirportId();
-        int dest = f.getDestAirportId();
+        int original = f.originAirportId;
+        int dest = f.destAirportId;
         if (!acMap.containsKey(original)) {
-            acMap.put(original, new ConnectionInfo(year));
+            acMap.put(original, new ConnectionInfo(f.getYear()));
         }
-        acMap.get(original).updateDep(f.getDepTimeScheduled(), f.getDepTimeActual());
+        acMap.get(original).updateDep(f);
 
         if (!acMap.containsKey(dest)) {
-            acMap.put(dest, new ConnectionInfo(year));
+            acMap.put(dest, new ConnectionInfo(f.getYear()));
         }
-        acMap.get(dest).updateArr(f.getArrTimeScheduled(), f.getArrTimeActual());
+        acMap.get(dest).updateArr(f);
     }
 //    static public String[] parseROutput(String line) {
 //        String[] splits = line.split(",");

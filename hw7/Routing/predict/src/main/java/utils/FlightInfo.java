@@ -41,10 +41,10 @@ public class FlightInfo {
     public DateTime flightDate;
     public String flightDateStr;
     public int originAirportId;
-    public int originCityMarket;
+    public String origin;
     public int originStateFips;
     public int destAirportId;
-    public int destCityMarket;
+    public String dest;
     public int destStateFips;
     public int distanceGroup;
     public DateTime crsDepTime;
@@ -54,16 +54,6 @@ public class FlightInfo {
     public boolean isDelayed;
     private boolean isValid = true;
     private boolean isTest = false;
-
-    public FlightInfo(Text value) {
-        String[] values = value.toString().split("_");
-        flightDateStr = values[0];
-        crsDepTime = new DateTime(Long.parseLong(values[1]));
-        crsArrTime = new DateTime(Long.parseLong(values[2]));
-        originAirportId = Integer.parseInt(values[3]);
-        destAirportId = Integer.parseInt(values[4]);
-        isDelayed = (values[5].equals("1"));
-    }
 
     public FlightInfo(String line, boolean isTest) {
         this.isTest = isTest;
@@ -98,10 +88,10 @@ public class FlightInfo {
             dayOfWeek = Integer.parseInt(values[OTPConsts.DAY_OF_WEEK]);
             carrier = values[OTPConsts.UNIQUE_CARRIER];
             originAirportId = Integer.parseInt(values[OTPConsts.ORIGIN_AIRPORT_ID]);
-            originCityMarket = Integer.parseInt(values[OTPConsts.ORIGIN_CITY_MARKET_ID]);
+            origin = values[OTPConsts.ORIGIN];
             originStateFips = Integer.parseInt(values[OTPConsts.ORIGIN_STATE_FIPS]);
             destAirportId = Integer.parseInt(values[OTPConsts.DEST_AIRPORT_ID]);
-            destCityMarket = Integer.parseInt(values[OTPConsts.ORIGIN_CITY_MARKET_ID]);
+            dest = values[OTPConsts.DEST];
             destStateFips = Integer.parseInt(values[OTPConsts.DEST_STATE_FIPS]);
             crsElapsedTime = Integer.parseInt(values[OTPConsts.CRS_ELAPSED_TIME]);
             distanceGroup = Integer.parseInt(values[OTPConsts.DISTANCE_GROUP]);
@@ -139,16 +129,17 @@ public class FlightInfo {
         sb.append(carrier + OTPConsts.COMMA);
         sb.append((isHolidy(flightDate) ? 1 : 0) + OTPConsts.COMMA);
         sb.append(originAirportId + OTPConsts.COMMA);
-        sb.append(originCityMarket + OTPConsts.COMMA);
+        sb.append(origin+ OTPConsts.COMMA);
         sb.append(originStateFips + OTPConsts.COMMA);
         sb.append(destAirportId + OTPConsts.COMMA);
-        sb.append(destCityMarket + OTPConsts.COMMA);
+        sb.append(dest+ OTPConsts.COMMA);
         sb.append(destStateFips + OTPConsts.COMMA);
         sb.append(distanceGroup + OTPConsts.COMMA);
         sb.append(crsDepTime.getHourOfDay() + OTPConsts.COMMA);
         sb.append(crsDepTime.toDate().getTime() + OTPConsts.COMMA);
         sb.append(crsArrTime.getHourOfDay() + OTPConsts.COMMA);
         sb.append(crsArrTime.toDate().getTime() + OTPConsts.COMMA);
+        sb.append(crsElapsedTime + OTPConsts.COMMA);
         sb.append(crsElapsedTime / 60 + OTPConsts.COMMA);
         sb.append(flightNumber + OTPConsts.COMMA);
         sb.append(flightDateStr + OTPConsts.COMMA);

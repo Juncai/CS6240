@@ -21,10 +21,11 @@ public class OTPConsts {
             + "depMS" + COMMA
             + "arrHourOfDay" + COMMA
             + "arrMS" + COMMA
+            + "elapsedTime" + COMMA
             + "elapsedTimeInHours" + COMMA
             + "flNum" + COMMA
             + "flDate" + COMMA
-            + "crsDepTime" + COMMA
+            + "crsDepTimeMS" + COMMA
             + "isDelay\n";
 
     // 2400
@@ -59,11 +60,10 @@ public class OTPConsts {
 
     // ORIGIN_AIRPORT_ID 11
     public final static int ORIGIN_AIRPORT_ID = 11;
-    public final static int ORIGIN_CITY_MARKET_ID = 13;
+    public final static int ORIGIN = 14;
     public final static int ORIGIN_STATE_FIPS = 17;
-    // DEST_AIRPORT_ID 20 (do we need DIV_AIRPORT_ID?)
     public final static int DEST_AIRPORT_ID = 20;
-    public final static int DEST_CITY_MARKET_ID = 22;
+    public final static int DEST = 23;
     public final static int DEST_STATE_FIPS = 26;
 
 
