@@ -58,7 +58,7 @@ public class TestingMapper extends Mapper<LongWritable, Text, Text, Text> {
 
         // if infoStrList is large enough, we write it to the rInputFile
         if (infoStrList.size() > 100000) {
-
+            writeRecordsToFile();
         }
     }
 
