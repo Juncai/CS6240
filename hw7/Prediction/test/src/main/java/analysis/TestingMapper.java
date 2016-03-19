@@ -16,11 +16,23 @@ import java.util.UUID;
 
 // Authors: Jun Cai and Vikas Boddu
 public class TestingMapper extends Mapper<LongWritable, Text, Text, Text> {
-//    List<FlightInfo> infoList;
+    //    List<FlightInfo> infoList;
     List<String> infoStrList;
+    String rInputFile;
+    long recordCount;
 
     @Override
-    protected void setup(Context context) {
+    protected void setup(Context context) throws IOException {
+        recordCount = 0;
+
+        rInputFile = "/tmp/OTP_prediction_testing_" + UUID.randomUUID().toString() + ".csv";
+        File f = new File(rInputFile);
+        f.createNewFile();
+        FileWriter fw = new FileWriter(f, true);
+        fw.write(OTPConsts.CSV_HEADER);
+        fw.flush();
+        fw.close();
+
         infoStrList = new ArrayList<String>();
     }
 
@@ -40,52 +52,68 @@ public class TestingMapper extends Mapper<LongWritable, Text, Text, Text> {
 
             if (flight.isValid()) {
                 infoStrList.add(flight.toString());
+                recordCount++;
             }
+        }
+
+        // if infoStrList is large enough, we write it to the rInputFile
+        if (infoStrList.size() > 100000) {
+
         }
     }
 
-    @Override
-    protected void cleanup(Context context) throws IOException, InterruptedException {
-        // this Mapper may deal with pure validate data
-        if (infoStrList.size() == 0) return;
-        String fName = "/tmp/OTP_prediction_testing_" + UUID.randomUUID().toString() + ".csv";
-        File f = new File(fName);
+    private void writeRecordsToFile() throws IOException {
+        File f = new File(rInputFile);
         f.createNewFile();
         FileWriter fw = new FileWriter(f, true);
-        fw.write(OTPConsts.CSV_HEADER);
         for (String s : infoStrList) {
             fw.write(s);
         }
         fw.flush();
         fw.close();
+        infoStrList.clear();
+    }
+
+    @Override
+    protected void cleanup(Context context) throws IOException, InterruptedException {
+        // this Mapper may deal with pure validate data
+        File f = new File(rInputFile);
+        if (recordCount == 0) {
+            Files.deleteIfExists(f.toPath());
+            return;
+        }
+//        String fName = "/tmp/OTP_prediction_testing_" + UUID.randomUUID().toString() + ".csv";
+        if (infoStrList.size() > 0) {
+            writeRecordsToFile();
+        }
 
         // TODO call R script to make prediction on the test data
         String outPath = "/tmp/OTP_prediction_result_" + UUID.randomUUID().toString();
         String rfPath = "/tmp/final.rf";
-        String comm = "Rscript /tmp/validate.R " + fName + " " + rfPath + " " + outPath;
+        String comm = "Rscript /tmp/validate.R " + rInputFile + " " + rfPath + " " + outPath;
 //        System.out.println(comm);
         Process p = Runtime.getRuntime().exec(comm);
 
-        InputStream stdout = p.getInputStream();
-        InputStreamReader isr0 = new InputStreamReader(stdout);
-        BufferedReader br0 = new BufferedReader(isr0);
-        String line0 = null;
-        System.out.println("<STD>");
-        while ((line0 = br0.readLine()) != null)
-            System.out.println(line0);
-        System.out.println("</STD>");
-
-        InputStream stderr = p.getErrorStream();
-        InputStreamReader isr = new InputStreamReader(stderr);
-        BufferedReader br1 = new BufferedReader(isr);
-        String line = null;
-        System.out.println("<ERROR>");
-        while ((line = br1.readLine()) != null)
-            System.out.println(line);
-        System.out.println("</ERROR>");
+//        InputStream stdout = p.getInputStream();
+//        InputStreamReader isr0 = new InputStreamReader(stdout);
+//        BufferedReader br0 = new BufferedReader(isr0);
+//        String line0 = null;
+//        System.out.println("<STD>");
+//        while ((line0 = br0.readLine()) != null)
+//            System.out.println(line0);
+//        System.out.println("</STD>");
+//
+//        InputStream stderr = p.getErrorStream();
+//        InputStreamReader isr = new InputStreamReader(stderr);
+//        BufferedReader br1 = new BufferedReader(isr);
+//        String line = null;
+//        System.out.println("<ERROR>");
+//        while ((line = br1.readLine()) != null)
+//            System.out.println(line);
+//        System.out.println("</ERROR>");
 
         int ret = p.waitFor();
-        System.out.println("R script return with status: " + ret);
+//        System.out.println("R script return with status: " + ret);
 
         // TODO read lines from the R output, write each line to the context
         // R output format: [FL_NUM]_[FL_DATE]_[CRS_DEP_TIME],logical
