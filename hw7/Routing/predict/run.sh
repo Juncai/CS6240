@@ -38,8 +38,8 @@ start_server () {
 }
 
 upload_rscript () {
-	rm /tmp/validate.R
-	cp validate.R /tmp/
+	rm /tmp/predict.R
+	cp predict.R /tmp/
 }
 
 upload_data_pd () {
@@ -47,8 +47,8 @@ upload_data_pd () {
 	# hadoop fs -mkdir input
 	# hadoop fs -cp ${PREDICTION_TEST_DIR}/* input
 	# hadoop fs -cp ${PREDICTION_VALIDATE_DIR}/* input
-	hadoop fs -put ${PREDICTION_TEST_DIR} input
-	hadoop fs -put ${PREDICTION_VALIDATE_DIR}/* input
+	hadoop fs -put ${ROUNTING_TEST_DIR} input
+	# hadoop fs -put ${PREDICTION_VALIDATE_DIR}/* input
 }
 
 upload_data_emr() {
