@@ -23,8 +23,6 @@ public class PredictReducer extends Reducer<Text, Text, Text, Text> {
         String[] possibleKeys = null;
         Map<Integer, ConnectionInfo> acMap = new HashMap<Integer, ConnectionInfo>(); // key: airportID, value: connection info
         SimpleFlightInfo flight;
-//        String carrier = key.toString();
-//        int year = Integer.parseInt(key.toString().split(",")[1]);
 
         for (Text v : values) {
             flight = new SimpleFlightInfo(v);
@@ -37,7 +35,7 @@ public class PredictReducer extends Reducer<Text, Text, Text, Text> {
         ConnectionInfo cci;
         String cKey;
         String[] pKeys;
-        int duration;
+        int[] durations;
         // calculate the expected duration of each connection
         // then write to the context
         for (Integer ap : acMap.keySet()) {
@@ -56,11 +54,12 @@ public class PredictReducer extends Reducer<Text, Text, Text, Text> {
 //                                    res += isMissedConnection(dep, arr);
                                     if (ConnectionInfo.isConnection(arr, dep)) {
                                         // calculate the expected duration
-                                        duration = expectedDuration(arr, dep);
+                                        durations = expectedDuration(arr, dep);
                                         // write to context
-                                        // P,year,month,day,origin,dest,duration
+                                        // P,year,month,day,origin,dest,flNum1,flNum2
+                                        // expDuration, duration
                                         context.write(new Text(outputKeyFormatter(arr, dep)),
-                                                new Text(duration + ""));
+                                                new Text(durations[0] + OTPConsts.COMMA + durations[1]));
                                     }
                                 }
                             }
@@ -69,7 +68,6 @@ public class PredictReducer extends Reducer<Text, Text, Text, Text> {
                 }
             }
         }
-
     }
 
     private String outputKeyFormatter(SimpleFlightInfo arr, SimpleFlightInfo dep) {
@@ -78,20 +76,21 @@ public class PredictReducer extends Reducer<Text, Text, Text, Text> {
                 + arr.month + OTPConsts.COMMA
                 + arr.day + OTPConsts.COMMA
                 + arr.origin + OTPConsts.COMMA
-                + arr.dest;
+                + dep.dest + OTPConsts.COMMA
+                + arr.flightNumber + OTPConsts.COMMA
+                + dep.flightNumber;
     }
 
-    private int expectedDuration(SimpleFlightInfo arr, SimpleFlightInfo dep) {
+    private int[] expectedDuration(SimpleFlightInfo arr, SimpleFlightInfo dep) {
+        int[] res = new int[2];
         int duration = arr.crsElapsedTime + dep.crsElapsedTime + (int)((dep.crsDepTimeMS - arr.crsArrTimeMS) / 1000 / 60);
+        res[0] = duration;
+        res[1] = duration;
         if (arr.isDelayed) {
             // TODO experiment with differnt criterials
-            duration += 100 * 60;
+            res[0] += 100 * 60;
         }
-        return duration;
+        return res;
     }
-
-//    @Override
-//    protected void cleanup(Context context) throws IOException, InterruptedException {
-//    }
 }
 

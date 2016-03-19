@@ -8,8 +8,7 @@ import utils.OTPConsts;
 import utils.SimpleFlightInfo;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 // Authors: Jun Cai and Vikas Boddu
 public class QueryReducer extends Reducer<Text, Text, Text, Text> {
@@ -20,77 +19,36 @@ public class QueryReducer extends Reducer<Text, Text, Text, Text> {
 
     @Override
     public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-        String[] possibleKeys = null;
-        Map<Integer, ConnectionInfo> acMap = new HashMap<Integer, ConnectionInfo>(); // key: airportID, value: connection info
-        SimpleFlightInfo flight;
-//        String carrier = key.toString();
-//        int year = Integer.parseInt(key.toString().split(",")[1]);
-
+        boolean hasRequest = false;
+        List<String[]> candidates = new ArrayList<String[]>();
+        String valueStr;
         for (Text v : values) {
-            flight = new SimpleFlightInfo(v);
-            if (possibleKeys == null) {
-                possibleKeys = ConnectionInfo.generatePossibleKeys(flight.year);
+            valueStr = v.toString();
+            if (valueStr.equals("Q")) {
+                hasRequest = true;
+            } else {
+                candidates.add(valueStr.split(","));
             }
-            DataPreprocessor.updateConnectionInfo(acMap, flight);
         }
 
-        ConnectionInfo cci;
-        String cKey;
-        String[] pKeys;
-        int duration;
-        // calculate the expected duration of each connection
-        // then write to the context
-        for (Integer ap : acMap.keySet()) {
-            cci = acMap.get(ap);
-            cci.prepareConnectionMaps();
-            // get each connection
-            for (int i = 0; i < possibleKeys.length; i++) {
-                cKey = possibleKeys[i];
-                if (cci.arrMap.containsKey(cKey)) {
-                    pKeys = ConnectionInfo.possibleConKeys(possibleKeys, i);
-                    for (String k : pKeys) {
-                        if (cci.depMap.containsKey(k)) {
-//                            res += missedConBetweenLOD(depMap.get(k), arrMap.get(cKey));
-                            for (SimpleFlightInfo arr : cci.arrMap.get(cKey)) {
-                                for (SimpleFlightInfo dep : cci.depMap.get(k)) {
-//                                    res += isMissedConnection(dep, arr);
-                                    if (ConnectionInfo.isConnection(arr, dep)) {
-                                        // calculate the expected duration
-                                        duration = expectedDuration(arr, dep);
-                                        // write to context
-                                        // year,month,day,origin,dest,duration
-                                        context.write(new Text(outputKeyFormatter(arr, dep)),
-                                                new Text(duration + ""));
-                                    }
-                                }
-                            }
-                        }
-                    }
+        if (hasRequest && candidates.size() > 0) {
+            int minExpDuration = Integer.parseInt(candidates.get(0)[2]);
+            int duration = Integer.parseInt(candidates.get(0)[3]);
+            String flNum1 = candidates.get(0)[0];
+            String flNum2 = candidates.get(0)[1];
+
+            for (int i = 1; i < candidates.size(); i++) {
+                int cDuration = Integer.parseInt(candidates.get(i)[2]);
+                if (cDuration < minExpDuration) {
+                    minExpDuration = cDuration;
+                    flNum1 = candidates.get(i)[0];
+                    flNum2 = candidates.get(i)[1];
+                    duration = Integer.parseInt(candidates.get(i)[3]);
                 }
             }
+            context.write(key, new Text(flNum1 + OTPConsts.COMMA + flNum2 + OTPConsts.COMMA + duration));
         }
 
     }
-
-    private String outputKeyFormatter(SimpleFlightInfo arr, SimpleFlightInfo dep) {
-        return arr.year + OTPConsts.COMMA
-                + arr.month + OTPConsts.COMMA
-                + arr.day + OTPConsts.COMMA
-                + arr.origin + OTPConsts.COMMA
-                + arr.dest;
-    }
-
-    private int expectedDuration(SimpleFlightInfo arr, SimpleFlightInfo dep) {
-        int duration = arr.crsElapsedTime + dep.crsElapsedTime + (int)((dep.crsDepTimeMS - arr.crsArrTimeMS) / 1000 / 60);
-        if (arr.isDelayed) {
-            // TODO experiment with differnt criterials
-            duration += 100 * 60;
-        }
-        return duration;
-    }
-
-//    @Override
-//    protected void cleanup(Context context) throws IOException, InterruptedException {
-//    }
 }
 
