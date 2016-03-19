@@ -47,7 +47,7 @@ upload_data_pd () {
 	# hadoop fs -mkdir input
 	# hadoop fs -cp ${PREDICTION_TEST_DIR}/* input
 	# hadoop fs -cp ${PREDICTION_VALIDATE_DIR}/* input
-	hadoop fs -put ${ROUNTING_TEST_DIR} input
+	hadoop fs -put ${ROUTING_TEST_DIR} input
 	# hadoop fs -put ${PREDICTION_VALIDATE_DIR}/* input
 }
 
