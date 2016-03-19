@@ -29,22 +29,17 @@ public class PredictMapper extends Mapper<LongWritable, Text, Text, Text> {
         // skip the header
         if (line.startsWith(OTPConsts.HEADER_START)) return;
 
-        // two possible input format: 1. test input, 2. validate input
-        String[] splits = line.split(",");
-        if (splits.length == 2) {
-            context.write(new Text(splits[0]), new Text(splits[1]));
-        } else {
-            FlightInfo flight = new FlightInfo(line, true);
+        FlightInfo flight = new FlightInfo(line, true);
 
-            if (flight.isValid()) {
-                infoStrList.add(flight.toString());
-            }
+        if (flight.isValid()) {
+            infoStrList.add(flight.toString());
         }
     }
 
     @Override
     protected void cleanup(Context context) throws IOException, InterruptedException {
-        String fName = "/tmp/OTP_prediction_testing_" + UUID.randomUUID().toString() + ".csv";
+        if (infoStrList.size() == 0) return;
+        String fName = "/tmp/OTP_routing_test_" + UUID.randomUUID().toString() + ".csv";
         File f = new File(fName);
         f.createNewFile();
         FileWriter fw = new FileWriter(f, true);
