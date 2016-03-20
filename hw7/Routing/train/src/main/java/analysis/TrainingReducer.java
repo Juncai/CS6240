@@ -14,7 +14,6 @@ import java.util.*;
 public class TrainingReducer extends Reducer<Text, Text, NullWritable, Text> {
 	List<String> rfPathList;
     
-
     @Override
     protected void setup(Context ctx) {
 		rfPathList = new ArrayList<String>();
