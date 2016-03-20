@@ -48,10 +48,8 @@ public class PredictReducer extends Reducer<Text, Text, Text, Text> {
                     pKeys = ConnectionInfo.possibleConKeys(possibleKeys, i);
                     for (String k : pKeys) {
                         if (cci.depMap.containsKey(k)) {
-//                            res += missedConBetweenLOD(depMap.get(k), arrMap.get(cKey));
                             for (SimpleFlightInfo arr : cci.arrMap.get(cKey)) {
                                 for (SimpleFlightInfo dep : cci.depMap.get(k)) {
-//                                    res += isMissedConnection(dep, arr);
                                     if (ConnectionInfo.isConnection(arr, dep)) {
                                         // calculate the expected duration
                                         durations = expectedDuration(arr, dep);
@@ -87,10 +85,8 @@ public class PredictReducer extends Reducer<Text, Text, Text, Text> {
         res[0] = duration;
         res[1] = duration;
         if (arr.isDelayed) {
-            // TODO experiment with differnt criterials
             res[0] += 100 * 60;
         }
         return res;
     }
 }
-
