@@ -87,7 +87,7 @@ getForest <- function(path) {
 	as(rf, "randomForest")
 }
 
-input_path <- "/tmp"
+input_path <- "./"
 #filenames <- dir(input_path, pattern="OTP_prediction_forest_*", full.names=TRUE)
 filenames <- list.files(input_path, pattern="OTP_prediction_forest_*", full.names=TRUE)
 #filenames <- list.files(input_path, pattern="OTP_test_*", full.names=TRUE)

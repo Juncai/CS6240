@@ -18,7 +18,7 @@ import java.util.UUID;
 public class TrainingMapper extends Mapper<LongWritable, Text, Text, Text> {
     //    List<FlightInfo> infoList;
     List<String> infoStrList;
-    String rInput = "/tmp/OTP_prediction_training_" + UUID.randomUUID().toString() + ".csv";
+    String rInput = "./OTP_prediction_training_" + UUID.randomUUID().toString() + ".csv";
     long recordCount;
 
     @Override
@@ -78,8 +78,8 @@ public class TrainingMapper extends Mapper<LongWritable, Text, Text, Text> {
         }
 
         // TODO call R script to get Random Forest
-        String path = "/tmp/OTP_prediction_" + UUID.randomUUID().toString() + ".rf";
-        String comm = "Rscript /tmp/rf.R " + rInput + " " + path;
+        String path = "./OTP_prediction_" + UUID.randomUUID().toString() + ".rf";
+        String comm = "Rscript ./rf.R " + rInput + " " + path;
 //        System.out.println(comm);
         Process p = Runtime.getRuntime().exec(comm);
 
