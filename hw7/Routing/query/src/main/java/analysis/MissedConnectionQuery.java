@@ -16,22 +16,17 @@ import org.apache.hadoop.util.ToolRunner;
 public class MissedConnectionQuery extends Configured implements Tool {
 
     public int run (String[] args) throws Exception {
-
         Job job = Job.getInstance();
         job.setJarByClass(MissedConnectionQuery.class);
         job.setJobName("MissedConnectionQuery");
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
-        // TODO pass the RF s3 path or pre-upload it to the node's /tmp dir
-
 
         job.setMapperClass(QueryMapper.class);
         job.setReducerClass(QueryReducer.class);
-//        job.setPartitionerClass(PredictPartitioner.class); // set custom partitioner
-//        job.setNumReduceTasks(2); // for test
 
-		job.setOutputKeyClass(Text.class);
+	job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
 
         job.setMapOutputKeyClass(Text.class);
