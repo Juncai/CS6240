@@ -12,37 +12,36 @@ import java.util.*;
 
 // Authors: Jun Cai and Vikas Boddu
 public class TrainingReducer extends Reducer<Text, Text, NullWritable, Text> {
-    List<String> rfList;
+	List<String> rfPathList;
+    // List<String> rfList;
 
     @Override
     protected void setup(Context ctx) {
-        rfList = new ArrayList<String>();
+		rfPathList = new ArrayList<String>();
+        // rfList = new ArrayList<String>();
     }
 
     @Override
-    public void reduce(Text key, Iterable<Text> values, Context context) {
+    public void reduce(Text key, Iterable<Text> values, Context context)  throws IOException, InterruptedException {
+        String rfPath;
+        File f;
+        FileWriter fw;
         for (Text v : values) {
-            rfList.add(v.toString());
+            rfPath = "/tmp/OTP_prediction_forest_" + UUID.randomUUID().toString();
+            rfPathList.add(rfPath);
+            f = new File(rfPath);
+            f.createNewFile();
+            fw = new FileWriter(f, false);
+            fw.write(v.toString());
+            fw.flush();
+            fw.close();
+            // rfList.add(v.toString());
         }
     }
 
     @Override
     protected void cleanup(Context context) throws IOException, InterruptedException {
         // TODO write forests to file
-        List<String> rfPathList = new ArrayList<String>();
-        String rfPath;
-        File f;
-        FileWriter fw;
-        for (String s : rfList) {
-            rfPath = "/tmp/OTP_prediction_forest_" + UUID.randomUUID().toString();
-            rfPathList.add(rfPath);
-            f = new File(rfPath);
-            f.createNewFile();
-            fw = new FileWriter(f, false);
-            fw.write(s);
-            fw.flush();
-            fw.close();
-        }
         // TODO call R script to combine the forests in to one final forest
         String finalRFPath = "/tmp/OTP_prediction_final_" + UUID.randomUUID().toString() + ".rf";
         Process p = Runtime.getRuntime().exec("Rscript /tmp/combineRF.R " + finalRFPath);
