@@ -12,7 +12,7 @@ input <- args[1]
 rf_path <- args[2]
 output <- args[3]
 
-# declare facotrs
+# declare factors
 quarterF <- c(1:4)
 monthF <- c(1:12)
 dayOfMonthF <- c(1:31) 
@@ -44,21 +44,13 @@ res$arrHourOfDay <- factor(res$arrHourOfDay, levels=arrHourOfDayF, ordered=TRUE)
 res$elapsedTimeInHours <- factor(res$elapsedTimeInHours, levels=elapsedTimeInHoursF, ordered=TRUE)
 res$isDelay <- factor(res$isDelay, levels=isDelayF, ordered=TRUE)
 
-#for (n in names(x)) {
-#	x[[n]] <- factor(x[[n]])
-#}
-
 x <- subset(res, select = -c(isDelay))
-#y <- res$isDelay
+
 set.seed(687)
 
 rf <- getForest(rf_path)
 prediction <- predict(rf, x, type="response", norm.votes=TRUE, predict.all=FALSE, proximity=FALSE, nodes=FALSE)
-#prediction <- c(1, 0)
+
 for (i in 1:length(rawRes$originAI)) {
-#	print(paste(paste(rawRes$originAI[i], rawRes$originCity[i], rawRes$destAI[i], sep="_", collapse=NULL), prediction[i], sep=",", collapse=NULL))
 	write(paste(rawRes$carrier[i], paste(rawRes$year[i], rawRes$month[i], rawRes$dayOfMonth[i], rawRes$depMS[i], rawRes$arrMS[i], rawRes$originAI[i], rawRes$origin[i], rawRes$destAI[i], rawRes$dest[i], rawRes$flNum[i], rawRes$elapsedTime[i], prediction[i], sep="_", collapse=NULL), sep=",", collapse=NULL), file=output, append=TRUE)
 }
-#rfString <- rawToChar(serialize(fit, NULL, ascii=TRUE))
-#write(rfString, file = "/tmp/OTP_prediction.rf")
-#write(rfString, file = output)
