@@ -48,6 +48,7 @@ res$isDelay <- factor(res$isDelay, levels=isDelayF, ordered=TRUE)
 #	x[[n]] <- factor(x[[n]])
 #}
 
+res <- res[complete.cases(res),]
 x <- subset(res, select = -c(isDelay))
 #y <- res$isDelay
 set.seed(687)

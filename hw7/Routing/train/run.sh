@@ -52,7 +52,7 @@ upload_data_pd () {
 upload_data_emr() {
 	# upload the data files
 	aws s3 rm s3://${BUCKET_NAME}/input --recursive
-	aws s3 sync ${ROUTING_HISTORY_DIR} s3://${BUCKET_NAME}/input
+	aws s3 sync ${MR_INPUT} s3://${BUCKET_NAME}/input
 }
 
 stop_server () {
@@ -106,7 +106,6 @@ emr () {
 		--name 'Jun MR cluster' \
 		--instance-groups '[{"InstanceCount":1,"InstanceGroupType":"MASTER","InstanceType":"m1.medium","Name":"Master Instance Group"},{"InstanceCount":2,"InstanceGroupType":"CORE","InstanceType":"m1.medium","Name":"Core Instance Group"}]' \
 		--bootstrap-actions \
-			Name=emR_bootstrap,\
 			Path="s3://hw7bootstrapping/emR_bootstrap.sh" \
 		--configurations '[{"Classification":"spark","Properties":{"maximizeResourceAllocation":"true"},"Configurations":[]}]' \
 		--auto-terminate \

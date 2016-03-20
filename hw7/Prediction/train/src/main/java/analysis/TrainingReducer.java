@@ -34,7 +34,7 @@ public class TrainingReducer extends Reducer<Text, Text, NullWritable, Text> {
         File f;
         FileWriter fw;
         for (String s : rfList) {
-            rfPath = "/tmp/OTP_prediction_forest_" + UUID.randomUUID().toString();
+            rfPath = "./OTP_prediction_forest_" + UUID.randomUUID().toString();
             rfPathList.add(rfPath);
             f = new File(rfPath);
             f.createNewFile();
@@ -44,8 +44,8 @@ public class TrainingReducer extends Reducer<Text, Text, NullWritable, Text> {
             fw.close();
         }
         // TODO call R script to combine the forests in to one final forest
-        String finalRFPath = "/tmp/OTP_prediction_final_" + UUID.randomUUID().toString() + ".rf";
-        Process p = Runtime.getRuntime().exec("Rscript /tmp/combineRF.R " + finalRFPath);
+        String finalRFPath = "./OTP_prediction_final_" + UUID.randomUUID().toString() + ".rf";
+        Process p = Runtime.getRuntime().exec("Rscript ./combineRF.R " + finalRFPath);
 
        // InputStream stdout = p.getInputStream();
        // InputStreamReader isr0 = new InputStreamReader(stdout);

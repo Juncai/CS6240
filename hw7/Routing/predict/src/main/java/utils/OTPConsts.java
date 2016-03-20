@@ -12,10 +12,10 @@ public class OTPConsts {
             + "carrier" + COMMA
             + "isHoliday" + COMMA
             + "originAI" + COMMA
-            + "originCity" + COMMA
+            + "origin" + COMMA
             + "originState" + COMMA
             + "destAI" + COMMA
-            + "destCity" + COMMA
+            + "dest" + COMMA
             + "destState" + COMMA
             + "distanceGroup" + COMMA
             + "depHourOfDay" + COMMA
@@ -25,7 +25,7 @@ public class OTPConsts {
             + "elapsedTime" + COMMA
             + "elapsedTimeInHours" + COMMA
             + "flNum" + COMMA
-            + "crsDepTimeMS" + COMMA
+            + "crsDepTime" + COMMA
             + "isDelay\n";
 
     // 2400
