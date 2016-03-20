@@ -1,5 +1,6 @@
 library(randomForest)
 library(methods)
+options(scipen=999)
 
 getForest <- function(path) {
 	rfString <- readChar(path, file.info(path)$size)
@@ -58,7 +59,7 @@ prediction <- predict(rf, x, type="response", norm.votes=TRUE, predict.all=FALSE
 #prediction <- c(1, 0)
 for (i in 1:length(rawRes$originAI)) {
 #	print(paste(paste(rawRes$originAI[i], rawRes$originCity[i], rawRes$destAI[i], sep="_", collapse=NULL), prediction[i], sep=",", collapse=NULL))
-	write(paste(rawRes$carrier[i], paste(rawRes$year[i], rawRes$month[i], rawRes$dayOfMonth[i], rawRes$depMS[i], rawRes$arrMS[i], rawRes$originAI[i], rawRes$origin[i], rawRes$destAI[i], rawRes$dest[i], rawRes$flNum[i], rawRes$elapsedTime[i], prediction[i], sep="_", collapse=NULL), sep=",", collapse=NULL), file=output, append=TRUE)
+	write(paste(rawRes$carrier[i], paste(rawRes$year[i], rawRes$month[i], rawRes$dayOfMonth[i], as.character(rawRes$depMS[i]), as.character(rawRes$arrMS[i]), rawRes$originAI[i], rawRes$origin[i], rawRes$destAI[i], rawRes$dest[i], rawRes$flNum[i], rawRes$elapsedTime[i], prediction[i], sep="_", collapse=NULL), sep=",", collapse=NULL), file=output, append=TRUE)
 }
 #rfString <- rawToChar(serialize(fit, NULL, ascii=TRUE))
 #write(rfString, file = "/tmp/OTP_prediction.rf")
