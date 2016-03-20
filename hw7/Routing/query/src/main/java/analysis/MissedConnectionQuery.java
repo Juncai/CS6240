@@ -11,7 +11,6 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
-
 // Authors: Jun Cai and Vikas Boddu
 public class MissedConnectionQuery extends Configured implements Tool {
 
