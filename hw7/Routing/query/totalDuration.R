@@ -12,7 +12,6 @@ args = commandArgs(trailingOnly=TRUE)
 iteraryDir <- args[1]
 validatePath <- args[2]
 
-
 filenames <- list.files(iteraryDir, pattern="part-r-*", full.names=TRUE)
 totalDuration <- 0
 if (length(filenames) > 0) {
@@ -21,7 +20,6 @@ if (length(filenames) > 0) {
 		for (i in 2:length(filenames)){
 			cStrings <- readLines(con <- file(filenames[i]))
 			append(iteraryStrings, cStrings, after = length(iteraryStrings))
-#	iterary <- rbind(iterary, read.csv(file=filenames[i], head=FALSE, row.names=NULL))
 		}
 	}
 	validateStrings <- readLines(con <- file(validatePath))
@@ -35,7 +33,5 @@ if (length(filenames) > 0) {
 		}
 	}
 }
-#names(iterary) <- c("year", "month", "day", "origin", "dest", "flNum1", "flNum2", "duration")
 
-#validate <- data.frame(
 print(totalDuration)

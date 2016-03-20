@@ -23,15 +23,11 @@ public class MissedConnectionTesting extends Configured implements Tool {
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
-        // TODO pass the RF s3 path or pre-upload it to the node's /tmp dir
-
 
         job.setMapperClass(TestingMapper.class);
         job.setReducerClass(TestingReducer.class);
-//        job.setPartitionerClass(TrainingPartitioner.class); // set custom partitioner
-//        job.setNumReduceTasks(2); // for test
 
-		job.setOutputKeyClass(Text.class);
+	job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
 
         job.setMapOutputKeyClass(Text.class);

@@ -12,12 +12,10 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
-
 // Authors: Jun Cai and Vikas Boddu
 public class MissedConnectionTraining extends Configured implements Tool {
 
     public int run (String[] args) throws Exception {
-
         Job job = Job.getInstance();
         job.setJarByClass(MissedConnectionTraining.class);
         job.setJobName("MissedConnectionTraining");
@@ -27,10 +25,8 @@ public class MissedConnectionTraining extends Configured implements Tool {
 
         job.setMapperClass(TrainingMapper.class);
         job.setReducerClass(TrainingReducer.class);
-//        job.setPartitionerClass(TrainingPartitioner.class); // set custom partitioner
-//        job.setNumReduceTasks(2); // for test
 
-		job.setOutputKeyClass(NullWritable.class);
+	job.setOutputKeyClass(NullWritable.class);
         job.setOutputValueClass(Text.class);
 
         job.setMapOutputKeyClass(Text.class);
