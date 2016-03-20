@@ -1,0 +1,33 @@
+
+
+Part I: Prediction
+
+For the first part, we use random forest to model the flights delay. The features we chose are: quarter, month, dayOfMonth, dayOfWeek, carrierID, originStateFip, destStateFip, depHourOfDay, arrHourOfDay, distanceGroup as well as isHoliday which is a synthetic feature to see if the date is close to Christmas or new year. 
+
+Implementation
+Two MapReduce jobs are deployed to train and test the delay model. In the first MapReduce job, we use randomForest package in R for training our delay model. Input data is first processed in the map phase then write to a csv file on the local file system. R script is called to build the model in cleanUp function of the mapper. Each mapper will create a random forest which contains ten decision trees. In reducer, all the random forests are combine to one final random forest then serialized in a string as the output of the first MapReduce. 
+
+The second MapReduce job reads the test input data and the random forest from the first MapReduce. Predictions are calculated in the mappers. The reducers will compute the confusion matrix by comparing the predictions and the actual delay states. 
+
+Performance
+Our traning MapReduce job finished in around 18 minutes in local mode. Testing job finished in about 24 minutes in local mode. 
+
+Confusion Matrix
+TruePos: 1375778
+TrueNeg: 553045
+FalsePos: 1189124
+FalseNeg: 418115
+
+
+
+Part II: Routing
+
+In this part, we use the delay model we built in the first part to adjust the duration of each connection. If the first flight is predicted to be late, than that connection is considered as a missed connection and a 100-hour penalty is given to that connection. 
+
+Implementation
+Three MapReduce jobs are created for this task. One is for training the model which is the same as the first part. The second MapReduce job is for loading the test data, giving each flight a delay stat prediction, finding all the connections in the schedule and calculating the original duration and adjusted duration using delay prediction. The third MapReduce job take the request data, find the best iterary for each of the request by grouping the connections with the same origin and destination and discovering the one with shortest adjusted duration.
+
+Performance
+The training MapReduce job finished in 25 minutes. The predicting job run about 40 minutes. The query job can't finish locally due to resource limitation. 
+EMR implementation is not achieved in this submission.
+
