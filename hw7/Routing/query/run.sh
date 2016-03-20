@@ -44,11 +44,8 @@ upload_rscript () {
 
 upload_data_pd () {
 	hadoop fs -rm -r input
-	# hadoop fs -mkdir input
-	# hadoop fs -cp ${PREDICTION_TEST_DIR}/* input
-	# hadoop fs -cp ${PREDICTION_VALIDATE_DIR}/* input
-	hadoop fs -put ${ROUNTING_TEST_DIR} input
-	# hadoop fs -put ${PREDICTION_VALIDATE_DIR}/* input
+	hadoop fs -put ${ROUTING_REQUEST_DIR} input
+	hadoop fs -put ${ROUTING_PREDICTION_DIR}/* input
 }
 
 upload_data_emr() {
@@ -152,7 +149,7 @@ fi
 input_path='input'
 
 if [ "$1" = '-pd' ]; then
-	upload_rscript
+	# upload_rscript
 	clean
 	pd
 	# process_output
