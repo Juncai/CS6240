@@ -99,20 +99,3 @@ if (length(filenames) > 0) {
 	rfString <- rawToChar(serialize(forest, NULL, ascii=TRUE))
 	write(rfString, file = output)
 }
-
-
-
-
-
-
-
-#rfStrings <- lapply(filenames, readChar)
-#res <- do.call(rbind, tables)
-
-#filename <- "/tmp/OTP_prediction.rf"
-#rfString <- readChar(filename, file.info(filename)$size)
-#rf <- unserialize(charToRaw(rfString))
-#as(rf, "randomForest")
-#print(rf)
-
-
