@@ -27,10 +27,8 @@ public class MissedConnectionTraining extends Configured implements Tool {
 
         job.setMapperClass(TrainingMapper.class);
         job.setReducerClass(TrainingReducer.class);
-//        job.setPartitionerClass(TrainingPartitioner.class); // set custom partitioner
-//        job.setNumReduceTasks(2); // for test
 
-		job.setOutputKeyClass(NullWritable.class);
+	job.setOutputKeyClass(NullWritable.class);
         job.setOutputValueClass(Text.class);
 
         job.setMapOutputKeyClass(Text.class);
