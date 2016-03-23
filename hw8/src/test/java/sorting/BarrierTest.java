@@ -27,7 +27,6 @@ public class BarrierTest {
         System.out.println("Wait for other nodes...");
         b.waitForOtherNodes();
         System.out.println("Done!");
-
     }
 
     private class TestThread extends Thread {
