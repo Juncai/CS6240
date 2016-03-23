@@ -31,7 +31,6 @@ public class Barrier {
     }
 
     public void waitForOtherNodes() {
-        init();
         while (!readyToContinue()) {
             synchronized (lock) {
                 try {
@@ -41,6 +40,7 @@ public class Barrier {
                 }
             }
         }
+        init();
     }
 
     public void nodeReady(String nodeIP) {
