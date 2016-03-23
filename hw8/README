@@ -1,0 +1,4 @@
+Prerequisits:
+	Make sure you have the key-pair to create AWS EC2 instance, set the key pair name and private key file path in env.sh.
+	
+	
