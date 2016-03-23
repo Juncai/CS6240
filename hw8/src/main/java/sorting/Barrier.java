@@ -30,6 +30,9 @@ public class Barrier {
         return ready;
     }
 
+    /***
+     * need to make current node into Barrier before call this method
+     */
     public void waitForOtherNodes() {
         while (!readyToContinue()) {
             synchronized (lock) {
