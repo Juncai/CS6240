@@ -4,9 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// Author: Jun Cai
 public class Barrier {
     private Map<String, Boolean> stateMap;
-    private Object lock;
+    final private Object lock;
 
     public Barrier(List<String> nodeIPs) {
         stateMap = new HashMap<String, Boolean>();

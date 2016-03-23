@@ -8,35 +8,43 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by jon on 3/23/16.
- */
+// Author: Jun Cai
 public class NodeCommunication {
     private ServerSocket listenSocket;
+    private List<String> peerAddrs;
+    private List<String> peerIPs;
     private Map<String, Socket> readConns;
     private Map<String, ReceiveDataTread> listeningThreads;
     private Map<String, Socket> writeConns;
     private Socket masterConn;
     private String masterAddr;
-    private Object writeConnsLock;
+    final private Object writeConnsLock;
     private Barrier b;
     private Consts.Stage stage;
 
 
     // TODO handle communication with master node
-    public NodeCommunication(int port, String masterAddr, List<String> peerAddr) throws Exception {
+    public NodeCommunication(int port, String masterAddr, List<String> peerAddrs) throws Exception {
         stage = Consts.Stage.SAMPLE;
         listenSocket = new ServerSocket(port);
         this.masterAddr = masterAddr;
-        this.b = new Barrier(peerAddr);
+        this.peerAddrs = peerAddrs;
+
+        peerIPs = new ArrayList<String>();
+        for (String adr : peerAddrs) {
+            peerIPs.add(adr.split(":")[0]);
+        }
+
+        b = new Barrier(peerIPs);
         masterConn = null;
+
         // initialize the connection maps
         readConns = new HashMap<String, Socket>();
         listeningThreads = new HashMap<String, ReceiveDataTread>();
         writeConns = new HashMap<String, Socket>();
-        for (String pa : peerAddr) {
-            readConns.put(pa, null);
-            writeConns.put(pa, null);
+        for (String ip : peerIPs) {
+            readConns.put(ip, null);
+            writeConns.put(ip, null);
         }
         writeConnsLock = new Object();
         initCommunication();
@@ -44,6 +52,7 @@ public class NodeCommunication {
 
     private void initCommunication() throws Exception {
         // init read conns
+        System.out.println("initComm...");
         InitReadConnThread irct = new InitReadConnThread(listenSocket, readConns);
         irct.start();
         Thread.sleep(5000);    // wait for other nodes to start
@@ -51,7 +60,8 @@ public class NodeCommunication {
         // init write conns
         InitWriteConnThread cIwct;
         List<InitWriteConnThread> iwctList = new ArrayList<InitWriteConnThread>();
-        for (String tarAddr : writeConns.keySet()) {
+        for (String tarAddr : peerAddrs) {
+            System.out.println("Init write conn with: " + tarAddr);
             cIwct = new InitWriteConnThread(writeConns, tarAddr, writeConnsLock);
             iwctList.add(cIwct);
             cIwct.start();
@@ -96,7 +106,7 @@ public class NodeCommunication {
             if (stage == Consts.Stage.SELECT) {
                 allBufferedData.addAll(rdt.sampleBuffer);
                 rdt.sampleBuffer.clear();
-            } else  if (stage == Consts.Stage.SORT) {
+            } else if (stage == Consts.Stage.SORT) {
                 allBufferedData.addAll(rdt.selectBuffer);
                 rdt.selectBuffer.clear();
             }
@@ -107,6 +117,7 @@ public class NodeCommunication {
     /***
      * Note: the initial stage of the program is SAMPLE, so the first Barrier call should be
      * with SELECT stage, which means all nodes are ready for SELECT stage
+     *
      * @param stage
      * @throws IOException
      */
@@ -117,7 +128,7 @@ public class NodeCommunication {
         while (!done) {
             done = readDataDoneForStage(stage);
         }
-        // send READY signal to other nodes
+        // send READY signal to all other nodes
         this.stage = stage;
         sendReadyToNodes();
 
@@ -127,10 +138,12 @@ public class NodeCommunication {
 
     private void sendReadyToNodes() throws IOException {
         BufferedWriter wtr;
-        for (String adr: writeConns.keySet()) {
-             wtr = new BufferedWriter(new OutputStreamWriter(writeConns.get(adr).getOutputStream(),
+        for (String adr : writeConns.keySet()) {
+            wtr = new BufferedWriter(new OutputStreamWriter(writeConns.get(adr).getOutputStream(),
                     "UTF-8"));
-            wtr.write(Consts.NODE_READY);
+            System.out.println("Sending Node ready: " + adr);
+            String nready = Consts.NODE_READY + Consts.END_OF_LINE;
+            wtr.write(nready);
             wtr.flush();
         }
     }
@@ -150,7 +163,7 @@ public class NodeCommunication {
 }
 
 class ReceiveDataTread extends Thread {
-    public Object lock;
+    final public Object lock;
     private Socket readConn;
     public List<String> sampleBuffer;
     public List<String> selectBuffer;
@@ -180,6 +193,7 @@ class ReceiveDataTread extends Thread {
                     if (line.equals(Consts.END_OF_DATA)) {
                         changeStage();
                     } else if (line.equals(Consts.NODE_READY)) {
+                        System.out.println("Node ready: " + tarAddr);
                         b.nodeReady(tarAddr);
                     } else {
                         if (currentBuffer != null) {
@@ -187,9 +201,10 @@ class ReceiveDataTread extends Thread {
                         }
                     }
                 }
+                line = rdr.readLine();
             }
         } catch (Exception ee) {
-            System.err.println("Error in ListenThread: " + ee.toString());
+            System.err.println("Error in ReceiveDataThread: " + ee.toString());
         }
     }
 
@@ -226,11 +241,12 @@ class SendDataTread extends Thread {
                 s += Consts.END_OF_LINE;
                 wtr.write(s, 0, s.length());
             }
-            wtr.write(Consts.END_OF_DATA, 0, Consts.END_OF_DATA.length());
+            String eod = Consts.END_OF_DATA + Consts.END_OF_LINE;
+            wtr.write(eod, 0, eod.length());
             wtr.flush();
 //            wtr.close();
         } catch (Exception ee) {
-            System.err.println("Error in ListenThread: " + ee.toString());
+            System.err.println("Error in SendDataThread: " + ee.toString());
         }
     }
 }
@@ -238,13 +254,16 @@ class SendDataTread extends Thread {
 class InitWriteConnThread extends Thread {
     private Map<String, Socket> writeConns;
     final private Object mapLock;
-    private String tartAddr;
+    private String tarIP;
+    private int tarPort;
 
     public InitWriteConnThread(Map<String, Socket> writeConns, String tarAddr, Object mapLock) throws Exception {
         this.writeConns = writeConns;
         this.mapLock = mapLock;
-        this.tartAddr = tarAddr;
-        if (!writeConns.containsKey(tarAddr)) {
+        String[] parts = tarAddr.split(":");
+        tarIP = parts[0];
+        tarPort = Integer.parseInt(parts[1]);
+        if (!writeConns.containsKey(tarIP)) {
             throw new Exception("Target address is not in the writeConns");
         }
     }
@@ -252,15 +271,12 @@ class InitWriteConnThread extends Thread {
     @Override
     public void run() {
         try {
-            String[] parts = tartAddr.split(":");
-            String ip = parts[0];
-            int port = Integer.parseInt(parts[1]);
-            Socket conn = new Socket(ip, port);
+            Socket conn = new Socket(tarIP, tarPort);
             synchronized (mapLock) {
-                writeConns.put(tartAddr, conn);
+                writeConns.put(tarIP, conn);
             }
         } catch (Exception ee) {
-            System.err.println("Error in ListenThread: " + ee.toString());
+            System.err.println("Error in InitWriteConnThread: " + ee.toString());
         }
     }
 }
@@ -280,7 +296,7 @@ class InitReadConnThread extends Thread {
         try {
             loop();
         } catch (Exception ee) {
-            System.err.println("Error in ListenThread: " + ee.toString());
+            System.err.println("Error in InitReadConnTread: " + ee.toString());
         }
     }
 
@@ -288,9 +304,12 @@ class InitReadConnThread extends Thread {
         Socket conn;
         String cAddr;
         while (null != (conn = listenSocket.accept())) {
-            cAddr = conn.getInetAddress() + ":" + conn.getPort();
+            System.out.println("see connection from " + conn.getInetAddress().toString().substring(1));
+            cAddr = conn.getInetAddress().toString().substring(1);
+            System.out.println("Adding connection from " + cAddr);
             if (readConns.containsKey(cAddr)) {
                 readConns.put(cAddr, conn);
+                System.out.println("Added connection from " + cAddr);
             }
             if (done()) {
                 return;
