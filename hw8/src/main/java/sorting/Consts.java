@@ -10,4 +10,5 @@ public class Consts {
     public enum Stage {
         SAMPLE, SELECT, SORT
     }
+    public static final int SAMPLE_FREQUENCY = 500;
 }
