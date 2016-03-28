@@ -1,0 +1,13 @@
+s3://cs6240sp16/climate/200205hourly.txt.gz
+s3://cs6240sp16/climate/200206hourly.txt.gz
+s3://cs6240sp16/climate/200207hourly.txt.gz
+s3://cs6240sp16/climate/200208hourly.txt.gz
+s3://cs6240sp16/climate/200209hourly.txt.gz
+s3://cs6240sp16/climate/200210hourly.txt.gz
+s3://cs6240sp16/climate/200211hourly.txt.gz
+s3://cs6240sp16/climate/200212hourly.txt.gz
+s3://cs6240sp16/climate/200301hourly.txt.gz
+s3://cs6240sp16/climate/200302hourly.txt.gz
+s3://cs6240sp16/climate/200303hourly.txt.gz
+s3://cs6240sp16/climate/200304hourly.txt.gz
+s3://cs6240sp16/climate/200305hourly.txt.gz
