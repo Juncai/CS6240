@@ -1,7 +1,5 @@
 package sorting;
 
-import sorting.Value;
-import sorting.Constants;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,7 +79,7 @@ public class DataProcessing {
                 if (i > 0) {
                     Value desiredValues = new Value(parsedValues[0], parsedValues[1], parsedValues[2], parsedValues[8]);
                     list.add(desiredValues);
-                    if (i % SAMPLE_FREQUENCY) {
+                    if (i % Consts.SAMPLE_FREQUENCY == 0) {
                         sampleTemps.add(desiredValues.temp);
                     }
                 }
@@ -101,6 +99,8 @@ public class DataProcessing {
 
     public void recvSamples() {
         //Networking
+        // TODO integrate with networking class
+        List<Integer> recvTemps = new ArrayList<Integer>();
         sampleTemps.addAll(recvTemps);
     }
 
@@ -109,6 +109,7 @@ public class DataProcessing {
         ArrayList<Double> pivots = new ArrayList<Double>();
         pivots.add(median(sampleTemps));
         //TODO split array and generate 1 or 7 medians depending on numberofnodes
+        return null;
     }
 
     public double median(ArrayList<Integer> aL) {

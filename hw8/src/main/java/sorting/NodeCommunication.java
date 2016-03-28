@@ -55,7 +55,7 @@ public class NodeCommunication {
         System.out.println("initComm...");
         InitReadConnThread irct = new InitReadConnThread(listenSocket, readConns);
         irct.start();
-        Thread.sleep(5000);    // wait for other nodes to start
+        Thread.sleep(20000);    // wait for other nodes to start
 
         // init write conns
         InitWriteConnThread cIwct;

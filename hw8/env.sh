@@ -14,7 +14,7 @@ export EC2_PRIVATE_KEY_PATH=
 # export EC2_SECURITY_GROUP=A8SecurityGroup
 
 # s3 bucket name
-export BUCKET_NAME= (for later use)
+# export BUCKET_NAME= (for later use)
 
 # AMI
 export IMAGE_ID=ami-8fcee4e5

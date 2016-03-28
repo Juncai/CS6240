@@ -10,7 +10,8 @@ public class Main {
 //        int localPort = 10001;
         int localPort = Integer.parseInt(args[0]);
         List<String> ipList = new ArrayList<String>();
-        ipList.add("127.0.0.1:" + args[1]);
+        ipList.add(args[1]);
+//        ipList.add("127.0.0.1:" + args[1]);
 //        ipList.add("127.0.0.1:10003");
 //        ipList.add("127.0.0.1:10004");
 //        ipList.add("127.0.0.1:10005");
@@ -28,6 +29,7 @@ public class Main {
 
         // send data to other nodes
         List<String> dataToSomeNode = new ArrayList<String>();
+        dataToSomeNode.add("The sample data, handsome!");
         System.out.println("Start sending sample data...");
         List<String> dataReceived;
         for (String adr : ipList) {
