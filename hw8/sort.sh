@@ -7,25 +7,40 @@ port=10001
 master_port=10002
 
 # ip list of peers
-ip_file='ip.txt'
+ip_file='address.txt'
 
 # input path list
-input_list='inputs.txt'
+input_prefix='inputs_'
+
+# ips[0]='some ip'
+# counter
+i="0"
 
 while IFS='' read -r line || [[ -n "$line" ]]; do
 # start the program on each slave
-	ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$line "java -jar ~/Job.jar ${port} ${master_port} ${ip_file} ${input_list}  > ~/log 2>&1 &"
+	# ips[$i]=$line
+	# ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$line "'java -jar ~/Job.jar $port $master_port $ip_file $i $INPUT_BUCKET $input_prefix$i $OUTPUT_BUCKET > ~/log 2>&1 &'"
+	# ssh -i $EC2_PRIVATE_KEY_PATH -n -f $EC2_USERNAME@$line "nohup java -jar ~/Job.jar $port $master_port $ip_file $i $INPUT_BUCKET $input_prefix$i $OUTPUT_BUCKET > ~/log 2>&1 &"
+	ssh -i $EC2_PRIVATE_KEY_PATH -n -f $EC2_USERNAME@$line ". ~/slave_env.sh; java -jar ~/Job.jar $port $master_port $ip_file $i $INPUT_BUCKET $input_prefix$i $OUTPUT_BUCKET > ~/log 2>&1 &"
+	i=$[$i+1]
     echo "Node start working: $line"
-done < "$1"
+done < "$ip_file"
 
+# i="0"
+# for ip in "${ips[@]}"
+# do
+# 	echo "'java -jar ~/Job.jar $port $master_port $ip_file $i $INPUT_BUCKET $input_prefix$i $OUTPUT_BUCKET > ~/log 2>&1 &'"
+# 	echo $ip$i
+# 	i=$[$i+1]
+# done
 
 # waiting for the all the slave finishing their jobs
 tmstate='done'
 output='not yet'
-while [ "$output" != "$tmstate" ]; do
-	output=$(aws emr describe-cluster --cluster-id "$cid" | grep -oh '^[[:space:]]\{12\}"State": "TERMINATED",')
-	echo Waiting for job completion...
-	sleep 1m
-done
+# while [ "$output" != "$tmstate" ]; do
+# 	output=$(aws emr describe-cluster --cluster-id "$cid" | grep -oh '^[[:space:]]\{12\}"State": "TERMINATED",')
+# 	echo Waiting for job completion...
+# 	sleep 1m
+# done
 
-echo Sorting complete!
+# echo Sorting complete!

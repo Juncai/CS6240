@@ -11,38 +11,35 @@ import java.util.Map;
 // Author: Jun Cai
 public class NodeCommunication {
     private ServerSocket listenSocket;
-    private List<String> peerAddrs;
     private List<String> peerIPs;
     private Map<String, Socket> readConns;
     private Map<String, ReceiveDataTread> listeningThreads;
     private Map<String, Socket> writeConns;
-    private Socket masterConn;
-    private String masterAddr;
+    private ServerSocket masterSocket;
+    private int masterPort;
+    private int listenPort;
     final private Object writeConnsLock;
     private Barrier b;
     private Consts.Stage stage;
 
 
     // TODO handle communication with master node
-    public NodeCommunication(int port, String masterAddr, List<String> peerAddrs) throws Exception {
+    public NodeCommunication(int listenPort, int masterPort, List<String> peerIPs) throws Exception {
         stage = Consts.Stage.SAMPLE;
-        listenSocket = new ServerSocket(port);
-        this.masterAddr = masterAddr;
-        this.peerAddrs = peerAddrs;
+        this.listenPort = listenPort;
+        this.masterPort = masterPort;
+        listenSocket = new ServerSocket(listenPort);
+        masterSocket = new ServerSocket(masterPort);
 
-        peerIPs = new ArrayList<String>();
-        for (String adr : peerAddrs) {
-            peerIPs.add(adr.split(":")[0]);
-        }
+        this.peerIPs = peerIPs;
 
-        b = new Barrier(peerIPs);
-        masterConn = null;
+        b = new Barrier(this.peerIPs);
 
         // initialize the connection maps
         readConns = new HashMap<String, Socket>();
         listeningThreads = new HashMap<String, ReceiveDataTread>();
         writeConns = new HashMap<String, Socket>();
-        for (String ip : peerIPs) {
+        for (String ip : this.peerIPs) {
             readConns.put(ip, null);
             writeConns.put(ip, null);
         }
@@ -60,9 +57,11 @@ public class NodeCommunication {
         // init write conns
         InitWriteConnThread cIwct;
         List<InitWriteConnThread> iwctList = new ArrayList<InitWriteConnThread>();
-        for (String tarAddr : peerAddrs) {
-            System.out.println("Init write conn with: " + tarAddr);
-            cIwct = new InitWriteConnThread(writeConns, tarAddr, writeConnsLock);
+        String remoteAddr;
+        for (String tarIP : peerIPs) {
+            remoteAddr = tarIP + ":" + this.listenPort;
+            System.out.println("Init write conn with: " + remoteAddr);
+            cIwct = new InitWriteConnThread(writeConns, remoteAddr, writeConnsLock);
             iwctList.add(cIwct);
             cIwct.start();
         }
@@ -89,7 +88,7 @@ public class NodeCommunication {
             readConns.get(ad).close();
         }
         listenSocket.close();
-        masterConn.close();
+        masterSocket.close();
     }
 
     public void sendDataToNode(String tar, List<String> buffer) throws Exception {
