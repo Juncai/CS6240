@@ -6,7 +6,7 @@
 
 
 while IFS='' read -r line || [[ -n "$line" ]]; do
-    echo "Text read from file: $line"
+    echo "Terminating node: $line"
     aws ec2 terminate-instances --instance-ids $line
 done < "id.txt"
 
