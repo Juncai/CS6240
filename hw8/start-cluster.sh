@@ -23,6 +23,7 @@ ip_file=address.txt
 
 # instances public ip address list
 ids[0]='some id'
+ips[0]='some ip'
 
 # instances id file
 id_file=id.txt
@@ -56,18 +57,20 @@ for id in "${ids[@]}"
 do
 	public_ip=$(aws ec2 describe-instances --instance-ids $id | json Reservations[0].Instances[0].PublicIpAddress)
 
+	ips[$i]=$public_ip
 	echo $public_ip >> $ip_file
+done
 
+i="0"
+for public_ip in "${ips[@]}"
+do
 # upload peer and master address list, input file paths, jar file and env.sh
 	ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$public_ip 'rm -rf ~/*'
-	ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$public_ip 'mkdir ~/output'
+	ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$public_ip 'mkdir ~/output ~/.aws'
 	scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH Job.jar $EC2_USERNAME@$public_ip:~/
-	scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH slave_env.sh $EC2_USERNAME@$public_ip:~/
+	scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH credentials $EC2_USERNAME@$public_ip:~/.aws/
 	scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $ip_file $EC2_USERNAME@$public_ip:~/
 	scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $inputs_prefix$i $EC2_USERNAME@$public_ip:~/
-
-# source environment variables
-	ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$public_ip ". ~/slave_env.sh"
 
 	i=$[$i+1]
 	echo "Done initializing node:" $public_ip

@@ -26,7 +26,10 @@ public class Barrier {
     private boolean readyToContinue() {
         boolean ready = true;
         for (String ip : stateMap.keySet()) {
-            ready = stateMap.get(ip);
+            if (!stateMap.get(ip)) {
+                ready = false;
+            }
+//            ready = stateMap.get(ip);
         }
         return ready;
     }
@@ -35,6 +38,10 @@ public class Barrier {
      * need to make current node into Barrier before call this method
      */
     public void waitForOtherNodes() {
+        System.out.println("ip in barrier");
+        for (String ip : stateMap.keySet()) {
+            System.out.println(ip);
+        }
         while (!readyToContinue()) {
             synchronized (lock) {
                 try {

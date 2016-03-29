@@ -1,0 +1,13 @@
+climate/200405hourly.txt.gz
+climate/200406hourly.txt.gz
+climate/200407hourly.txt.gz
+climate/200408hourly.txt.gz
+climate/200409hourly.txt.gz
+climate/200410hourly.txt.gz
+climate/200411hourly.txt.gz
+climate/200412hourly.txt.gz
+climate/200501hourly.txt.gz
+climate/200502hourly.txt.gz
+climate/200503hourly.txt.gz
+climate/200504hourly.txt.gz
+climate/200505hourly.txt.gz

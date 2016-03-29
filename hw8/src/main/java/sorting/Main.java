@@ -2,6 +2,7 @@ package sorting;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.regions.Region;
 import com.amazonaws.services.s3.AmazonS3;
@@ -13,6 +14,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
 // Author:
@@ -31,7 +33,6 @@ public class Main {
         String keysFilePath = args[5];
         String outputBucket = args[6];
         String outputKey = "part-" + cInd;
-//        String outputKey = "output/part-" + cInd;
 
 
         // load peer ip list
@@ -42,10 +43,14 @@ public class Main {
         while ((line = br.readLine()) != null) {
             if (i++ != cInd) {
                 ipList.add(line);
+                System.out.println("adding ip to iplist: " + line);
             }
         }
         br.close();
 
+        // create data processing object
+        int nNodes = ipList.size();
+        DataProcessing dp = new DataProcessing(nNodes, cInd);
 
         // create communication object and initialize it
         // This should be done ASAP to create the listening socket at about the same time
@@ -54,16 +59,17 @@ public class Main {
         NodeCommunication comm = new NodeCommunication(listenPort, masterPort, ipList);
 
 
-        // TODO load data from S3
-        AWSCredentials credentials = new EnvironmentVariableCredentialsProvider().getCredentials();
+        // load data from S3
+//        AWSCredentials credentials = new EnvironmentVariableCredentialsProvider().getCredentials();
+        AWSCredentials credentials = new ProfileCredentialsProvider().getCredentials();
         AmazonS3 s3 = new AmazonS3Client(credentials);
         Region usEast1 = Region.getRegion(Regions.US_EAST_1);
         s3.setRegion(usEast1);
         S3Object object;
 
         // TODO load input from s3, parse and sample the data
-        List<String> dataToSomeNode = new ArrayList<String>();
-        List<String> finalData = new ArrayList<String>();
+//        List<String> dataToSomeNode = new ArrayList<String>();
+//        List<String> finalData = new ArrayList<String>();
 
         br = new BufferedReader(new FileReader(keysFilePath));
 //        GZIPInputStream gis = new GZIPInputStream(fis);
@@ -74,19 +80,22 @@ public class Main {
             gis = new GZIPInputStream(object.getObjectContent());
             inputBr = new BufferedReader(new InputStreamReader(gis));
             // add the first two line into data as a test
-            dataToSomeNode.add(inputBr.readLine());
-            dataToSomeNode.add(inputBr.readLine());
+//            dataToSomeNode.add(inputBr.readLine());
+//            dataToSomeNode.add(inputBr.readLine());
+            System.out.println("reading data from s3");
+            // feed data to the DataProcessing
+            dp.feedLine(inputBr.readLine());
         }
         br.close();
 
         // TODO sample local data
+        Set<String> localSamples = dp.getLocalSamples();
 
         // send data to other nodes
-//        dataToSomeNode.add("The sample data, handsome!");
         System.out.println("Start sending sample data...");
-        List<String> dataReceived;
+        Set<String> dataReceived;
         for (String ip : ipList) {
-            comm.sendDataToNode(ip, dataToSomeNode);
+            comm.sendDataToNode(ip, localSamples);
         }
         // enter barrier, wait for other nodes getting ready for SELECT stage
         System.out.println("Entering barrier...");
@@ -94,11 +103,13 @@ public class Main {
         // load data from buffer
         System.out.println("Start reading sample data...");
         dataReceived = comm.readBufferedData();
-        finalData.addAll(dataReceived);
+//        finalData.addAll(dataReceived);
+        dp.recvSamples(dataReceived);
         dataReceived.clear();
 
 
-        // TODO combine sample data, choose pivots, prepare data for other nodes
+        // TODO choose pivots, prepare data for other nodes
+        List<Set<String>> dataToOtherNodes = dp.dataToOtherNode();
 
         // send data to other nodes
         System.out.println("Start sending select data...");

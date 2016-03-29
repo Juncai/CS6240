@@ -3,10 +3,7 @@ package sorting;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 // Author: Jun Cai
 public class NodeCommunication {
@@ -91,14 +88,14 @@ public class NodeCommunication {
         masterSocket.close();
     }
 
-    public void sendDataToNode(String tar, List<String> buffer) throws Exception {
+    public void sendDataToNode(String tar, Collection<String> buffer) throws Exception {
         // write data
         SendDataTread sdt = new SendDataTread(writeConns.get(tar), buffer);
         sdt.start();
     }
 
-    public List<String> readBufferedData() {
-        List<String> allBufferedData = new ArrayList<String>();
+    public Set<String> readBufferedData() {
+        Set<String> allBufferedData = new HashSet<String>();
         ReceiveDataTread rdt;
         for (String adr : listeningThreads.keySet()) {
             rdt = listeningThreads.get(adr);
@@ -224,9 +221,9 @@ class ReceiveDataTread extends Thread {
 
 class SendDataTread extends Thread {
     private Socket writeConn;
-    private List<String> payload;
+    private Collection<String> payload;
 
-    public SendDataTread(Socket writeConn, List<String> payload) throws Exception {
+    public SendDataTread(Socket writeConn, Collection<String> payload) throws Exception {
         this.writeConn = writeConn;
         this.payload = payload;
     }

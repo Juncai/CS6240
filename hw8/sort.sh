@@ -18,10 +18,19 @@ i="0"
 
 while IFS='' read -r line || [[ -n "$line" ]]; do
 # start the program on each slave
-	ssh -i $EC2_PRIVATE_KEY_PATH -n -f $EC2_USERNAME@$line ". ~/slave_env.sh; java -jar ~/Job.jar $port $master_port $ip_file $i $INPUT_BUCKET $input_prefix$i $OUTPUT_BUCKET > ~/log 2>&1 &"
+	# ssh -i $EC2_PRIVATE_KEY_PATH -n -f $EC2_USERNAME@$line ". ~/slave_env.sh; java -jar ~/Job.jar $port $master_port $ip_file $i $INPUT_BUCKET $input_prefix$i $OUTPUT_BUCKET > ~/log 2>&1 &"
+	ssh -i $EC2_PRIVATE_KEY_PATH -n -f $EC2_USERNAME@$line "java -jar ~/Job.jar $port $master_port $ip_file $i $INPUT_BUCKET $input_prefix$i $OUTPUT_BUCKET > ~/log 2>&1 &"
 	i=$[$i+1]
     echo "Node start working: $line"
 done < "$ip_file"
+
+# i="0"
+# for ip in "${ips[@]}"
+# do
+# 	echo "'java -jar ~/Job.jar $port $master_port $ip_file $i $INPUT_BUCKET $input_prefix$i $OUTPUT_BUCKET > ~/log 2>&1 &'"
+# 	echo $ip$i
+# 	i=$[$i+1]
+# done
 
 # waiting for the all the slave finishing their jobs
 tmstate='done'

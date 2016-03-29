@@ -1,124 +1,229 @@
 package sorting;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 //Author: Vikas Boddu
 public class DataProcessing {
-    String inputPathGzip;
-    String inputPathTxt;
     ArrayList<Value> list = new ArrayList<Value>();
-    ArrayList<Integer> sampleTemps = new ArrayList<Integer>();
+    private Set<Double> sampleTemps;
+    private Set<String[]> data;
+    private List<Double> pivots;
+    private int numOfNodes;
+    private int nodeInd;
 
-    public DataProcessing(String inputPath) {
-        this.inputPathGzip = inputPath;
+    public DataProcessing(int nNodes, int ind) {
+        numOfNodes = nNodes;
+        nodeInd = ind;
+        data = new HashSet<String[]>();
+        sampleTemps = new HashSet<Double>();
+        pivots = new ArrayList<Double>();
     }
 
-    public void unZipAll(String inputPath, String outputPath) {
-        inputPathTxt = outputPath;
-        File dir = new File(inputPath);
-        File[] directoryListing = dir.listFiles();
-        if (directoryListing != null) {
-            for (File aFile : directoryListing) {
-                if (aFile.toString().endsWith(".txt.gz")) {
-                    unZipOne(aFile, outputPath);
-                }
-            }
-        } else {
-            System.out.println("No .*.txt.gz present");
+    public void feedLine(String line) {
+        if (line.startsWith(Consts.HEADER_START)) return;
+
+        String[] values = line.split(Consts.COMMA);
+        if (sanityCheck(values)) {
+            data.add(values);
         }
     }
 
-    public void unZipOne(File gzip, String outputPath) {
+
+    private boolean sanityCheck(String[] values) {
         try {
-            String outputTxtName = gzip.getName();
-            outputTxtName = outputTxtName.substring(0, outputTxtName.length() - 3);
-            outputTxtName = outputPath + outputTxtName;
-
-            FileInputStream fis = new FileInputStream(gzip);
-            GZIPInputStream gis = new GZIPInputStream(fis);
-            FileOutputStream fos = new FileOutputStream(outputTxtName);
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = gis.read(buffer)) != -1) {
-                fos.write(buffer, 0, len);
-            }
-            fos.close();
-            gis.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+            int webnNumber = Integer.parseInt(values[Consts.WBAN_NUMBER]);
+            int date = Integer.parseInt(values[Consts.DATE]);
+            int time = Integer.parseInt(values[Consts.TIME]);
+            double dbt = Double.parseDouble(values[Consts.DRY_BULB_TEMP]);
+        } catch (NumberFormatException ex) {
+            return false;
         }
+        return true;
     }
 
-    public void txtReadAll() {
-        File dir = new File(inputPathTxt);
-        File[] directoryListing = dir.listFiles();
-        if (directoryListing != null) {
-            for (File aFile : directoryListing) {
-                if (aFile.toString().endsWith(".txt")) {
-                    txtReadOne(aFile);
-                }
+    public Set<String> getLocalSamples() {
+        Set<String> res = new HashSet<String>();
+        int i = 0;
+        double cTemp;
+        for (String[] v : data) {
+            if (i++ % Consts.SAMPLE_BASE == 0) {
+                cTemp = getTemp(v);
+                sampleTemps.add(cTemp);
+                res.add(cTemp + "");
             }
-        } else {
-            System.out.println("No .*.txt present");
         }
+        return res;
     }
 
-    public void txtReadOne(File inputFile) {
-        BufferedReader br = null;
-        String line = "";
-        String cvsSplitBy = ",";
-        try {
-            br = new BufferedReader(new FileReader(inputFile));
-            int i = 0;
-            while ((line = br.readLine()) != null) {
-                String[] parsedValues = line.split(cvsSplitBy);
-                if (i > 0) {
-                    Value desiredValues = new Value(parsedValues[0], parsedValues[1], parsedValues[2], parsedValues[8]);
-                    list.add(desiredValues);
-                    if (i % Consts.SAMPLE_FREQUENCY == 0) {
-                        sampleTemps.add(desiredValues.temp);
+    public List<Set<String[]>> dataToOtherNode() {
+        // compute the pivots
+        getPivots();
+
+        List<Set<String[]>> res = new ArrayList<Set<String[]>>();
+
+        // create buckets for each node
+        for (int i = 0; i < numOfNodes; i++) {
+            res.add(new HashSet<String[]>());
+        }
+
+        double cTemp;
+        boolean done;
+        for (String[] v : data) {
+            cTemp = getTemp(v);
+            done = false;
+            for (int i = 0; i < pivots.size(); i++) {
+                if (cTemp < pivots.get(i)) {
+                    if (i != nodeInd) {
+                        res.get(i).add(v);
                     }
+                    done = true;
                 }
-                i++;
             }
-            if (br != null) {
-                br.close();
+            if (!done) {
+                res.get(numOfNodes - 1).add(v);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
+        return res;
     }
 
-    public void sendSamples() {
-        //Networking
-    }
+    private String arrayToString(String[] arr) {
+        // TODO concatenate the strings with COMMA
 
-    public void recvSamples() {
-        //Networking
-        // TODO integrate with networking class
-        List<Integer> recvTemps = new ArrayList<Integer>();
-        sampleTemps.addAll(recvTemps);
-    }
-
-    public ArrayList<Integer> pivots(int numberOfNodes) {
-        Collections.sort(sampleTemps);
-        ArrayList<Double> pivots = new ArrayList<Double>();
-        pivots.add(median(sampleTemps));
-        //TODO split array and generate 1 or 7 medians depending on numberofnodes
         return null;
     }
 
-    public double median(ArrayList<Integer> aL) {
+    private double getTemp(String[] values) {
+        return Double.parseDouble(values[Consts.DRY_BULB_TEMP]);
+    }
+
+    public void recvSamples(Set<String> samples) {
+        double s;
+        for (String ss : samples) {
+            try {
+                s = Double.parseDouble(ss);
+                sampleTemps.add(s);
+            } catch (NumberFormatException ex) {
+                // something wrong
+            }
+        }
+    }
+
+    public void recvData(Set<String[]> d) {
+        data.addAll(d);
+    }
+
+    private void getPivots() {
+        List<Double> sampleList = new ArrayList<Double>(sampleTemps);
+        Collections.sort(sampleList);
+
+        if (numOfNodes == 2) {
+            pivots = findOnePivot(sampleList);
+        } else {
+            pivots = findSevenPivots(sampleList);
+        }
+    }
+
+    private List<Double> findSevenPivots(List<Double> samples) {
+        List<Double> res = new ArrayList<Double>();
+        //TODO find 7 pivots
+
+        return res;
+    }
+
+    private List<Double> findOnePivot(List<Double> samples) {
+        List<Double> res = new ArrayList<Double>();
+        res.add(median(samples));
+        return res;
+    }
+
+    private double median(List<Double> aL) {
         double median;
         if (sampleTemps.size() % 2 == 0) {
-            median = ((double) aL.get(aL.size() / 2) + (double) aL.get(aL.size() / 2 - 1)) / 2;
+            median = (aL.get(aL.size() / 2) + aL.get(aL.size() / 2 - 1)) / 2;
         } else {
-            median = (double) aL.get(aL.size() / 2);
+            median = aL.get(aL.size() / 2);
         }
         return median;
     }
+
+//    public void unZipAll(String inputPath, String outputPath) {
+//        inputPathTxt = outputPath;
+//        File dir = new File(inputPath);
+//        File[] directoryListing = dir.listFiles();
+//        if (directoryListing != null) {
+//            for (File aFile : directoryListing) {
+//                if (aFile.toString().endsWith(".txt.gz")) {
+//                    unZipOne(aFile, outputPath);
+//                }
+//            }
+//        } else {
+//            System.out.println("No .*.txt.gz present");
+//        }
+//    }
+//
+//    public void unZipOne(File gzip, String outputPath) {
+//        try {
+//            String outputTxtName = gzip.getName();
+//            outputTxtName = outputTxtName.substring(0, outputTxtName.length() - 3);
+//            outputTxtName = outputPath + outputTxtName;
+//
+//            FileInputStream fis = new FileInputStream(gzip);
+//            GZIPInputStream gis = new GZIPInputStream(fis);
+//            FileOutputStream fos = new FileOutputStream(outputTxtName);
+//            byte[] buffer = new byte[1024];
+//            int len;
+//            while ((len = gis.read(buffer)) != -1) {
+//                fos.write(buffer, 0, len);
+//            }
+//            fos.close();
+//            gis.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    public void txtReadAll() {
+//        File dir = new File(inputPathTxt);
+//        File[] directoryListing = dir.listFiles();
+//        if (directoryListing != null) {
+//            for (File aFile : directoryListing) {
+//                if (aFile.toString().endsWith(".txt")) {
+//                    txtReadOne(aFile);
+//                }
+//            }
+//        } else {
+//            System.out.println("No .*.txt present");
+//        }
+//    }
+//
+//    public void txtReadOne(File inputFile) {
+//        BufferedReader br = null;
+//        String line = "";
+//        String cvsSplitBy = ",";
+//        try {
+//            br = new BufferedReader(new FileReader(inputFile));
+//            int i = 0;
+//            while ((line = br.readLine()) != null) {
+//                String[] parsedValues = line.split(cvsSplitBy);
+//                if (i > 0) {
+//                    Value desiredValues = new Value(parsedValues[0], parsedValues[1], parsedValues[2], parsedValues[8]);
+//                    list.add(desiredValues);
+//                    if (i % Consts.SAMPLE_FREQUENCY == 0) {
+//                        sampleTemps.add(desiredValues.temp);
+//                    }
+//                }
+//                i++;
+//            }
+//            if (br != null) {
+//                br.close();
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+
 }
