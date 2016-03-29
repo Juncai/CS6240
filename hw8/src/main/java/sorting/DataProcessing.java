@@ -164,8 +164,44 @@ public class DataProcessing {
 
     private List<Double> findSevenPivots(List<Double> samples) {
         List<Double> res = new ArrayList<Double>();
-        //TODO find 7 pivots
+        List<Double> res = new ArrayList<Double>();
+        List<Double> samplesSplit0 = new ArrayList<Double>();
+        List<Double> samplesSplit1 = new ArrayList<Double>();
+        List<Double> samplesSplit2 = new ArrayList<Double>();
+        List<Double> samplesSplit3 = new ArrayList<Double>();
+        res.add(median(samples));
 
+        if (samples.size() % 2 == 0) {
+            samplesSplit0 = samples.subList(0, (samples.size() / 2));
+            samplesSplit2 = samples.subList((samples.size() / 2), samples.size());
+        } else {
+            samplesSplit0 = samples.subList(0, ((samples.size() + 1 ) / 2) - 1);
+            samplesSplit2 = samples.subList((samples.size() + 1 ) / 2, samples.size());
+        }
+
+        res.add(median(samplesSplit0));
+        res.add(median(samplesSplit2));
+
+        if (samplesSplit0.size() % 2 == 0) {
+            samplesSplit1 = samplesSplit0.subList((samplesSplit0.size() / 2), samplesSplit0.size());
+            samplesSplit0 = samplesSplit0.subList(0, (samplesSplit0.size() / 2));
+
+            samplesSplit3 = samplesSplit2.subList((samplesSplit2.size() / 2), samplesSplit2.size());
+            samplesSplit2 = samplesSplit2.subList(0, (samplesSplit2.size() / 2));
+        } else {
+            samplesSplit1 = samplesSplit0.subList((samplesSplit0.size() + 1 ) / 2, samplesSplit0.size());
+            samplesSplit0 = samplesSplit0.subList(0, ((samplesSplit0.size() + 1 ) / 2) - 1);
+
+            samplesSplit3 = samplesSplit2.subList((samplesSplit2.size() + 1 ) / 2, samplesSplit2.size());
+            samplesSplit2 = samplesSplit2.subList(0, ((samplesSplit2.size() + 1 ) / 2) - 1);
+        }
+
+        res.add(median(samplesSplit0));
+        res.add(median(samplesSplit1));
+        res.add(median(samplesSplit2));
+        res.add(median(samplesSplit3));
+
+        Collections.sort(res);
         return res;
     }
 
