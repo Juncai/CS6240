@@ -7,7 +7,7 @@ import java.util.zip.GZIPInputStream;
 //Author: Vikas Boddu
 public class DataProcessing {
     private Set<Double> sampleTemps;
-    private Set<String[]> data;
+    private Set<String> data;
     private List<Double> pivots;
     private int numOfNodes;
     private int nodeInd;
@@ -17,7 +17,7 @@ public class DataProcessing {
     public DataProcessing(int nNodes, int ind) {
         numOfNodes = nNodes;
         nodeInd = ind;
-        data = new HashSet<String[]>();
+        data = new HashSet<String>();
         sampleTemps = new HashSet<Double>();
         pivots = new ArrayList<Double>();
         badCount = 0;
@@ -27,42 +27,53 @@ public class DataProcessing {
     public void feedLine(String line) {
         if (line.startsWith(Consts.HEADER_START)) return;
 
-        String[] values = line.split(Consts.COMMA);
-        if (sanityCheck(values)) {
-            data.add(values);
+        if (sanityCheck(line)) {
+            data.add(line);
             dataCount++;
+        } else {
+            badCount++;
         }
     }
 
-    private boolean sanityCheck(String[] values) {
+    public static boolean isDouble(String line) {
         try {
-            int webnNumber = Integer.parseInt(values[Consts.WBAN_NUMBER]);
-            int date = Integer.parseInt(values[Consts.DATE]);
-            int time = Integer.parseInt(values[Consts.TIME]);
-            double dbt = Double.parseDouble(values[Consts.DRY_BULB_TEMP]);
-        } catch (NumberFormatException ex) {
-            badCount++;
+            Double.parseDouble(line);
+        } catch (Exception ex) {
             return false;
         }
         return true;
     }
 
-    public List<String[]> sortData() {
-        List<String[]> orderedData = new ArrayList<String[]>(data);
+    public static boolean sanityCheck(String line) {
+        String[] values = line.split(Consts.COMMA);
+        try {
+            int webnNumber = Integer.parseInt(values[Consts.WBAN_NUMBER]);
+            int date = Integer.parseInt(values[Consts.DATE]);
+            int time = Integer.parseInt(values[Consts.TIME]);
+            double dbt = Double.parseDouble(values[Consts.DRY_BULB_TEMP]);
+        } catch (Exception ex) {
+            return false;
+        }
+        return true;
+    }
+
+    public List<String> sortData() {
+
+        List<String> orderedData = new ArrayList<String>(data);
 
         // clean the data
 //        data.clear();
 
-        Collections.sort(orderedData, new Comparator<String[]>() {
+        Collections.sort(orderedData, new Comparator<String>() {
             @Override
-            public int compare(String[] o1, String[] o2) {
+            public int compare(String o1, String o2) {
                 // TODO compare dry bulb temp
                 double temp1 = getTemp(o1);
                 double temp2 = getTemp(o2);
                 if (temp1 > temp2) {
-                    return 1;
-                } else if (temp1 < temp2) {
                     return -1;
+                } else if (temp1 < temp2) {
+                    return 1;
                 }
                 return 0;
             }
@@ -75,7 +86,7 @@ public class DataProcessing {
         Set<String> res = new HashSet<String>();
         int i = 0;
         double cTemp;
-        for (String[] v : data) {
+        for (String v : data) {
             if (i++ % Consts.SAMPLE_BASE == 0) {
                 cTemp = getTemp(v);
                 sampleTemps.add(cTemp);
@@ -90,6 +101,7 @@ public class DataProcessing {
         getPivots();
 
         List<Set<String>> res = new ArrayList<Set<String>>();
+        Set<String> dataRemain = new HashSet<String>();
 
         // create buckets for each node
         for (int i = 0; i < numOfNodes; i++) {
@@ -98,38 +110,45 @@ public class DataProcessing {
 
         double cTemp;
         boolean done;
-        for (String[] v : data) {
+        for (String v : data) {
             cTemp = getTemp(v);
             done = false;
             for (int i = 0; i < pivots.size(); i++) {
                 if (cTemp < pivots.get(i)) {
                     if (i != nodeInd) {
-                        res.get(i).add(arrayToString(v));
+                        res.get(i).add(v);
+                    } else {
+                        dataRemain.add(v);
                     }
                     done = true;
                 }
             }
             if (!done) {
-                res.get(numOfNodes - 1).add(arrayToString(v));
+                res.get(numOfNodes - 1).add(v);
             }
         }
+
+        // only keep the necessary data
+        data = dataRemain;
+
         return res;
     }
 
-    public static String arrayToString(String[] arr) {
-        // TODO concatenate the strings with COMMA
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < arr.length; i++) {
-            sb.append(arr[i]);
-            if (i < arr.length - 1) {
-                sb.append(Consts.DELIMITER);
-            }
-        }
+//    public static String arrayToString(String[] arr) {
+//        // TODO concatenate the strings with COMMA
+//        StringBuilder sb = new StringBuilder();
+//        for (int i = 0; i < arr.length; i++) {
+//            sb.append(arr[i]);
+//            if (i < arr.length - 1) {
+//                sb.append(Consts.DELIMITER);
+//            }
+//        }
+//
+//        return sb.toString();
+//    }
 
-        return sb.toString();
-    }
-
-    private double getTemp(String[] values) {
+    private double getTemp(String line) {
+        String[] values = line.split(Consts.COMMA);
         return Double.parseDouble(values[Consts.DRY_BULB_TEMP]);
     }
 
@@ -146,9 +165,7 @@ public class DataProcessing {
     }
 
     public void recvData(Set<String> d) {
-        for (String v : d) {
-            data.add(v.split(Consts.COMMA));
-        }
+        data.addAll(d);
     }
 
     private void getPivots() {

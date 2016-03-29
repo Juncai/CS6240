@@ -161,9 +161,9 @@ public class NodeCommunication {
 class ReceiveDataTread extends Thread {
     final public Object lock;
     private Socket readConn;
-    public List<String> sampleBuffer;
-    public List<String> selectBuffer;
-    private List<String> currentBuffer;
+    public Set<String> sampleBuffer;
+    public Set<String> selectBuffer;
+    private Set<String> currentBuffer;
     private Barrier b;
     private String tarAddr;
     public Consts.Stage stage;
@@ -172,8 +172,8 @@ class ReceiveDataTread extends Thread {
         stage = Consts.Stage.SAMPLE;
         lock = new Object();
         this.readConn = readConn;
-        sampleBuffer = new ArrayList<String>();
-        selectBuffer = new ArrayList<String>();
+        sampleBuffer = new HashSet<String>();
+        selectBuffer = new HashSet<String>();
         currentBuffer = sampleBuffer;
         this.b = b;
         this.tarAddr = tarAddr;
@@ -193,7 +193,14 @@ class ReceiveDataTread extends Thread {
                         b.nodeReady(tarAddr);
                     } else {
                         if (currentBuffer != null) {
-                            currentBuffer.add(line);
+                            if (stage == Consts.Stage.SAMPLE
+                                    && DataProcessing.isDouble(line)) {
+                                currentBuffer.add(line);
+                            }
+                            if (stage == Consts.Stage.SELECT
+                                    && DataProcessing.sanityCheck(line)) {
+                                currentBuffer.add(line);
+                            }
                         }
                     }
                 }
@@ -209,10 +216,12 @@ class ReceiveDataTread extends Thread {
             switch (stage) {
                 case SAMPLE:
                     stage = Consts.Stage.SELECT;
+                    sampleBuffer.clear();
                     currentBuffer = selectBuffer;
                     break;
                 case SELECT:
                     stage = Consts.Stage.SORT;
+                    selectBuffer.clear();
                     currentBuffer = null;
             }
         }

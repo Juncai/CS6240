@@ -13,6 +13,7 @@ import com.amazonaws.services.s3.model.S3Object;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
@@ -20,6 +21,8 @@ import java.util.zip.GZIPInputStream;
 // Author:
 public class Main {
     public static void main(String[] args) throws Exception {
+        long startTS;
+        long endTS;
         for (String s : args) {
             System.out.println(s);
         }
@@ -93,6 +96,7 @@ public class Main {
         // TODO sample local data
         System.out.println("Good data: " + dp.dataCount);
         System.out.println("Bad data: " + dp.badCount);
+        startTS = new Date().getTime();
         Set<String> localSamples = dp.getLocalSamples();
 
         // send data to other nodes
@@ -132,28 +136,29 @@ public class Main {
         dataReceived.clear();
 
         // TODO sort the local data, then send the result to S3
-        List<String[]> outputData = dp.sortData();
+        List<String> outputData = dp.sortData();
+        endTS = new Date().getTime();
 
         // create output file in the output bucket
+        System.out.println("Start creating output...");
         s3.deleteObject(outputBucket, outputKey);
         s3.putObject(new PutObjectRequest(outputBucket, outputKey,
                 createOutputFile(outputKey, outputData)));
 
         // close sockets
+        System.out.println("Time used: " + (endTS - startTS) / 1000);
         System.out.println("Closing connections...");
         comm.endCommunication();
     }
 
-    private static File createOutputFile(String fileName, List<String[]> data) throws IOException {
+    private static File createOutputFile(String fileName, List<String> data) throws IOException {
 
         File file = new File(fileName);
         file.createNewFile();
 //        file.deleteOnExit();
         FileWriter fw = new FileWriter(file, true);
-        String line;
-        for (String[] v : data) {
-            line = DataProcessing.arrayToString(v);
-            fw.write(line);
+        for (String v : data) {
+            fw.write(v);
             fw.write("\n");
         }
         fw.flush();

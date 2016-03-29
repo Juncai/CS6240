@@ -19,8 +19,9 @@ i="0"
 while IFS='' read -r line || [[ -n "$line" ]]; do
 # start the program on each slave
 	scp -i $EC2_PRIVATE_KEY_PATH Job.jar $EC2_USERNAME@$line:~/ 
+	scp -i $EC2_PRIVATE_KEY_PATH inputs/$input_prefix$i $EC2_USERNAME@$line:~/ 
 	i=$[$i+1]
-    echo "Node start working: $line"
+    echo "Node finished: $line"
 done < "$ip_file"
 
 # i="0"
