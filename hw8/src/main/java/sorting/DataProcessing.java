@@ -6,12 +6,13 @@ import java.util.zip.GZIPInputStream;
 
 //Author: Vikas Boddu
 public class DataProcessing {
-    ArrayList<Value> list = new ArrayList<Value>();
     private Set<Double> sampleTemps;
     private Set<String[]> data;
     private List<Double> pivots;
     private int numOfNodes;
     private int nodeInd;
+    public int badCount;
+    public int dataCount;
 
     public DataProcessing(int nNodes, int ind) {
         numOfNodes = nNodes;
@@ -19,6 +20,8 @@ public class DataProcessing {
         data = new HashSet<String[]>();
         sampleTemps = new HashSet<Double>();
         pivots = new ArrayList<Double>();
+        badCount = 0;
+        dataCount = 0;
     }
 
     public void feedLine(String line) {
@@ -27,9 +30,9 @@ public class DataProcessing {
         String[] values = line.split(Consts.COMMA);
         if (sanityCheck(values)) {
             data.add(values);
+            dataCount++;
         }
     }
-
 
     private boolean sanityCheck(String[] values) {
         try {
@@ -38,9 +41,34 @@ public class DataProcessing {
             int time = Integer.parseInt(values[Consts.TIME]);
             double dbt = Double.parseDouble(values[Consts.DRY_BULB_TEMP]);
         } catch (NumberFormatException ex) {
+            badCount++;
             return false;
         }
         return true;
+    }
+
+    public List<String[]> sortData() {
+        List<String[]> orderedData = new ArrayList<String[]>(data);
+
+        // clean the data
+//        data.clear();
+
+        Collections.sort(orderedData, new Comparator<String[]>() {
+            @Override
+            public int compare(String[] o1, String[] o2) {
+                // TODO compare dry bulb temp
+                double temp1 = getTemp(o1);
+                double temp2 = getTemp(o2);
+                if (temp1 > temp2) {
+                    return 1;
+                } else if (temp1 < temp2) {
+                    return -1;
+                }
+                return 0;
+            }
+        });
+
+        return orderedData;
     }
 
     public Set<String> getLocalSamples() {
@@ -57,15 +85,15 @@ public class DataProcessing {
         return res;
     }
 
-    public List<Set<String[]>> dataToOtherNode() {
+    public List<Set<String>> dataToOtherNode() {
         // compute the pivots
         getPivots();
 
-        List<Set<String[]>> res = new ArrayList<Set<String[]>>();
+        List<Set<String>> res = new ArrayList<Set<String>>();
 
         // create buckets for each node
         for (int i = 0; i < numOfNodes; i++) {
-            res.add(new HashSet<String[]>());
+            res.add(new HashSet<String>());
         }
 
         double cTemp;
@@ -76,23 +104,29 @@ public class DataProcessing {
             for (int i = 0; i < pivots.size(); i++) {
                 if (cTemp < pivots.get(i)) {
                     if (i != nodeInd) {
-                        res.get(i).add(v);
+                        res.get(i).add(arrayToString(v));
                     }
                     done = true;
                 }
             }
             if (!done) {
-                res.get(numOfNodes - 1).add(v);
+                res.get(numOfNodes - 1).add(arrayToString(v));
             }
         }
-
         return res;
     }
 
-    private String arrayToString(String[] arr) {
+    public static String arrayToString(String[] arr) {
         // TODO concatenate the strings with COMMA
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < arr.length; i++) {
+            sb.append(arr[i]);
+            if (i < arr.length - 1) {
+                sb.append(Consts.DELIMITER);
+            }
+        }
 
-        return null;
+        return sb.toString();
     }
 
     private double getTemp(String[] values) {
@@ -111,8 +145,10 @@ public class DataProcessing {
         }
     }
 
-    public void recvData(Set<String[]> d) {
-        data.addAll(d);
+    public void recvData(Set<String> d) {
+        for (String v : d) {
+            data.add(v.split(Consts.COMMA));
+        }
     }
 
     private void getPivots() {
@@ -141,7 +177,7 @@ public class DataProcessing {
 
     private double median(List<Double> aL) {
         double median;
-        if (sampleTemps.size() % 2 == 0) {
+        if (aL.size() % 2 == 0) {
             median = (aL.get(aL.size() / 2) + aL.get(aL.size() / 2 - 1)) / 2;
         } else {
             median = aL.get(aL.size() / 2);

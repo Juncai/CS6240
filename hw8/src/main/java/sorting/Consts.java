@@ -9,6 +9,7 @@ public class Consts {
     public static final String HEADER_START = "Wban Number,";
     public static final String NODE_READY = "READY";
     public static final String COMMA = ",";
+    public static final String DELIMITER = ", ";
     public enum Stage {
         SAMPLE, SELECT, SORT
     }

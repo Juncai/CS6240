@@ -39,9 +39,9 @@ public class Main {
         BufferedReader br = new BufferedReader(new FileReader(peerIpFilePath));
         List<String> ipList = new ArrayList<String>();
         String line = null;
-        int i = 0;
+        int nNodes = 0;
         while ((line = br.readLine()) != null) {
-            if (i++ != cInd) {
+            if (nNodes++ != cInd) {
                 ipList.add(line);
                 System.out.println("adding ip to iplist: " + line);
             }
@@ -49,7 +49,6 @@ public class Main {
         br.close();
 
         // create data processing object
-        int nNodes = ipList.size();
         DataProcessing dp = new DataProcessing(nNodes, cInd);
 
         // create communication object and initialize it
@@ -75,6 +74,7 @@ public class Main {
 //        GZIPInputStream gis = new GZIPInputStream(fis);
         GZIPInputStream gis;
         BufferedReader inputBr;
+        String dataLine;
         while ((line = br.readLine()) != null) {
             object = s3.getObject(new GetObjectRequest(inputBucket, line));
             gis = new GZIPInputStream(object.getObjectContent());
@@ -84,11 +84,15 @@ public class Main {
 //            dataToSomeNode.add(inputBr.readLine());
             System.out.println("reading data from s3");
             // feed data to the DataProcessing
-            dp.feedLine(inputBr.readLine());
+            while ((dataLine = inputBr.readLine()) != null) {
+                dp.feedLine(dataLine);
+            }
         }
         br.close();
 
         // TODO sample local data
+        System.out.println("Good data: " + dp.dataCount);
+        System.out.println("Bad data: " + dp.badCount);
         Set<String> localSamples = dp.getLocalSamples();
 
         // send data to other nodes
@@ -113,9 +117,10 @@ public class Main {
 
         // send data to other nodes
         System.out.println("Start sending select data...");
-        for (String adr : ipList) {
-            String ip = adr.split(":")[0];
-            comm.sendDataToNode(ip, dataToSomeNode);
+        for (int i = 0; i < ipList.size(); i++) {
+            // since we remove the current ip from the ip list
+            int actualInd = (i >= cInd) ? i + 1 : i;
+            comm.sendDataToNode(ipList.get(i), dataToOtherNodes.get(actualInd));
         }
         // enter barrier, wait for other nodes getting ready for SORT stage
         System.out.println("Entering barrier...");
@@ -123,30 +128,32 @@ public class Main {
         // load data from buffer
         System.out.println("Start reading select data...");
         dataReceived = comm.readBufferedData();
+        dp.recvData(dataReceived);
         dataReceived.clear();
 
         // TODO sort the local data, then send the result to S3
-
+        List<String[]> outputData = dp.sortData();
 
         // create output file in the output bucket
-        finalData.addAll(dataToSomeNode);
         s3.deleteObject(outputBucket, outputKey);
         s3.putObject(new PutObjectRequest(outputBucket, outputKey,
-                createOutputFile(outputKey, finalData)));
+                createOutputFile(outputKey, outputData)));
 
         // close sockets
         System.out.println("Closing connections...");
         comm.endCommunication();
     }
 
-    private static File createOutputFile(String fileName, List<String> data) throws IOException {
+    private static File createOutputFile(String fileName, List<String[]> data) throws IOException {
 
         File file = new File(fileName);
         file.createNewFile();
 //        file.deleteOnExit();
         FileWriter fw = new FileWriter(file, true);
-        for (String d : data) {
-            fw.write(d);
+        String line;
+        for (String[] v : data) {
+            line = DataProcessing.arrayToString(v);
+            fw.write(line);
             fw.write("\n");
         }
         fw.flush();

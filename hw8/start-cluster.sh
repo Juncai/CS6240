@@ -38,7 +38,7 @@ while [ $i -lt $instance_number ]
 do
 	instance_id=$(aws ec2 run-instances --image-id $IMAGE_ID \
 			--count 1 \
-			--instance-type t2.micro \
+			--instance-type m3.medium \
 			--key-name $EC2_KEY_PAIR_NAME \
 			--instance-initiated-shutdown-behavior terminate \
 			--security-groups $EC2_SECURITY_GROUP | json Instances[0].InstanceId)
@@ -49,7 +49,7 @@ do
 done
 
 # need to wait until instance is up
-sleep 5m
+sleep 1m
 
 i="0"
 inputs_prefix='inputs/inputs_'
@@ -59,6 +59,7 @@ do
 
 	ips[$i]=$public_ip
 	echo $public_ip >> $ip_file
+	i=$[$i+1]
 done
 
 i="0"
