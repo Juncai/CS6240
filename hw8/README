@@ -1,7 +1,9 @@
 Prerequisits:
 	Make sure you have the key-pair to create AWS EC2 instance, set the key pair name and private key file path in env.sh.
+	Install 'json' package to parse the AWS response.
 	
 Run the code:
+	Specify the input file list in 'inputs' dir. The file 'inputs_N' is for Nth node.
 	Set variables in 'env.sh_template' and 'credentials_template'.
 	Rename them to 'env.sh' and 'credentials'.
 	Source the 'env.sh' by '. env.sh'
