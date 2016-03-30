@@ -2,17 +2,6 @@
 
 # author: Xi Wang
 
-# create a security group
-# aws ec2 create-security-group --group-name A8SecurityGroup --description "security group for MR class"
-
-# export EC2_SECURITY_GROUP=A8SecurityGroup
-
-#If you're launching a Windows instance, you must add a rule to my-security-group to allow inbound traffic on TCP port 3389 (RDP).
-#If you're launching a Linux instance, you must add a rule to allow inbound traffic on TCP port 22 (SSH).
-#Reference: http://docs.aws.amazon.com/cli/latest/userguide/cli-ec2-sg.html#configuring-a-security-group
-# aws ec2 authorize-security-group-ingress --group-name A8SecurityGroup --protocol tcp --port 22 --cidr 203.0.113.0/24
-
-
 # Get input instances number
 instance_number=$1
 
