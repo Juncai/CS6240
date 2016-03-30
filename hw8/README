@@ -1,6 +1,13 @@
 Prerequisits:
-	Make sure you have the key-pair to create AWS EC2 instance, set the key pair name and private key file path in env.sh.
-	Install 'json' package to parse the AWS response.
+	1) Make sure you have the key-pair to create AWS EC2 instance, set the key pair name and private key file path in env.sh_template.
+	If you find Permissions 0644 error (private key is too open), check this guide out: http://stackoverflow.com/questions/8193768/trying-to-ssh-into-an-amazon-ec2-instance-permission-error
+
+	2) Make sure to create your own security group and add a rule to "your-security-group" to allow inbound traffic from "Anywhere". Besides, don't forget to set the security group name in env.sh_template. 
+	Reference: http://docs.aws.amazon.com/cli/latest/userguide/cli-ec2-sg.html#configuring-a-security-group
+
+	3) Install 'json' package using npm to parse the AWS response. 
+	Reference: https://github.com/trentm/json
+	
 	
 Run the code:
 	Specify the input file list in 'inputs' dir. The file 'inputs_N' is for Nth node.
@@ -12,4 +19,4 @@ Run the code:
 	./sort.sh
 	
 Other script:
-	./login N can login the Nth node.
+	./login N can login the Nth node. For example, if you have two nodes. The command should like "./login 0" and "./login 1"
