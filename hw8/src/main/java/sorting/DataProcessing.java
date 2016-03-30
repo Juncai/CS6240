@@ -6,8 +6,8 @@ import java.util.zip.GZIPInputStream;
 
 //Author: Vikas Boddu
 public class DataProcessing {
-    private Set<Double> sampleTemps;
-    private Set<String> data;
+    private List<Double> sampleTemps;
+    private List<String> data;
     private List<Double> pivots;
     private int numOfNodes;
     private int nodeInd;
@@ -17,8 +17,8 @@ public class DataProcessing {
     public DataProcessing(int nNodes, int ind) {
         numOfNodes = nNodes;
         nodeInd = ind;
-        data = new HashSet<String>();
-        sampleTemps = new HashSet<Double>();
+        data = new ArrayList<String>();
+        sampleTemps = new ArrayList<Double>();
         pivots = new ArrayList<Double>();
         badCount = 0;
         dataCount = 0;
@@ -82,8 +82,8 @@ public class DataProcessing {
         return orderedData;
     }
 
-    public Set<String> getLocalSamples() {
-        Set<String> res = new HashSet<String>();
+    public List<String> getLocalSamples() {
+        List<String> res = new ArrayList<String>();
         int i = 0;
         double cTemp;
         for (String v : data) {
@@ -96,16 +96,16 @@ public class DataProcessing {
         return res;
     }
 
-    public List<Set<String>> dataToOtherNode() {
+    public List<List<String>> dataToOtherNode() {
         // compute the pivots
         getPivots();
 
-        List<Set<String>> res = new ArrayList<Set<String>>();
-        Set<String> dataRemain = new HashSet<String>();
+        List<List<String>> res = new ArrayList<List<String>>();
+        List<String> dataRemain = new ArrayList<String>();
 
         // create buckets for each node
         for (int i = 0; i < numOfNodes; i++) {
-            res.add(new HashSet<String>());
+            res.add(new ArrayList<String>());
         }
 
         double cTemp;
@@ -152,8 +152,9 @@ public class DataProcessing {
         return Double.parseDouble(values[Consts.DRY_BULB_TEMP]);
     }
 
-    public void recvSamples(Set<String> samples) {
+    public void recvSamples(List<String> samples) {
         double s;
+        System.out.println("Sample received: " + samples.size());
         for (String ss : samples) {
             try {
                 s = Double.parseDouble(ss);
@@ -164,7 +165,8 @@ public class DataProcessing {
         }
     }
 
-    public void recvData(Set<String> d) {
+    public void recvData(List<String> d) {
+        System.out.println("Data received: " + d.size());
         data.addAll(d);
     }
 
@@ -180,7 +182,7 @@ public class DataProcessing {
     }
 
     private List<Double> findSevenPivots(List<Double> samples) {
-        List<Double> res = new ArrayList<Double>();
+//        List<Double> res = new ArrayList<Double>();
         List<Double> res = new ArrayList<Double>();
         List<Double> samplesSplit0 = new ArrayList<Double>();
         List<Double> samplesSplit1 = new ArrayList<Double>();

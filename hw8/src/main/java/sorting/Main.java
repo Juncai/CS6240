@@ -1,7 +1,6 @@
 package sorting;
 
 import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.regions.Region;
@@ -15,7 +14,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
 // Author:
@@ -90,6 +88,8 @@ public class Main {
             while ((dataLine = inputBr.readLine()) != null) {
                 dp.feedLine(dataLine);
             }
+            inputBr.close();
+            gis.close();
         }
         br.close();
 
@@ -97,11 +97,11 @@ public class Main {
         System.out.println("Good data: " + dp.dataCount);
         System.out.println("Bad data: " + dp.badCount);
         startTS = new Date().getTime();
-        Set<String> localSamples = dp.getLocalSamples();
+        List<String> localSamples = dp.getLocalSamples();
 
         // send data to other nodes
         System.out.println("Start sending sample data...");
-        Set<String> dataReceived;
+        List<String> dataReceived;
         for (String ip : ipList) {
             comm.sendDataToNode(ip, localSamples);
         }
@@ -117,7 +117,7 @@ public class Main {
 
 
         // TODO choose pivots, prepare data for other nodes
-        List<Set<String>> dataToOtherNodes = dp.dataToOtherNode();
+        List<List<String>> dataToOtherNodes = dp.dataToOtherNode();
 
         // send data to other nodes
         System.out.println("Start sending select data...");
@@ -148,7 +148,8 @@ public class Main {
         // close sockets
         System.out.println("Time used: " + (endTS - startTS) / 1000);
         System.out.println("Closing connections...");
-        comm.endCommunication();
+        // TODO find a good way to end the connections
+//        comm.endCommunication();
     }
 
     private static File createOutputFile(String fileName, List<String> data) throws IOException {

@@ -24,7 +24,7 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
 # start the program on each slave
 	# ssh -i $EC2_PRIVATE_KEY_PATH -n -f $EC2_USERNAME@$line ". ~/slave_env.sh; java -jar ~/Job.jar $port $master_port $ip_file $i $INPUT_BUCKET $input_prefix$i $OUTPUT_BUCKET > ~/log 2>&1 &"
 	# scp -i $EC2_PRIVATE_KEY_PATH Job.jar $EC2_USERNAME@$line:~/ 
-	ssh -i $EC2_PRIVATE_KEY_PATH -n -f $EC2_USERNAME@$line "rm part-*;nohup java -jar ~/Job.jar $port $master_port $ip_file $i $INPUT_BUCKET $input_prefix$i $OUTPUT_BUCKET > ~/log 2>&1 &"
+	ssh -i $EC2_PRIVATE_KEY_PATH -n -f $EC2_USERNAME@$line "rm part-*;nohup java -Xmx2g -jar ~/Job.jar $port $master_port $ip_file $i $INPUT_BUCKET $input_prefix$i $OUTPUT_BUCKET > ~/log 2>&1 &"
 	# ssh -i $EC2_PRIVATE_KEY_PATH -n -f $EC2_USERNAME@$line "rm part-* ;nohup java -jar ~/Job.jar $port $master_port $ip_file $i $INPUT_BUCKET $input_prefix$i $OUTPUT_BUCKET &"
 	i=$[$i+1]
     echo "Node start working: $line"

@@ -94,8 +94,8 @@ public class NodeCommunication {
         sdt.start();
     }
 
-    public Set<String> readBufferedData() {
-        Set<String> allBufferedData = new HashSet<String>();
+    public List<String> readBufferedData() {
+        List<String> allBufferedData = new ArrayList<String>();
         ReceiveDataTread rdt;
         for (String adr : listeningThreads.keySet()) {
             rdt = listeningThreads.get(adr);
@@ -161,9 +161,9 @@ public class NodeCommunication {
 class ReceiveDataTread extends Thread {
     final public Object lock;
     private Socket readConn;
-    public Set<String> sampleBuffer;
-    public Set<String> selectBuffer;
-    private Set<String> currentBuffer;
+    public List<String> sampleBuffer;
+    public List<String> selectBuffer;
+    private List<String> currentBuffer;
     private Barrier b;
     private String tarAddr;
     public Consts.Stage stage;
@@ -172,8 +172,8 @@ class ReceiveDataTread extends Thread {
         stage = Consts.Stage.SAMPLE;
         lock = new Object();
         this.readConn = readConn;
-        sampleBuffer = new HashSet<String>();
-        selectBuffer = new HashSet<String>();
+        sampleBuffer = new ArrayList<String>();
+        selectBuffer = new ArrayList<String>();
         currentBuffer = sampleBuffer;
         this.b = b;
         this.tarAddr = tarAddr;
@@ -216,12 +216,12 @@ class ReceiveDataTread extends Thread {
             switch (stage) {
                 case SAMPLE:
                     stage = Consts.Stage.SELECT;
-                    sampleBuffer.clear();
+//                    sampleBuffer.clear();
                     currentBuffer = selectBuffer;
                     break;
                 case SELECT:
                     stage = Consts.Stage.SORT;
-                    selectBuffer.clear();
+//                    selectBuffer.clear();
                     currentBuffer = null;
             }
         }
