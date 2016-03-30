@@ -79,6 +79,7 @@ public class Main {
         BufferedReader inputBr;
         String dataLine;
         while ((line = br.readLine()) != null) {
+            if (line.trim().length() == 0) continue;
             object = s3.getObject(new GetObjectRequest(inputBucket, line));
             gis = new GZIPInputStream(object.getObjectContent());
             inputBr = new BufferedReader(new InputStreamReader(gis));
