@@ -13,7 +13,7 @@ export EC2_PRIVATE_KEY_PATH=
 export EC2_SECURITY_GROUP=
 
 # s3 bucket name
-export INPUT_BUCKET= cs6240sp16
+export INPUT_BUCKET=cs6240sp16
 export OUTPUT_BUCKET=
 
 # AMI
