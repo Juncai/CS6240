@@ -1,4 +1,13 @@
 Prerequisits:
 	Make sure you have the key-pair to create AWS EC2 instance, set the key pair name and private key file path in env.sh.
 	
+Run the code:
+	Set variables in 'env.sh_template' and 'credentials_template'.
+	Rename them to 'env.sh' and 'credentials'.
+	Source the 'env.sh' by '. env.sh'
+	'./run.sh' to build and copy the jar file to the current dir.
+	'./start-cluster.sh NUM_OF_NODES'
+	./sort.sh
 	
+Other script:
+	./login N can login the Nth node.
