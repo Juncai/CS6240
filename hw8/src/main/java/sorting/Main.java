@@ -42,10 +42,11 @@ public class Main {
         String line = null;
         int nNodes = 0;
         while ((line = br.readLine()) != null) {
-            if (nNodes++ != cInd) {
+//            if (nNodes++ != cInd) {
                 ipList.add(line);
                 System.out.println("adding ip to iplist: " + line);
-            }
+//            }
+            nNodes++;
         }
         br.close();
 
@@ -56,7 +57,8 @@ public class Main {
         // This should be done ASAP to create the listening socket at about the same time
         System.out.println("Start creating NodeCommunication...");
         // TODO handle communication with master node
-        NodeCommunication comm = new NodeCommunication(listenPort, masterPort, ipList);
+//        NodeCommunication comm = new NodeCommunication(listenPort, masterPort, ipList);
+        SingleServerNodeCommunication comm = new SingleServerNodeCommunication(listenPort, cInd, ipList);
 
 
         // load data from S3
@@ -102,18 +104,22 @@ public class Main {
         // send data to other nodes
         System.out.println("Start sending sample data...");
         List<String> dataReceived;
-        for (String ip : ipList) {
-            comm.sendDataToNode(ip, localSamples);
+//        for (String ip : ipList) {
+//            comm.sendDataToNode(ip, localSamples);
+//        }
+        for (int i = 0; i < nNodes; i++) {
+            if (i == cInd) continue;
+            comm.sendDataToNode(i, localSamples);
         }
         // enter barrier, wait for other nodes getting ready for SELECT stage
         System.out.println("Entering barrier...");
         comm.barrier(Consts.Stage.SELECT);
         // load data from buffer
         System.out.println("Start reading sample data...");
-        dataReceived = comm.readBufferedData();
+//        dataReceived = comm.readBufferedData();
 //        finalData.addAll(dataReceived);
-        dp.recvSamples(dataReceived);
-        dataReceived.clear();
+        dp.recvSamples(comm.readBufferedSamples());
+//        dataReceived.clear();
 
 
         // TODO choose pivots, prepare data for other nodes
@@ -121,10 +127,9 @@ public class Main {
 
         // send data to other nodes
         System.out.println("Start sending select data...");
-        for (int i = 0; i < ipList.size(); i++) {
-            // since we remove the current ip from the ip list
-            int actualInd = (i >= cInd) ? i + 1 : i;
-            comm.sendDataToNode(ipList.get(i), dataToOtherNodes.get(actualInd));
+        for (int i = 0; i < nNodes; i++) {
+            if (i == cInd) continue;
+            comm.sendDataToNode(i, dataToOtherNodes.get(i));
         }
         // enter barrier, wait for other nodes getting ready for SORT stage
         System.out.println("Entering barrier...");
@@ -149,7 +154,7 @@ public class Main {
         System.out.println("Time used: " + (endTS - startTS) / 1000);
         System.out.println("Closing connections...");
         // TODO find a good way to end the connections
-//        comm.endCommunication();
+        comm.endCommunication();
     }
 
     private static File createOutputFile(String fileName, List<String> data) throws IOException {

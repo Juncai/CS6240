@@ -152,17 +152,19 @@ public class DataProcessing {
         return Double.parseDouble(values[Consts.DRY_BULB_TEMP]);
     }
 
-    public void recvSamples(List<String> samples) {
+    public void recvSamples(List<Double> samples) {
         double s;
         System.out.println("Sample received: " + samples.size());
-        for (String ss : samples) {
-            try {
-                s = Double.parseDouble(ss);
-                sampleTemps.add(s);
-            } catch (NumberFormatException ex) {
-                // something wrong
-            }
-        }
+        sampleTemps.addAll(samples);
+
+//        for (String ss : samples) {
+//            try {
+//                s = Double.parseDouble(ss);
+//                sampleTemps.add(s);
+//            } catch (NumberFormatException ex) {
+//                // something wrong
+//            }
+//        }
     }
 
     public void recvData(List<String> d) {

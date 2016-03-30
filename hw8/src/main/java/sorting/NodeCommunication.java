@@ -78,14 +78,20 @@ public class NodeCommunication {
     }
 
     public void endCommunication() throws IOException {
-        for (String ad : writeConns.keySet()) {
-            writeConns.get(ad).close();
+        // close one end should be enough
+        try {
+            for (String ad : writeConns.keySet()) {
+                writeConns.get(ad).close();
+            }
+            for (String ad : readConns.keySet()) {
+                readConns.get(ad).close();
+            }
+//        listenSocket.close();
+//        masterSocket.close();
+        } catch (IOException ex) {
+
         }
-        for (String ad : readConns.keySet()) {
-            readConns.get(ad).close();
-        }
-        listenSocket.close();
-        masterSocket.close();
+
     }
 
     public void sendDataToNode(String tar, Collection<String> buffer) throws Exception {
