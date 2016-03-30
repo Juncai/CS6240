@@ -1,7 +1,7 @@
 Prerequisits:
 	1) Make sure you have the key-pair to create AWS EC2 instance, set the key pair name and private key file path in env.sh_template.
 
-	2) Make sure to create your own security group. If you're launching a Windows instance, you must add a rule to "your-security-group" to allow inbound traffic on TCP port 3389 (RDP).If you're launching a Linux instance, you must add a rule to allow inbound traffic on TCP port 22 (SSH). Besides, don't forget to set the security group name in env.sh_template. 
+	2) Make sure to create your own security group and add a rule to "your-security-group" to allow inbound traffic from "Anywhere". Besides, don't forget to set the security group name in env.sh_template. 
 	Reference: http://docs.aws.amazon.com/cli/latest/userguide/cli-ec2-sg.html#configuring-a-security-group
 
 	3) Install 'json' package using npm to parse the AWS response. 
