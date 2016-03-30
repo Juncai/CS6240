@@ -33,5 +33,7 @@ public class Consts {
     // master request
     public static final String STATUS_REQ = "STATUS";
     public static final String SHUTDOWN_REQ = "SHUTDOWN";
+    public static final String FINISHED = "FININSHED";
+    public static final String WORKING = "WORKING";
 
 }

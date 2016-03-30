@@ -22,6 +22,7 @@ public class SingleServerNodeCommunication {
     private int nodeInd;
     private boolean[] sampleRecvStates;
     private boolean[] dataRecvStates;
+    private boolean nodeEndStates = false;
 
     public SingleServerNodeCommunication(int listenPort, int nodeInd, List<String> ips) throws Exception {
         sampleBuffer = new ArrayList<Double>();
@@ -54,6 +55,7 @@ public class SingleServerNodeCommunication {
 
     public void endCommunication() throws InterruptedException {
         // waiting for listening thread
+    	nodeStates = true;
         lt.join();
     }
 
@@ -228,6 +230,24 @@ public class SingleServerNodeCommunication {
 
         private void handleMasterRequest(BufferedReader br) {
             // TODO
+            String line;
+            while (null != (line = br.readLine())) {
+                if (line.equals(Consts.STATUS_REQ)) {
+                    // check status
+                	BufferedWriter wtr = new BufferedWriter(new OutputStreamWriter(s.getOutputStream(),
+                            "UTF-8"));
+                	if(nodeEndStatus == false){
+                		wtr.write(Consts.WORKING);
+                	} else if (nodeEndStatus == true){
+                		wtr.write(Consts.FINISHED);
+                	}
+                	wtr.flush();
+                	wtr.close();
+                	
+                } else if (line.equals(Consts.SHUTDOWN_REQ)){
+                   // shut down thread and socket
+                }
+            }
 
         }
 
