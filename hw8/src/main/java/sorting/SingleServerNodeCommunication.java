@@ -20,15 +20,13 @@ public class SingleServerNodeCommunication {
     final private Object bufferLock;
     private SingleServerBarrier b;
     private Consts.Stage stage;
-    private List<Double> sampleBuffer;
-    private List<String> dataBuffer;
+    public List<Double> sampleBuffer;
     private int nodeInd;
     private boolean[] sampleRecvStates;
     private boolean[] dataRecvStates;
 
     public SingleServerNodeCommunication(int listenPort, int nodeInd, List<String> ips) throws Exception {
         sampleBuffer = new ArrayList<Double>();
-        dataBuffer = new ArrayList<String>();
         this.listenPort = listenPort;
         this.nodeInd = nodeInd;
         ipList = ips;
@@ -39,6 +37,7 @@ public class SingleServerNodeCommunication {
         lt = new ListeningThread(listenPort);
         lt.start();
         stage = Consts.Stage.SAMPLE;
+        Thread.sleep(1000);
     }
 
 
@@ -305,6 +304,7 @@ public class SingleServerNodeCommunication {
                             sampleBuffer.addAll(cBuffer);
                             sampleRecvStates[nInd] = true;
                         }
+                        cBuffer = null;
                         break;
                     } else {
                         if (DataProcessing.isDouble(line)) {

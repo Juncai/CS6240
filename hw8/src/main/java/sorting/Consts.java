@@ -23,7 +23,7 @@ public class Consts {
     public static final int DRY_BULB_TEMP = 8;
 
     // sample rate
-    public static final int SAMPLE_BASE = 50;
+    public static final int SAMPLE_BASE = 100;
 
     // Communication headers
     public static final String MASTER_HEADER = "MASTER";

@@ -35,10 +35,11 @@ do
 	ids[$i]=$instance_id
 
 	i=$[$i+1]
+	sleep 5s
 done
 
 # need to wait until instance is up
-sleep 3m
+sleep 2m
 
 i="0"
 inputs_prefix='inputs/inputs_'
@@ -49,6 +50,7 @@ do
 	ips[$i]=$public_ip
 	echo $public_ip >> $ip_file
 	i=$[$i+1]
+	sleep 3s
 done
 
 i="0"

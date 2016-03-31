@@ -1,0 +1,140 @@
+10001
+10002
+address.txt
+2
+cs6240sp16
+inputs_2
+juncai001
+adding ip to iplist: 54.172.148.155
+adding ip to iplist: 52.87.253.82
+adding ip to iplist: 52.207.241.93
+adding ip to iplist: 54.172.220.194
+adding ip to iplist: 52.91.142.201
+adding ip to iplist: 54.174.178.232
+adding ip to iplist: 54.152.52.101
+adding ip to iplist: 54.85.172.243
+Start creating NodeCommunication...
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+Good data: 11413098
+Bad data: 2984031
+Start sending sample data...
+Entering barrier...
+sending header: SAMPLE 2 114131
+
+sending header: SAMPLE 2 114131
+
+sending header: SAMPLE 2 114131
+
+sending header: SAMPLE 2 114131
+
+sending header: SAMPLE 2 114131
+
+sending header: SAMPLE 2 114131
+
+sending header: SAMPLE 2 114131
+
+see header: SAMPLE 0 106364
+sample receiving done: 0
+see header: SAMPLE 1 121247
+sample receiving done: 1
+see header: SAMPLE 5 130279
+sample receiving done: 5
+see header: SAMPLE 6 128283
+sample receiving done: 6
+see header: SAMPLE 3 135220
+sample receiving done: 3
+see header: SAMPLE 4 151538
+sample receiving done: 4
+see header: READY 7 SAMPLE
+see header: SAMPLE 7 128473
+see header: READY 6 SAMPLE
+see header: READY 3 SAMPLE
+sample receiving done: 7
+Number of nodes in barrier: 8
+sending header: READY 2 SAMPLE
+
+sending header: READY 2 SAMPLE
+
+sending header: READY 2 SAMPLE
+
+sending header: READY 2 SAMPLE
+
+sending header: READY 2 SAMPLE
+
+sending header: READY 2 SAMPLE
+
+sending header: READY 2 SAMPLE
+
+see header: READY 5 SAMPLE
+see header: READY 0 SAMPLE
+see header: READY 4 SAMPLE
+see header: READY 1 SAMPLE
+Start reading sample data...
+Sample received: 901404
+Pivots: 29.0 39.0 48.0 55.0 63.0 70.0 77.0 
+see header: DATA 0 1350396
+Start sending select data...
+Entering barrier...
+sending header: DATA 2 1796129
+
+sending header: DATA 2 1328556
+
+sending header: DATA 2 1385073
+
+sending header: DATA 2 1336356
+
+sending header: DATA 2 1083237
+
+sending header: DATA 2 1123912
+
+sending header: DATA 2 1729973
+
+see header: DATA 1 1495827
+see header: DATA 3 1882779
+see header: DATA 7 1527950
+see header: DATA 6 1479800
+see header: DATA 5 1652962
+see header: DATA 4 1945787
+see header: READY 4 DATA
+see header: READY 3 DATA
+see header: READY 0 DATA
+see header: READY 6 DATA
+see header: READY 1 DATA
+see header: READY 7 DATA
+Number of nodes in barrier: 8
+sending header: READY 2 DATA
+
+sending header: READY 2 DATA
+
+sending header: READY 2 DATA
+
+sending header: READY 2 DATA
+
+sending header: READY 2 DATA
+
+sending header: READY 2 DATA
+
+sending header: READY 2 DATA
+
+see header: READY 5 DATA
+Start reading select data...
+Start creating output...
+Time used: 184
+Closing connections...

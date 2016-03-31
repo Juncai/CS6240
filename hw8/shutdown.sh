@@ -19,7 +19,7 @@ i="0"
 while IFS='' read -r line || [[ -n "$line" ]]; do
 # start the program on each slave
 	ssh -i $EC2_PRIVATE_KEY_PATH -n -f $EC2_USERNAME@$line "pkill java"
-	ssh -i $EC2_PRIVATE_KEY_PATH -n -f $EC2_USERNAME@$line "rm buffer_*"
+	ssh -i $EC2_PRIVATE_KEY_PATH -n -f $EC2_USERNAME@$line "rm /dev/shm/buffer_* > ~/log 2>&1 &"
 	i=$[$i+1]
     echo "Node Shutdown: $line"
 done < "$ip_file"

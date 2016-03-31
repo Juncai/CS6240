@@ -13,7 +13,7 @@ public class DataProcessing {
     private int nodeInd;
     public int badCount;
     public int dataCount;
-    private static String[] sanityCheckSplits;
+    private static double cTmp;
 
     public DataProcessing(int nNodes, int ind) {
         numOfNodes = nNodes;
@@ -23,14 +23,22 @@ public class DataProcessing {
         pivots = new ArrayList<Double>();
         badCount = 0;
         dataCount = 0;
+        cTmp = 0.0;
     }
 
     public void feedLine(String line) {
         if (line.startsWith(Consts.HEADER_START)) return;
 
+        // remove all the spaces in the data records
+//        line = line.replaceAll("\\s", "");
+
         if (sanityCheck(line)) {
             data.add(line);
-            dataCount++;
+//            dataCount++;
+            // TODO do the sampling here
+            if (dataCount++ % Consts.SAMPLE_BASE == 0) {
+                sampleTemps.add(cTmp);
+            }
         } else {
             badCount++;
         }
@@ -46,14 +54,16 @@ public class DataProcessing {
     }
 
     public static boolean sanityCheck(String line) {
-        sanityCheckSplits = line.split(Consts.COMMA);
+        String[] sanityCheckSplits = line.split(Consts.COMMA);
         try {
             Integer.parseInt(sanityCheckSplits[Consts.WBAN_NUMBER]);
             Integer.parseInt(sanityCheckSplits[Consts.DATE]);
             Integer.parseInt(sanityCheckSplits[Consts.TIME]);
-            Double.parseDouble(sanityCheckSplits[Consts.DRY_BULB_TEMP]);
+            cTmp = Double.parseDouble(sanityCheckSplits[Consts.DRY_BULB_TEMP]);
         } catch (Exception ex) {
             return false;
+        } finally {
+            sanityCheckSplits = null;
         }
         return true;
     }
@@ -80,14 +90,16 @@ public class DataProcessing {
 
     public List<String> getLocalSamples() {
         List<String> res = new ArrayList<String>();
-        int i = 0;
-        double cTemp;
-        for (String v : data) {
-            if (i++ % Consts.SAMPLE_BASE == 0) {
-                cTemp = getTemp(v);
-                sampleTemps.add(cTemp);
-                res.add(cTemp + "");
-            }
+//        double cs;
+//        Random r = new Random();
+//        int numOfSample = data.size() / Consts.SAMPLE_BASE;
+//        for (int i = 0; i < numOfSample; i++) {
+//            cs = getTemp(data.get(r.nextInt(data.size())));
+//            sampleTemps.add(cs);
+//            res.add(cs + "");
+//        }
+        for (Double v : sampleTemps) {
+            res.add(v + "");
         }
         return res;
     }
@@ -110,7 +122,7 @@ public class DataProcessing {
             cTemp = getTemp(v);
             done = false;
             for (int i = 0; i < pivots.size(); i++) {
-                if (i == pivots.size() - 1) {
+//                if (i == pivots.size() - 1) {
                     if (cTemp < pivots.get(i)) {
                         if (i != nodeInd) {
                             res.get(i).add(v);
@@ -118,17 +130,19 @@ public class DataProcessing {
                             dataRemain.add(v);
                         }
                         done = true;
+                        break;
                     }
-                } else {
-                    if (cTemp <= pivots.get(i)) {
-                        if (i != nodeInd) {
-                            res.get(i).add(v);
-                        } else {
-                            dataRemain.add(v);
-                        }
-                        done = true;
-                    }
-                }
+//                } else {
+//                    if (cTemp <= pivots.get(i)) {
+//                        if (i != nodeInd) {
+//                            res.get(i).add(v);
+//                        } else {
+//                            dataRemain.add(v);
+//                        }
+//                        done = true;
+//                        break;
+//                    }
+//                }
             }
             if (!done) {
                 res.get(numOfNodes - 1).add(v);
@@ -142,37 +156,13 @@ public class DataProcessing {
         return res;
     }
 
-//    public static String arrayToString(String[] arr) {
-//        // TODO concatenate the strings with COMMA
-//        StringBuilder sb = new StringBuilder();
-//        for (int i = 0; i < arr.length; i++) {
-//            sb.append(arr[i]);
-//            if (i < arr.length - 1) {
-//                sb.append(Consts.DELIMITER);
-//            }
-//        }
-//
-//        return sb.toString();
-//    }
-
     private double getTemp(String line) {
-        String[] values = line.split(Consts.COMMA);
-        return Double.parseDouble(values[Consts.DRY_BULB_TEMP]);
+        return Double.parseDouble(line.split(Consts.COMMA)[Consts.DRY_BULB_TEMP]);
     }
 
     public void recvSamples(List<Double> samples) {
-        double s;
         System.out.println("Sample received: " + samples.size());
         sampleTemps.addAll(samples);
-
-//        for (String ss : samples) {
-//            try {
-//                s = Double.parseDouble(ss);
-//                sampleTemps.add(s);
-//            } catch (NumberFormatException ex) {
-//                // something wrong
-//            }
-//        }
     }
 
     public void recvData(List<String> d) {
@@ -181,16 +171,18 @@ public class DataProcessing {
     }
 
     private void getPivots() {
-        List<Double> sampleList = new ArrayList<Double>(sampleTemps);
-        Collections.sort(sampleList);
+        Collections.sort(sampleTemps);
 
         if (numOfNodes == 2) {
-            pivots = findOnePivot(sampleList);
+            pivots = findOnePivot();
         } else {
-            pivots = findSevenPivots(sampleList);
+//            pivots = findSevenPivots();
+            pivots = findSevenPivotsJun();
         }
         // for testing
         printPivots();
+        // clear samples
+        sampleTemps = null;
     }
 
 
@@ -202,8 +194,18 @@ public class DataProcessing {
         System.out.println("");
     }
 
+    private List<Double> findSevenPivotsJun() {
+        List<Double> res = new ArrayList<Double>();
+//        Collections.sort(sampleTemps);
+        int interval = sampleTemps.size() / 8;
+        for (int i = 1; i < 8; i++) {
+            res.add(sampleTemps.get(interval * i));
+        }
+        res.set(6, res.get(6) - 1);
+        return res;
+    }
+
     private List<Double> findSevenPivots(List<Double> samples) {
-//        List<Double> res = new ArrayList<Double>();
         List<Double> res = new ArrayList<Double>();
         List<Double> samplesSplit0 = new ArrayList<Double>();
         List<Double> samplesSplit1 = new ArrayList<Double>();
@@ -245,9 +247,9 @@ public class DataProcessing {
         return res;
     }
 
-    private List<Double> findOnePivot(List<Double> samples) {
+    private List<Double> findOnePivot() {
         List<Double> res = new ArrayList<Double>();
-        res.add(median(samples));
+        res.add(median(sampleTemps));
         return res;
     }
 

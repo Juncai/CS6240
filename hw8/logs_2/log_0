@@ -1,0 +1,96 @@
+10001
+10002
+address.txt
+0
+cs6240sp16
+inputs_0
+juncai001
+adding ip to iplist: 52.23.223.194
+adding ip to iplist: 54.152.168.193
+Start creating NodeCommunication...
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+see header: SAMPLE 1 476961
+sample receiving done: 1
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+Good data: 53857170
+Bad data: 13983837
+Start sending sample data...
+Entering barrier...
+Number of nodes in barrier: 2
+sending header: READY 0 SAMPLE
+
+sending header: SAMPLE 0 538572
+
+see header: READY 1 SAMPLE
+Start reading sample data...
+Sample received: 476961
+Pivots: 55.0 
+Start sending select data...
+Entering barrier...
+sending header: DATA 0 28770299
+
+see header: DATA 1 24466686
+Number of nodes in barrier: 2
+sending header: READY 0 DATA
+
+see header: READY 1 DATA
+Start reading select data...
+Start creating output...
+Exception in thread "main" com.amazonaws.services.s3.model.AmazonS3Exception: Your proposed upload exceeds the maximum allowed size (Service: Amazon S3; Status Code: 400; Error Code: EntityTooLarge; Request ID: 0136AE3CC3F365B1), S3 Extended Request ID: m7nUNFpFqqxO+/8teSUagARxPrZPLXiFW6hVHUNicwa6UEdIV79E/KIukk0Wy6yc+jAxeo54sa4=
+	at com.amazonaws.http.AmazonHttpClient.handleErrorResponse(AmazonHttpClient.java:1383)
+	at com.amazonaws.http.AmazonHttpClient.executeOneRequest(AmazonHttpClient.java:902)
+	at com.amazonaws.http.AmazonHttpClient.executeHelper(AmazonHttpClient.java:607)
+	at com.amazonaws.http.AmazonHttpClient.doExecute(AmazonHttpClient.java:376)
+	at com.amazonaws.http.AmazonHttpClient.executeWithTimer(AmazonHttpClient.java:338)
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:287)
+	at com.amazonaws.services.s3.AmazonS3Client.invoke(AmazonS3Client.java:3687)
+	at com.amazonaws.services.s3.AmazonS3Client.putObject(AmazonS3Client.java:1441)
+	at sorting.Main.main(Main.java:141)

@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-// Author:
+// Author: Jun Cai
 public class Main {
     public static void main(String[] args) throws Exception {
         long startTS;
@@ -42,10 +42,8 @@ public class Main {
         String line = null;
         int nNodes = 0;
         while ((line = br.readLine()) != null) {
-//            if (nNodes++ != cInd) {
-                ipList.add(line);
-                System.out.println("adding ip to iplist: " + line);
-//            }
+            ipList.add(line);
+            System.out.println("adding ip to iplist: " + line);
             nNodes++;
         }
         br.close();
@@ -70,11 +68,7 @@ public class Main {
         S3Object object;
 
         // TODO load input from s3, parse and sample the data
-//        List<String> dataToSomeNode = new ArrayList<String>();
-//        List<String> finalData = new ArrayList<String>();
-
         br = new BufferedReader(new FileReader(keysFilePath));
-//        GZIPInputStream gis = new GZIPInputStream(fis);
         GZIPInputStream gis;
         BufferedReader inputBr;
         String dataLine;
@@ -83,9 +77,6 @@ public class Main {
             object = s3.getObject(new GetObjectRequest(inputBucket, line));
             gis = new GZIPInputStream(object.getObjectContent());
             inputBr = new BufferedReader(new InputStreamReader(gis));
-            // add the first two line into data as a test
-//            dataToSomeNode.add(inputBr.readLine());
-//            dataToSomeNode.add(inputBr.readLine());
             System.out.println("reading data from s3");
             // feed data to the DataProcessing
             while ((dataLine = inputBr.readLine()) != null) {
@@ -93,6 +84,7 @@ public class Main {
             }
             inputBr.close();
             gis.close();
+            object.close();
         }
         br.close();
 
@@ -104,10 +96,6 @@ public class Main {
 
         // send data to other nodes
         System.out.println("Start sending sample data...");
-        List<String> dataReceived;
-//        for (String ip : ipList) {
-//            comm.sendDataToNode(ip, localSamples);
-//        }
         for (int i = 0; i < nNodes; i++) {
             if (i == cInd) continue;
             comm.sendDataToNode(i, localSamples);
@@ -115,12 +103,13 @@ public class Main {
         // enter barrier, wait for other nodes getting ready for SELECT stage
         System.out.println("Entering barrier...");
         comm.barrier(Consts.Stage.SELECT);
+        // clean localSamples
+        localSamples = null;
         // load data from buffer
         System.out.println("Start reading sample data...");
-//        dataReceived = comm.readBufferedData();
-//        finalData.addAll(dataReceived);
         dp.recvSamples(comm.readBufferedSamples());
-//        dataReceived.clear();
+        // clean the sample buffer
+        comm.sampleBuffer = null;
 
 
         // TODO choose pivots, prepare data for other nodes
@@ -136,18 +125,16 @@ public class Main {
         System.out.println("Entering barrier...");
         comm.barrier(Consts.Stage.SORT);
         // clean data to other nodes
-        for (List<String> los : dataToOtherNodes) {
-            los.clear();
-        }
+        dataToOtherNodes = null;
+
         // load data from buffer
         System.out.println("Start reading select data...");
         comm.readBufferedData(dp.data);
-//        dp.recvData(dataReceived);
-//        dataReceived.clear();
 
         // TODO sort the local data, then send the result to S3
         List<String> outputData = dp.sortData();
         endTS = new Date().getTime();
+        System.out.println("Time used: " + (endTS - startTS) / 1000);
 
         // create output file in the output bucket
         System.out.println("Start creating output...");
@@ -156,7 +143,6 @@ public class Main {
                 createOutputFile(outputKey, outputData)));
 
         // close sockets
-        System.out.println("Time used: " + (endTS - startTS) / 1000);
         System.out.println("Closing connections...");
         // TODO find a good way to end the connections
         comm.endCommunication();
