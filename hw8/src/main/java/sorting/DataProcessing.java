@@ -122,7 +122,6 @@ public class DataProcessing {
             cTemp = getTemp(v);
             done = false;
             for (int i = 0; i < pivots.size(); i++) {
-//                if (i == pivots.size() - 1) {
                     if (cTemp < pivots.get(i)) {
                         if (i != nodeInd) {
                             res.get(i).add(v);
@@ -132,20 +131,13 @@ public class DataProcessing {
                         done = true;
                         break;
                     }
-//                } else {
-//                    if (cTemp <= pivots.get(i)) {
-//                        if (i != nodeInd) {
-//                            res.get(i).add(v);
-//                        } else {
-//                            dataRemain.add(v);
-//                        }
-//                        done = true;
-//                        break;
-//                    }
-//                }
             }
             if (!done) {
-                res.get(numOfNodes - 1).add(v);
+                if (nodeInd == numOfNodes - 1) {
+                    dataRemain.add(v);
+                } else {
+                    res.get(numOfNodes - 1).add(v);
+                }
             }
         }
 
