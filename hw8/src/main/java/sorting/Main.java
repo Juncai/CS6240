@@ -135,11 +135,15 @@ public class Main {
         // enter barrier, wait for other nodes getting ready for SORT stage
         System.out.println("Entering barrier...");
         comm.barrier(Consts.Stage.SORT);
+        // clean data to other nodes
+        for (List<String> los : dataToOtherNodes) {
+            los.clear();
+        }
         // load data from buffer
         System.out.println("Start reading select data...");
-        dataReceived = comm.readBufferedData();
-        dp.recvData(dataReceived);
-        dataReceived.clear();
+        comm.readBufferedData(dp.data);
+//        dp.recvData(dataReceived);
+//        dataReceived.clear();
 
         // TODO sort the local data, then send the result to S3
         List<String> outputData = dp.sortData();

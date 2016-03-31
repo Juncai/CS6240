@@ -17,13 +17,11 @@ input_prefix='inputs_'
 i="0"
 
 while IFS='' read -r line || [[ -n "$line" ]]; do
-# clean output
-	aws s3 rm s3://$OUTPUT_BUCKET/part-$i
 # start the program on each slave
-	ssh -i $EC2_PRIVATE_KEY_PATH -n -f $EC2_USERNAME@$line "rm part-$i;nohup java -Xmx25g -jar ~/Job.jar $port $master_port $ip_file $i $INPUT_BUCKET $input_prefix$i $OUTPUT_BUCKET > ~/log 2>&1 &"
-	# ssh -i $EC2_PRIVATE_KEY_PATH -n -f $EC2_USERNAME@$line "rm part-*;nohup java -Xmx25g -jar ~/Job.jar $port $master_port $ip_file $i $INPUT_BUCKET $input_prefix$i junbucket00 > ~/log 2>&1 &"
+	ssh -i $EC2_PRIVATE_KEY_PATH -n -f $EC2_USERNAME@$line "pkill java"
+	ssh -i $EC2_PRIVATE_KEY_PATH -n -f $EC2_USERNAME@$line "rm buffer_*"
 	i=$[$i+1]
-    echo "Node start working: $line"
+    echo "Node Shutdown: $line"
 done < "$ip_file"
 
 # i="0"

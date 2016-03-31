@@ -27,7 +27,7 @@ while [ $i -lt $instance_number ]
 do
 	instance_id=$(aws ec2 run-instances --image-id $IMAGE_ID \
 			--count 1 \
-			--instance-type m3.medium \
+			--instance-type m3.2xlarge \
 			--key-name $EC2_KEY_PAIR_NAME \
 			--instance-initiated-shutdown-behavior terminate \
 			--security-groups $EC2_SECURITY_GROUP | json Instances[0].InstanceId)
@@ -38,7 +38,7 @@ do
 done
 
 # need to wait until instance is up
-sleep 2m
+sleep 3m
 
 i="0"
 inputs_prefix='inputs/inputs_'

@@ -7,12 +7,13 @@ import java.util.zip.GZIPInputStream;
 //Author: Vikas Boddu
 public class DataProcessing {
     private List<Double> sampleTemps;
-    private List<String> data;
+    public List<String> data;
     private List<Double> pivots;
     private int numOfNodes;
     private int nodeInd;
     public int badCount;
     public int dataCount;
+    private static String[] sanityCheckSplits;
 
     public DataProcessing(int nNodes, int ind) {
         numOfNodes = nNodes;
@@ -45,12 +46,12 @@ public class DataProcessing {
     }
 
     public static boolean sanityCheck(String line) {
-        String[] values = line.split(Consts.COMMA);
+        sanityCheckSplits = line.split(Consts.COMMA);
         try {
-            int webnNumber = Integer.parseInt(values[Consts.WBAN_NUMBER]);
-            int date = Integer.parseInt(values[Consts.DATE]);
-            int time = Integer.parseInt(values[Consts.TIME]);
-            double dbt = Double.parseDouble(values[Consts.DRY_BULB_TEMP]);
+            Integer.parseInt(sanityCheckSplits[Consts.WBAN_NUMBER]);
+            Integer.parseInt(sanityCheckSplits[Consts.DATE]);
+            Integer.parseInt(sanityCheckSplits[Consts.TIME]);
+            Double.parseDouble(sanityCheckSplits[Consts.DRY_BULB_TEMP]);
         } catch (Exception ex) {
             return false;
         }
@@ -59,12 +60,7 @@ public class DataProcessing {
 
     public List<String> sortData() {
 
-        List<String> orderedData = new ArrayList<String>(data);
-
-        // clean the data
-//        data.clear();
-
-        Collections.sort(orderedData, new Comparator<String>() {
+        Collections.sort(data, new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
                 // TODO compare dry bulb temp
@@ -79,7 +75,7 @@ public class DataProcessing {
             }
         });
 
-        return orderedData;
+        return data;
     }
 
     public List<String> getLocalSamples() {
@@ -114,13 +110,24 @@ public class DataProcessing {
             cTemp = getTemp(v);
             done = false;
             for (int i = 0; i < pivots.size(); i++) {
-                if (cTemp < pivots.get(i)) {
-                    if (i != nodeInd) {
-                        res.get(i).add(v);
-                    } else {
-                        dataRemain.add(v);
+                if (i == pivots.size() - 1) {
+                    if (cTemp < pivots.get(i)) {
+                        if (i != nodeInd) {
+                            res.get(i).add(v);
+                        } else {
+                            dataRemain.add(v);
+                        }
+                        done = true;
                     }
-                    done = true;
+                } else {
+                    if (cTemp <= pivots.get(i)) {
+                        if (i != nodeInd) {
+                            res.get(i).add(v);
+                        } else {
+                            dataRemain.add(v);
+                        }
+                        done = true;
+                    }
                 }
             }
             if (!done) {
@@ -129,6 +136,7 @@ public class DataProcessing {
         }
 
         // only keep the necessary data
+        data.clear();
         data = dataRemain;
 
         return res;
@@ -181,6 +189,17 @@ public class DataProcessing {
         } else {
             pivots = findSevenPivots(sampleList);
         }
+        // for testing
+        printPivots();
+    }
+
+
+    private void printPivots() {
+        System.out.print("Pivots: ");
+        for (double p : pivots) {
+            System.out.print(p + " ");
+        }
+        System.out.println("");
     }
 
     private List<Double> findSevenPivots(List<Double> samples) {
@@ -196,8 +215,8 @@ public class DataProcessing {
             samplesSplit0 = samples.subList(0, (samples.size() / 2));
             samplesSplit2 = samples.subList((samples.size() / 2), samples.size());
         } else {
-            samplesSplit0 = samples.subList(0, ((samples.size() + 1 ) / 2) - 1);
-            samplesSplit2 = samples.subList((samples.size() + 1 ) / 2, samples.size());
+            samplesSplit0 = samples.subList(0, ((samples.size() + 1) / 2) - 1);
+            samplesSplit2 = samples.subList((samples.size() + 1) / 2, samples.size());
         }
 
         res.add(median(samplesSplit0));
@@ -210,11 +229,11 @@ public class DataProcessing {
             samplesSplit3 = samplesSplit2.subList((samplesSplit2.size() / 2), samplesSplit2.size());
             samplesSplit2 = samplesSplit2.subList(0, (samplesSplit2.size() / 2));
         } else {
-            samplesSplit1 = samplesSplit0.subList((samplesSplit0.size() + 1 ) / 2, samplesSplit0.size());
-            samplesSplit0 = samplesSplit0.subList(0, ((samplesSplit0.size() + 1 ) / 2) - 1);
+            samplesSplit1 = samplesSplit0.subList((samplesSplit0.size() + 1) / 2, samplesSplit0.size());
+            samplesSplit0 = samplesSplit0.subList(0, ((samplesSplit0.size() + 1) / 2) - 1);
 
-            samplesSplit3 = samplesSplit2.subList((samplesSplit2.size() + 1 ) / 2, samplesSplit2.size());
-            samplesSplit2 = samplesSplit2.subList(0, ((samplesSplit2.size() + 1 ) / 2) - 1);
+            samplesSplit3 = samplesSplit2.subList((samplesSplit2.size() + 1) / 2, samplesSplit2.size());
+            samplesSplit2 = samplesSplit2.subList(0, ((samplesSplit2.size() + 1) / 2) - 1);
         }
 
         res.add(median(samplesSplit0));

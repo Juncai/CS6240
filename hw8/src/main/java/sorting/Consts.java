@@ -3,6 +3,7 @@ package sorting;
 // Author: Jun Cai
 public class Consts {
     public static final String END_OF_LINE = "\r\n";
+    public static final String END_OF_LINE_L = "\n";
     public static final String END_OF_DATA = "EOD";
     public static final String END_OF_DATA_EOL = END_OF_DATA + END_OF_LINE;
     public static final String HEADER_START = "Wban Number,";
@@ -22,7 +23,7 @@ public class Consts {
     public static final int DRY_BULB_TEMP = 8;
 
     // sample rate
-    public static final int SAMPLE_BASE = 100;
+    public static final int SAMPLE_BASE = 50;
 
     // Communication headers
     public static final String MASTER_HEADER = "MASTER";
@@ -33,5 +34,10 @@ public class Consts {
     // master request
     public static final String STATUS_REQ = "STATUS";
     public static final String SHUTDOWN_REQ = "SHUTDOWN";
+
+
+    // data buffer file prefix
+    public static final String BUFFER_FILE_PREFIX = "/dev/shm/buffer_";
+
 
 }

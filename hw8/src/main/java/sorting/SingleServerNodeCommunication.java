@@ -3,6 +3,9 @@ package sorting;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,12 +108,21 @@ public class SingleServerNodeCommunication {
         return null;
     }
 
-    public List<String> readBufferedData() {
+    public void readBufferedData(List<String> dpData) throws IOException {
         if (stage == Consts.Stage.SORT) {
-            // TODO need to clear the buffer somehow?
-            return dataBuffer;
+            // TODO load data from buffer files
+            BufferedReader br;
+            String line;
+            for (int i = 0; i < ipList.size(); i++) {
+                if (i == nodeInd) continue;
+                br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(Consts.BUFFER_FILE_PREFIX + i))));
+                while ((line = br.readLine()) != null) {
+                    dpData.add(line);
+                }
+                br.close();
+                Files.deleteIfExists(Paths.get(Consts.BUFFER_FILE_PREFIX + i));
+            }
         }
-        return null;
     }
     private boolean readDataDoneForStage(Consts.Stage s) {
         if (s == Consts.Stage.SELECT) {
@@ -165,6 +177,8 @@ public class SingleServerNodeCommunication {
                     // end of data
                     wtr.write(Consts.END_OF_DATA_EOL, 0, Consts.END_OF_DATA_EOL.length());
                 }
+                // clean the payload list
+//                payload.clear();
                 wtr.flush();
                 wtr.close();
             } catch (IOException e) {
@@ -246,20 +260,31 @@ public class SingleServerNodeCommunication {
         }
 
         private void handleDataTransfer(String[] header, BufferedReader br) throws IOException {
+            // TODO buffer the data in local file system
             if (stage != Consts.Stage.SELECT) return;
             try {
                 int nInd = Integer.parseInt(header[1]);
-                List<String> cBuffer = new ArrayList<String>();
+                // instead we create a file
+//                List<String> cBuffer = new ArrayList<String>();
+                File f = new File(Consts.BUFFER_FILE_PREFIX + nInd);
+                Files.deleteIfExists(Paths.get(f.getPath()));
+                f.createNewFile();
+                FileWriter fw = new FileWriter(f, false);
+
                 String line;
                 while (null != (line = br.readLine())) {
                     if (line.equals(Consts.END_OF_DATA)) {
+                        fw.flush();
+                        fw.close();
                         synchronized (bufferLock) {
-                            dataBuffer.addAll(cBuffer);
+//                            dataBuffer.addAll(cBuffer);
                             dataRecvStates[nInd] = true;
                         }
                         break;
                     } else {
-                        cBuffer.add(line);
+//                        cBuffer.add(line);
+                        fw.write(line);
+                        fw.write(Consts.END_OF_LINE_L);
                     }
                 }
             } catch (NumberFormatException ex) {
