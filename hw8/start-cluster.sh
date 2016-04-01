@@ -4,8 +4,20 @@
 
 # Get input instances number
 instance_number=$1
+if [ $instance_number != "2" ] && [ $instance_number != "8" ]; then
+	echo "The valid instance numbers are 2 and 8"
+	exit 1
+fi
 
-echo $instance_number
+# if [ $instance_number = "2" ]; then
+instance_type='m3.2xlarge'
+	# instance_type='m3.medium'
+# else
+	# instance_type='m3.xlarge'
+# fi
+
+
+echo starting $instance_number $instance_type instances
 
 # instances public ip address file
 ip_file=address.txt
@@ -27,7 +39,7 @@ while [ $i -lt $instance_number ]
 do
 	instance_id=$(aws ec2 run-instances --image-id $IMAGE_ID \
 			--count 1 \
-			--instance-type m3.2xlarge \
+			--instance-type $instance_type \
 			--key-name $EC2_KEY_PAIR_NAME \
 			--instance-initiated-shutdown-behavior terminate \
 			--security-groups $EC2_SECURITY_GROUP | json Instances[0].InstanceId)

@@ -1,0 +1,127 @@
+10001
+address.txt
+1
+s3://cs6240sp16/climate
+inputs_1
+s3://juncai001/output
+adding ip to iplist: 54.152.246.236
+adding ip to iplist: 54.208.107.237
+Start creating NodeCommunication...
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+Good data: 47696017
+Bad data: 12522626
+Start sending sample data...
+Entering barrier...
+sending header: SAMPLE 1 476961
+
+see header: READY 0 SAMPLE
+see header: SAMPLE 0 538572
+sample receiving done: 0
+Number of nodes in barrier: 2
+Start reading sample data...
+Sample received: 538572
+sending header: READY 1 SAMPLE
+
+Pivots: 55.0 
+Start sending select data...
+Entering barrier...
+sending header: DATA 1 24466686
+
+see header: DATA 0 28770299
+see header: READY 0 DATA
+Number of nodes in barrier: 2
+Start reading select data...
+sending header: READY 1 DATA
+
+Processing Start Time: 1459482311386
+Processing End Time: 1459485287529
+Time used: 2976
+Start creating output...
+Creating output/part-1-0
+Creating output/part-1-1
+All Start Time: 1459482081878
+All End Time: 1459485738907
+Total Time used: 3657
+Closing connections...

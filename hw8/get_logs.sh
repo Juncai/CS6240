@@ -1,5 +1,8 @@
 #!/bin/bash
 
+rm -rf logs > /dev/null 2>&1 &
+mkdir logs > /dev/null 2>&1 &
+
 # port number to use in the listening socket
 port=10001
 

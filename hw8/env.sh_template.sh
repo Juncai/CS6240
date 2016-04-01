@@ -12,10 +12,6 @@ export EC2_PRIVATE_KEY_PATH=
 # security group information
 export EC2_SECURITY_GROUP=
 
-# s3 bucket name
-export INPUT_BUCKET=cs6240sp16
-export OUTPUT_BUCKET=
-
 # AMI
 export IMAGE_ID=ami-8fcee4e5
 
