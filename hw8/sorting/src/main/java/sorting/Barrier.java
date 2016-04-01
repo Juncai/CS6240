@@ -29,7 +29,6 @@ public class Barrier {
             if (!stateMap.get(ip)) {
                 ready = false;
             }
-//            ready = stateMap.get(ip);
         }
         return ready;
     }

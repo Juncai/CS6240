@@ -1,10 +1,8 @@
 package sorting;
 
-import java.io.*;
 import java.util.*;
-import java.util.zip.GZIPInputStream;
 
-//Author: Vikas Boddu
+//Author: Vikas Boddu, Jun Cai
 public class DataProcessing {
     private List<Double> sampleTemps;
     public List<String> data;
@@ -35,7 +33,7 @@ public class DataProcessing {
         if (sanityCheck(line)) {
             data.add(line);
 //            dataCount++;
-            // TODO do the sampling here
+            // do the sampling here
             if (dataCount++ % Consts.SAMPLE_BASE == 0) {
                 sampleTemps.add(cTmp);
             }
@@ -90,14 +88,6 @@ public class DataProcessing {
 
     public List<String> getLocalSamples() {
         List<String> res = new ArrayList<String>();
-//        double cs;
-//        Random r = new Random();
-//        int numOfSample = data.size() / Consts.SAMPLE_BASE;
-//        for (int i = 0; i < numOfSample; i++) {
-//            cs = getTemp(data.get(r.nextInt(data.size())));
-//            sampleTemps.add(cs);
-//            res.add(cs + "");
-//        }
         for (Double v : sampleTemps) {
             res.add(v + "");
         }
@@ -160,11 +150,6 @@ public class DataProcessing {
         sampleTemps.addAll(samples);
     }
 
-    public void recvData(List<String> d) {
-        System.out.println("Data received: " + d.size());
-        data.addAll(d);
-    }
-
     private void getPivots() {
         Collections.sort(sampleTemps);
 
@@ -191,7 +176,6 @@ public class DataProcessing {
 
     private List<Double> findSevenPivotsJun() {
         List<Double> res = new ArrayList<Double>();
-//        Collections.sort(sampleTemps);
         int interval = sampleTemps.size() / 8;
         for (int i = 1; i < 8; i++) {
             res.add(sampleTemps.get(interval * i));
@@ -256,82 +240,4 @@ public class DataProcessing {
         }
         return median;
     }
-
-//    public void unZipAll(String inputPath, String outputPath) {
-//        inputPathTxt = outputPath;
-//        File dir = new File(inputPath);
-//        File[] directoryListing = dir.listFiles();
-//        if (directoryListing != null) {
-//            for (File aFile : directoryListing) {
-//                if (aFile.toString().endsWith(".txt.gz")) {
-//                    unZipOne(aFile, outputPath);
-//                }
-//            }
-//        } else {
-//            System.out.println("No .*.txt.gz present");
-//        }
-//    }
-//
-//    public void unZipOne(File gzip, String outputPath) {
-//        try {
-//            String outputTxtName = gzip.getName();
-//            outputTxtName = outputTxtName.substring(0, outputTxtName.length() - 3);
-//            outputTxtName = outputPath + outputTxtName;
-//
-//            FileInputStream fis = new FileInputStream(gzip);
-//            GZIPInputStream gis = new GZIPInputStream(fis);
-//            FileOutputStream fos = new FileOutputStream(outputTxtName);
-//            byte[] buffer = new byte[1024];
-//            int len;
-//            while ((len = gis.read(buffer)) != -1) {
-//                fos.write(buffer, 0, len);
-//            }
-//            fos.close();
-//            gis.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public void txtReadAll() {
-//        File dir = new File(inputPathTxt);
-//        File[] directoryListing = dir.listFiles();
-//        if (directoryListing != null) {
-//            for (File aFile : directoryListing) {
-//                if (aFile.toString().endsWith(".txt")) {
-//                    txtReadOne(aFile);
-//                }
-//            }
-//        } else {
-//            System.out.println("No .*.txt present");
-//        }
-//    }
-//
-//    public void txtReadOne(File inputFile) {
-//        BufferedReader br = null;
-//        String line = "";
-//        String cvsSplitBy = ",";
-//        try {
-//            br = new BufferedReader(new FileReader(inputFile));
-//            int i = 0;
-//            while ((line = br.readLine()) != null) {
-//                String[] parsedValues = line.split(cvsSplitBy);
-//                if (i > 0) {
-//                    Value desiredValues = new Value(parsedValues[0], parsedValues[1], parsedValues[2], parsedValues[8]);
-//                    list.add(desiredValues);
-//                    if (i % Consts.SAMPLE_FREQUENCY == 0) {
-//                        sampleTemps.add(desiredValues.temp);
-//                    }
-//                }
-//                i++;
-//            }
-//            if (br != null) {
-//                br.close();
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-
 }

@@ -9,9 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by jon on 3/29/16.
- */
+// Author: Jun Cai
 public class SingleServerNodeCommunication {
     //    private ServerSocket listenSocket;
     private ListeningThread lt;
@@ -41,7 +39,6 @@ public class SingleServerNodeCommunication {
         stage = Consts.Stage.SAMPLE;
         Thread.sleep(1000);
     }
-
 
     public void sendDataToNode(int ind, List<String> data) throws IOException {
         String header = "";

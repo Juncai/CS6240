@@ -12,6 +12,7 @@ Pre-requests:
     2)Fill the aws_access_key_id and aws_secret_access_key in "credentials_template", and rename it "credentials".
 
     3)Install the "json" package which is used to parse the AWS response. Please follow the instruction: https://github.com/trentm/json.
+	4) Make sure Gradle is installed. 
 ==============================================================================================================
 How to run:
     - Navigate to root file of this assignment.
