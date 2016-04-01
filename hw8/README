@@ -1,22 +1,40 @@
-Prerequisits:
-	1) Make sure you have the key-pair to create AWS EC2 instance, set the key pair name and private key file path in env.sh_template.
-	If you find Permissions 0644 error (private key is too open), check this guide out: http://stackoverflow.com/questions/8193768/trying-to-ssh-into-an-amazon-ec2-instance-permission-error
+Pre-requests:
+    1)Fill in the value of the required environment variables in "env.sh.template.sh", rename it to "env.sh".
+        Note:
+        a. You will need 2 key-pairs:
+            (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY),
+            (EC2_KEY_PAIR_NAME, EC2_PRIVATE_KEY_PATH)
+        b. Please remember to save the .pem file when you generate the ec2 key-pair for this specific region.
+        c. In case you encounter an Permission 0644 error, please give your ec2-key-pair file(.pem file) read-only permission. (use: chmod 400 YOUR_KEY_FILE.pem)
+        d. Create an EC2 security group that has an inbound rule with Type: "All Traffic", Protocol: "All", Source: "Anywhere" on AWS web console;
+        e. Please specify a S3 bucket name where the output files and logs will be saved.
 
-	2) Make sure to create your own security group and add a rule to "your-security-group" to allow inbound traffic from "Anywhere". Besides, don't forget to set the security group name in env.sh_template. 
-	Reference: http://docs.aws.amazon.com/cli/latest/userguide/cli-ec2-sg.html#configuring-a-security-group
+    2)Fill the aws_access_key_id and aws_secret_access_key in "credentials_template", and rename it "credentials".
 
-	3) Install 'json' package using npm to parse the AWS response. 
-	Reference: https://github.com/trentm/json
-	
-	
-Run the code:
-	Specify the input file list in 'inputs' dir. The file 'inputs_N' is for Nth node.
-	Set variables in 'env.sh_template' and 'credentials_template'.
-	Rename them to 'env.sh' and 'credentials'.
-	Source the 'env.sh' by '. env.sh'
-	'./run.sh' to build and copy the jar file to the current dir.
-	'./start-cluster.sh NUM_OF_NODES'
-	./sort.sh
-	
-Other script:
-	./login N can login the Nth node. For example, if you have two nodes. The command should like "./login 0" and "./login 1"
+    3)Install the "json" package which is used to parse the AWS response. Please follow the instruction: https://github.com/trentm/json.
+==============================================================================================================
+How to run:
+    - Navigate to root file of this assignment.
+    - Source the env.sh file;
+        - Command: . env.sh
+    - Package the assignment into Jar file.
+        - Command: ./run.sh;
+    - start the cluster and upload Jar file and node address file.
+        - Command: ./start-cluster.sh
+    - Sort the input.
+        - Command: ./sort.sh
+    - When finish sorting, stop the cluster and terminate the ec2 instances.
+        - Command: ./stop-cluster.sh
+==============================================================================================================
+Other useful scripts:
+    - Access each EC2 instances from command line: (NODE_NUM starts from 0)
+        - Command: ./login.sh NODE_NUM
+        - Example: if you have 2 nodes, command are "./login.sh 0" and "./login.sh 1";
+
+Reminder: For your information, don't forget to double check if your EC2 instances are correctly terminated form AWS web console;
+==============================================================================================================
+References:
+    http://aws.amazon.com/documentation/
+    http://stackoverflow.com/questions/8193768/trying-to-ssh-into-an-amazon-ec2-instance-permission-error
+    http://docs.aws.amazon.com/cli/latest/userguide/cli-ec2-sg.html#configuring-a-security-group
+    https://github.com/trentm/json
