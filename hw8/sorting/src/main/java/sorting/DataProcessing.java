@@ -118,19 +118,22 @@ public class DataProcessing {
 
         double cTemp;
         boolean done;
+        Random r = new Random();
         for (String v : data) {
             cTemp = getTemp(v);
             done = false;
             for (int i = 0; i < pivots.size(); i++) {
-                    if (cTemp < pivots.get(i)) {
-                        if (i != nodeInd) {
-                            res.get(i).add(v);
-                        } else {
-                            dataRemain.add(v);
-                        }
-                        done = true;
-                        break;
+                // try to improve load balancing
+                if (cTemp < pivots.get(i) ||
+                        (cTemp == pivots.get(i) && r.nextInt(10) < 5)) {
+                    if (i != nodeInd) {
+                        res.get(i).add(v);
+                    } else {
+                        dataRemain.add(v);
                     }
+                    done = true;
+                    break;
+                }
             }
             if (!done) {
                 if (nodeInd == numOfNodes - 1) {

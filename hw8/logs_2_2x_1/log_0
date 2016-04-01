@@ -1,0 +1,200 @@
+10001
+address.txt
+0
+s3://cs6240sp16/climate
+inputs_0
+s3://juncai001/output
+adding ip to iplist: 54.210.226.4
+adding ip to iplist: 54.210.227.123
+Start creating NodeCommunication...
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+see header: MASTER
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+see header: MASTER
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+see header: MASTER
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+Good data: 47696017
+Bad data: 12522626
+Start sending sample data...
+Entering barrier...
+sending header: SAMPLE 0 476961
+
+see header: MASTER
+see header: READY 1 SAMPLE
+see header: SAMPLE 1 532474
+sample receiving done: 1
+Number of nodes in barrier: 2
+Start reading sample data...
+Sample received: 532474
+sending header: READY 0 SAMPLE
+
+Pivots: 55.0 
+see header: MASTER
+Start sending select data...
+Entering barrier...
+sending header: DATA 0 22820387
+
+see header: DATA 1 25653239
+see header: READY 1 DATA
+Number of nodes in barrier: 2
+Start reading select data...
+sending header: READY 0 DATA
+
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+Processing Start Time: 1459527431193
+Processing End Time: 1459531459130
+Time used: 4027
+Start creating output...
+Creating output/part-0-0
+see header: MASTER
+see header: MASTER
+Creating output/part-0-1
+see header: MASTER
+see header: MASTER
+see header: MASTER
+All Start Time: 1459527204348
+All End Time: 1459531789560
+Total Time used: 4585
+Closing connections...
+see header: MASTER

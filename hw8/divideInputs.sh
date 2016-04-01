@@ -3,7 +3,9 @@
 ####################Constants#################
 INPUT_PATH=$1
 NODE_NUM=$2
+# OUTPUT_PATH=$3
 total_size=0
+OUTPUT_PATH='inputs'
 ####################Functions#################
 function split() {
   local acc_size=0
@@ -16,7 +18,7 @@ function split() {
       local j=$[$i-1]
       if [ "$acc_size" -le $(( chunk_size*i )) ] && [ "$acc_size" -gt $(( chunk_size*j )) ]
       then
-        echo "climate/${name_array[index]}" >> ./inputs/input_$j
+        echo "climate/${name_array[index]}" >> $OUTPUT_PATH/inputs_$j
       fi
       i=$[$i+1]
     done
@@ -28,8 +30,10 @@ then
   echo "Usage: ./divideInputs.sh S3_INPUT_PATH NUM_OF_NODE"
   exit 1
 fi
-sizes=$(aws s3 ls $INPUT_PATH | awk 'NR!=1{printf $3 ":"}')
-fileNames=$(aws s3 ls $INPUT_PATH | awk 'NR!=1{printf $4 ":"}')
+rm -rf $OUTPUT_PATH > /dev/null 2&>1
+mkdir $OUTPUT_PATH
+sizes=$(aws s3 ls $INPUT_PATH/ | awk 'NR!=1{printf $3 ":"}')
+fileNames=$(aws s3 ls $INPUT_PATH/ | awk 'NR!=1{printf $4 ":"}')
 
 IFS=':' read -a size_array <<< "${sizes}"
 IFS=':' read -a name_array <<< "${fileNames}"

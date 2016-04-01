@@ -23,6 +23,9 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
 	i=$[$i+1]
 done < "$ip_file"
 
+# split the workload and create input list for each node
+./divideInputs.sh $input_bucket $i
+
 heap_size='25g'
 # if [ $i = "2" ]; then
 # 	heap_size='25g'

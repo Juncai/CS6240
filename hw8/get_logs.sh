@@ -23,7 +23,7 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
 # start the program on each slave
 	scp -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$line:~/log logs/log_$i
 	i=$[$i+1]
-    echo "Node Shutdown: $line"
+    echo "Log of node got: $line"
 done < "$ip_file"
 
 # i="0"

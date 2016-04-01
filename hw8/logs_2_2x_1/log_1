@@ -1,0 +1,166 @@
+10001
+address.txt
+1
+s3://cs6240sp16/climate
+inputs_1
+s3://juncai001/output
+adding ip to iplist: 54.210.226.4
+adding ip to iplist: 54.210.227.123
+Start creating NodeCommunication...
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+see header: MASTER
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+see header: MASTER
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+see header: MASTER
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+reading data from s3
+see header: SAMPLE 0 476961
+sample receiving done: 0
+reading data from s3
+reading data from s3
+see header: MASTER
+reading data from s3
+reading data from s3
+reading data from s3
+Good data: 53247364
+Bad data: 13807837
+Start sending sample data...
+Entering barrier...
+Number of nodes in barrier: 2
+sending header: SAMPLE 1 532474
+
+sending header: READY 1 SAMPLE
+
+see header: READY 0 SAMPLE
+Start reading sample data...
+Sample received: 476961
+Pivots: 55.0 
+see header: MASTER
+see header: DATA 0 22820387
+Start sending select data...
+Entering barrier...
+sending header: DATA 1 25653239
+
+Number of nodes in barrier: 2
+sending header: READY 1 DATA
+
+see header: READY 0 DATA
+Start reading select data...
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+Processing Start Time: 1459527463166
+Processing End Time: 1459528284345
+Time used: 821
+Start creating output...
+Creating output/part-1-0
+see header: MASTER
+see header: MASTER
+see header: MASTER
+Creating output/part-1-1
+see header: MASTER
+see header: MASTER
+All Start Time: 1459527204360
+All End Time: 1459528605134
+Total Time used: 1400
+Closing connections...
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER
+see header: MASTER

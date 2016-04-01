@@ -92,6 +92,7 @@ public class Client {
                 }
                 wtr.close();
                 rdr.close();
+                s.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -65,6 +65,9 @@ do
 	sleep 3s
 done
 
+# need to wait until instance is up
+sleep 1m
+
 i="0"
 for public_ip in "${ips[@]}"
 do
