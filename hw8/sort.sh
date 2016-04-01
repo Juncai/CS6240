@@ -41,12 +41,12 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
 done < "$ip_file"
 
 # waiting for the all the slave finishing their jobs
-# finished="0"
-# while [ $finished != "1" ]; do
-# 	echo Waiting for job completion...
-# 	sleep 1m
-# 	finished=$(java -jar Client.jar $ip_file $port)
-# 	echo $finished
-# done
+finished="0"
+while [ $finished != "1" ]; do
+	echo Waiting for job completion...
+	sleep 1m
+	finished=$(java -jar Client.jar $ip_file $port)
+	echo $finished
+done
 
 # ./shutdown.sh > /dev/null 2>&1 &

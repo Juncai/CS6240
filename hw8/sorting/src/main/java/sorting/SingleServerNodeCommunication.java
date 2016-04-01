@@ -170,20 +170,21 @@ public class SingleServerNodeCommunication {
                     header += Consts.END_OF_LINE;
                 }
                 System.out.println("sending header: " + header);
-                wtr.write(header, 0, header.length());
+                wtr.write(header);
                 // data
                 if (payload != null) {
                     for (String d : payload) {
                         d += Consts.END_OF_LINE;
-                        wtr.write(d, 0, d.length());
+                        wtr.write(d);
                     }
                     // end of data
-                    wtr.write(Consts.END_OF_DATA_EOL, 0, Consts.END_OF_DATA_EOL.length());
+                    wtr.write(Consts.END_OF_DATA_EOL);
                 }
-                // clean the payload list
-//                payload.clear();
                 wtr.flush();
                 wtr.close();
+                s.close();
+                // clean the payload list
+                payload = null;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -237,14 +238,15 @@ public class SingleServerNodeCommunication {
                 } else if (header[0].equals(Consts.READY_HEADER)) {
                     handleReadyMsg(header);
                 }
-
+                rdr.close();
+                // close the connection on client side
+//                s.close();
             } catch (Exception ee) {
                 System.err.println("Error in ReceiveDataThread: " + ee.toString());
             }
         }
 
         private void handleMasterRequest(BufferedReader br) throws IOException {
-            // TODO
             String line;
             while (null != (line = br.readLine())) {
                 if (line.equals(Consts.STATUS_REQ)) {
@@ -282,8 +284,7 @@ public class SingleServerNodeCommunication {
             if (stage != Consts.Stage.SELECT) return;
             try {
                 int nInd = Integer.parseInt(header[1]);
-                // instead we create a file
-//                List<String> cBuffer = new ArrayList<String>();
+                // instead create a file
                 File f = new File(Consts.BUFFER_FILE_PREFIX + nInd);
                 Files.deleteIfExists(Paths.get(f.getPath()));
                 f.createNewFile();
@@ -292,18 +293,16 @@ public class SingleServerNodeCommunication {
                 String line;
                 while (null != (line = br.readLine())) {
                     if (line.equals(Consts.END_OF_DATA)) {
-                        fw.flush();
-                        fw.close();
-                        synchronized (bufferLock) {
-//                            dataBuffer.addAll(cBuffer);
-                            dataRecvStates[nInd] = true;
-                        }
                         break;
                     } else {
-//                        cBuffer.add(line);
                         fw.write(line);
                         fw.write(Consts.END_OF_LINE_L);
                     }
+                }
+                fw.flush();
+                fw.close();
+                synchronized (bufferLock) {
+                    dataRecvStates[nInd] = true;
                 }
             } catch (NumberFormatException ex) {
                 System.out.println("Bad data transfer.");
@@ -319,11 +318,6 @@ public class SingleServerNodeCommunication {
                 while (null != (line = br.readLine())) {
 //                    System.out.println(line);
                     if (line.equals(Consts.END_OF_DATA)) {
-                        synchronized (bufferLock) {
-                            sampleBuffer.addAll(cBuffer);
-                            sampleRecvStates[nInd] = true;
-                        }
-                        cBuffer = null;
                         break;
                     } else {
                         if (DataProcessing.isDouble(line)) {
@@ -331,6 +325,11 @@ public class SingleServerNodeCommunication {
                         }
                     }
                 }
+                synchronized (bufferLock) {
+                    sampleBuffer.addAll(cBuffer);
+                    sampleRecvStates[nInd] = true;
+                }
+                cBuffer = null;
                 System.out.println("sample receiving done: " + nInd);
             } catch (NumberFormatException ex) {
                 System.out.println("Bad sample transfer.");
