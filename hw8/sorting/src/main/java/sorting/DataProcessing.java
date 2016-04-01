@@ -71,7 +71,7 @@ public class DataProcessing {
         Collections.sort(data, new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
-                // TODO compare dry bulb temp
+                // compare dry bulb temp
                 double temp1 = getTemp(o1);
                 double temp2 = getTemp(o2);
                 if (temp1 > temp2) {
@@ -108,14 +108,15 @@ public class DataProcessing {
 
         double cTemp;
         boolean done;
-        Random r = new Random();
+//        Random r = new Random();
         for (String v : data) {
             cTemp = getTemp(v);
             done = false;
             for (int i = 0; i < pivots.size(); i++) {
                 // try to improve load balancing
-                if (cTemp < pivots.get(i) ||
-                        (cTemp == pivots.get(i) && r.nextInt(10) < 5)) {
+//                if (cTemp < pivots.get(i) ||
+//                        (cTemp == pivots.get(i) && r.nextInt(10) < 5)) {
+                if (cTemp >= pivots.get(i)) {
                     if (i != nodeInd) {
                         res.get(i).add(v);
                     } else {
@@ -180,6 +181,7 @@ public class DataProcessing {
         for (int i = 1; i < 8; i++) {
             res.add(sampleTemps.get(interval * i));
         }
+        Collections.reverse(res);
         return res;
     }
 
@@ -222,6 +224,7 @@ public class DataProcessing {
         res.add(median(samplesSplit3));
 
         Collections.sort(res);
+        Collections.reverse(res);
         return res;
     }
 
