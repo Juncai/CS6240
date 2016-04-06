@@ -1,0 +1,48 @@
+Pre-requests:
+    1)Fill in the value of the required environment variables in "env.sh.template", rename it to "env.sh".
+        Note:
+        a. You will need 2 key-pairs:
+            (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY),
+            (EC2_KEY_PAIR_NAME, EC2_PRIVATE_KEY_PATH)
+        b. Please remember to save the .pem file when you generate the ec2 key-pair for this specific region.
+        c. In case you encounter an Permission 0644 error, please give your ec2-key-pair file(.pem file) read-only permission. (use: chmod 400 YOUR_KEY_FILE.pem)
+        d. Create an EC2 security group that has an inbound rule with Type: "All Traffic", Protocol: "All", Source: "Anywhere" on AWS web console;
+        e. Please specify a S3 bucket name where the output files and logs will be saved.
+
+    2)Fill the aws_access_key_id and aws_secret_access_key in "credentials_template", and rename it "credentials".
+
+    3)Install the "json" package which is used to parse the AWS response. Please follow the instruction: https://github.com/trentm/json.
+	4) Make sure Gradle is installed. 
+==============================================================================================================
+How to run:
+    - Navigate to root file of this assignment.
+    - Source the env.sh file;
+        - Command: . env.sh
+    - Package the assignment into Jar file.
+        - Command: ./compile.sh;
+    - Create the cluster and upload Jar file and node address file. Note that for now we only support 2 or 8 nodes setup.
+        - Command: ./start-cluster.sh NUM_OF_NODES
+    - Sort the input.
+		- Command: ./sort.sh "dry buld temp" INPUT_S3_PATH OUTPUT_S3_PATH
+		- Example: ./sort.sh "dry buld temp" s3://cs6240sp16/climate s3://juncai001/output
+    - (OPTIONAL) Get logs from all the slave nodes. The logs will be downloaded into './logs' dir.
+        - Command: ./get_logs.sh
+    - When finish sorting, stop the cluster and terminate the ec2 instances.
+        - Command: ./stop-cluster.sh
+==============================================================================================================
+Other useful scripts:
+    - Access each EC2 instances from command line: (NODE_NUM starts from 0)
+        - Command: ./login.sh NODE_NUM
+        - Example: if you have 2 nodes, command are "./login.sh 0" and "./login.sh 1";
+    - Re-upload the JAR file and input list to all the nodes:
+        - Command: ./upload_jar.sh
+    - Kill job on all nodes:
+        - Command: ./shutdown.sh
+
+Reminder: For your information, don't forget to double check if your EC2 instances are correctly terminated form AWS web console;
+==============================================================================================================
+References:
+    http://aws.amazon.com/documentation/
+    http://stackoverflow.com/questions/8193768/trying-to-ssh-into-an-amazon-ec2-instance-permission-error
+    http://docs.aws.amazon.com/cli/latest/userguide/cli-ec2-sg.html#configuring-a-security-group
+    https://github.com/trentm/json

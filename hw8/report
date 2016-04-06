@@ -1,12 +1,10 @@
 
-
-
-
 Performance
 
 When running on EC2 m3.2xlarge instances, our distributed sorting program will take about 218 seconds (processing time only, 356 seconds if includes the data transfer to/from S3) to finish with eight slave nodes. Though in the 2-node case, we see a strange performance variance where one of the node can finish in about 820 seconds (processing time only, 1400 seconds data trasfer included) and the other node will take 3500 to 4500 seconds to finish the work. We have confirmed that the workload is fairly balanced where each of the node will output data of the same size (6 GB).
 
 Here is a runtime sample for each node in one of our tests:
+
 (8-node setup)
 Node No., ProccessingTime(s),IncludingDataTransfer(s)
 0, 201, 355
