@@ -1,4 +1,4 @@
-package io;
+package hidoop.io;
 
 /**
  * Created by jon on 4/6/16.
