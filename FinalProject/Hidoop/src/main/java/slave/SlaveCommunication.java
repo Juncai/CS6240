@@ -126,14 +126,23 @@ public class SlaveCommunication {
                 String line = rdr.readLine();
                 System.out.println("see header: " + line);
                 String[] header = line.split(" ");
-                if (header[0].equals(Consts.MASTER_HEADER)) {
-                    handleMasterRequest(rdr);
-                } else if (header[0].equals(Consts.SAMPLE_HEADER)) {
-                    handleSampleTransfer(header, rdr);
-                } else if (header[0].equals(Consts.DATA_HEADER)) {
+                boolean ret;
+                if (header[0].equals(Consts.RUN_MAP)) {
+                    MapperRunner mr = new MapperRunner(header);
+                    ret = mr.run();
+                    // TODO send master the result of the Mapper
+                    // TODO collect all seen keys
+                } else if (header[0].equals(Consts.RUN_PARTITION)) {
+                    PartitionerRunner pr = new PartitionerRunner(header);
+                    ret = pr.run();
+                    // TODO send master the result of the Partitioner
+                } else if (header[0].equals(Consts.RUN_REDUCE)) {
+                    ReducerRunner rr = new ReducerRunner(header);
+                    ret = rr.run();
+                    // TODO send master the result of the Reducer
+                } else if (header[0].equals(Consts.REDUCER_INPUT)) {
                     handleDataTransfer(header, rdr);
-                } else if (header[0].equals(Consts.READY_HEADER)) {
-                    handleReadyMsg(header);
+                    // TODO send master the result of the reducer input transfer
                 }
                 rdr.close();
                 // close the connection on client side
@@ -143,42 +152,8 @@ public class SlaveCommunication {
             }
         }
 
-        private void handleMasterRequest(BufferedReader br) throws IOException {
-            String line;
-            while (null != (line = br.readLine())) {
-                if (line.equals(Consts.STATUS_REQ)) {
-                    // check status
-                    BufferedWriter wtr = new BufferedWriter(new OutputStreamWriter(s.getOutputStream(),
-                            "UTF-8"));
-                    if (nodeEndStates) {
-                        wtr.write(Consts.FINISHED_EOL);
-                    } else {
-                        wtr.write(Consts.WORKING_EOL);
-                    }
-                    wtr.flush();
-                    wtr.close();
-                    break;
-                }
-            }
-        }
-
-        private void handleReadyMsg(String[] header) {
-            try {
-                int nInd = Integer.parseInt(header[1]);
-                if (header[2].equals(Consts.SAMPLE_HEADER)) {
-                    b.nodeReady(nInd, Consts.Stage.SELECT);
-                }
-                if (header[2].equals(Consts.DATA_HEADER)) {
-                    b.nodeReady(nInd, Consts.Stage.SORT);
-                }
-            } catch (Exception ex) {
-                System.out.println("Bad ready signal.");
-            }
-        }
-
         private void handleDataTransfer(String[] header, BufferedReader br) throws IOException {
             // TODO buffer the data in local file system
-            if (stage != Consts.Stage.SELECT) return;
             try {
                 int nInd = Integer.parseInt(header[1]);
                 // instead create a file
@@ -198,38 +173,11 @@ public class SlaveCommunication {
                 }
                 fw.flush();
                 fw.close();
-                synchronized (bufferLock) {
-                    dataRecvStates[nInd] = true;
-                }
+//                synchronized (bufferLock) {
+//                    dataRecvStates[nInd] = true;
+//                }
             } catch (NumberFormatException ex) {
                 System.out.println("Bad data transfer.");
-            }
-        }
-
-        private void handleSampleTransfer(String[] header, BufferedReader br) throws IOException {
-            if (stage != Consts.Stage.SAMPLE) return;
-            try {
-                int nInd = Integer.parseInt(header[1]);
-                List<Double> cBuffer = new ArrayList<Double>();
-                String line;
-                while (null != (line = br.readLine())) {
-//                    System.out.println(line);
-                    if (line.equals(Consts.END_OF_DATA)) {
-                        break;
-                    } else {
-                        if (DataProcessing.isDouble(line)) {
-                            cBuffer.add(Double.parseDouble(line));
-                        }
-                    }
-                }
-                synchronized (bufferLock) {
-                    sampleBuffer.addAll(cBuffer);
-                    sampleRecvStates[nInd] = true;
-                }
-                cBuffer = null;
-                System.out.println("sample receiving done: " + nInd);
-            } catch (NumberFormatException ex) {
-                System.out.println("Bad sample transfer.");
             }
         }
     }

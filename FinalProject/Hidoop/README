@@ -1,0 +1,46 @@
+
+#######################
+ Message Header Format
+#######################
+
+Slave running (S->M)
+    RUNNING SLAVE_ID
+
+Run Mapper with MAPPER_CLASS, INPUT_FILE, OUTPUT_DIR (M->S)
+    MAP MAPPER_CLASS INPUT_FILE OUTPUT_DIR
+
+Mapper finished (S->M) followed by seen keys
+    MAPPER_DONE SLAVE_ID INPUT_FILE
+
+Mapper failed (S->M)
+    MAPPER_FAILED SLAVE_ID INPUT_FILE
+
+Run Partitioner with PARTITIONER_CLASS, NUMBER_OF_REDUCER (M->S)
+    PARTITION PARTITIONER_CLASS NUMBER_OF_REDUCER
+
+Send reducer input to peer (S->S)
+    REDUCER_INPUT SLAVE_ID REDUCER_ID
+
+Partitioner finished (S->M)
+    PARTITIONER_DONE SLAVE_ID
+
+Partitioner failed (S->M)
+    PARTITIONER_FAILED SLAVE_ID
+
+Reducer input received (S->M)
+    REDUCER_INPUT_READY SLAVE_ID REDUCER_ID FROM_SLAVE_ID
+
+Run Reducer with REDUCER_CLASS REDUCER_ID OUTPUT_DIR (M->S)
+    REDUCE REDUCER_CLASS REDUCER_ID OUTPUT_DIR
+
+Reducer finished (S->M)
+    REDUCER_DONE SLAVE_ID REDUCER_ID
+
+Reducer failed (S->M)
+    REDUCER_FAILED SLAVE_ID REDUCER_ID
+
+Shut down (M->S)
+    SHUT_DOWN
+
+Job status query/response (C<->M)
+    JOB_STATUS

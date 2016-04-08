@@ -13,29 +13,12 @@ public class Consts {
     public static final String REDUCE_INPUT_DIR = "reduce_in";
     public static final String REDUCE_OUTPUT_DIR = "reduce_out";
 
-        public static final String END_OF_LINE = "\r\n";
+    public static final String END_OF_LINE = "\r\n";
     public static final String END_OF_LINE_L = "\n";
     public static final String END_OF_DATA = "EOD";
     public static final String END_OF_DATA_EOL = END_OF_DATA + END_OF_LINE;
-    public static final String HEADER_START = "Wban Number,";
-    public static final String NODE_READY = "READY";
-    public static final String NODE_READY_EOL = NODE_READY + END_OF_LINE;
     public static final String COMMA = ",";
     public static final String DELIMITER = ", ";
-
-    // Communication headers
-    public static final String MASTER_HEADER = "MASTER";
-    public static final String SAMPLE_HEADER = "SAMPLE";
-    public static final String DATA_HEADER = "DATA";
-    public static final String READY_HEADER = "READY";
-
-    // master request
-    public static final String STATUS_REQ = "STATUS";
-    public static final String SHUTDOWN_REQ = "SHUTDOWN";
-    public static final String FINISHED = "FININSHED";
-    public static final String FINISHED_EOL = FINISHED + END_OF_LINE;
-    public static final String WORKING = "WORKING";
-    public static final String WORKING_EOL = WORKING + END_OF_LINE;
 
     // data buffer file prefix
     public static final String BUFFER_FILE_PREFIX = "/dev/shm/buffer_";
@@ -45,4 +28,19 @@ public class Consts {
     public static final String DIR_GROUP = "dir";
     public static final String S3_URL_PATTERN = "s3://(?<" + BUCKET_GROUP + ">\\w+)/(?<" + DIR_GROUP + ">\\w+)";
 
+    // Communication headers
+    public static final String RUNNING = "RUNNING";
+    public static final String RUN_MAP = "MAP";
+    public static final String MAP_DONE = "MAPPER_DONE";
+    public static final String MAP_FAILED = "MAPPER_FAILED";
+    public static final String RUN_PARTITION = "PARTITION";
+    public static final String REDUCER_INPUT = "REDUCER_INPUT";
+    public static final String PARTITION_DONE = "PARTITIONER_DONE";
+    public static final String PARTITION_FAILED = "PARTITIONER_FAILED";
+    public static final String REDUCER_INPUT_READY = "REDUCER_INPUT_READY";
+    public static final String RUN_REDUCE = "REDUCE";
+    public static final String REDUCE_DONE = "REDUCER_DONE";
+    public static final String REDUCE_FAILED = "REDUCER_FAILED";
+    public static final String SHUT_DOWN = "SHUT_DOWN";
+    public static final String JOB_STATUS = "JOB_STATUS";
 }

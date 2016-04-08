@@ -112,7 +112,7 @@ public class Job {
             Reducer r = (Reducer) conf.reducerClass.newInstance();
             r.run(null);
 
-            // TODO load class from URL
+            // load class from URL
 //            JarFile jarFile = new JarFile(pathToJar);
 //            Enumeration e = jarFile.entries();
 //

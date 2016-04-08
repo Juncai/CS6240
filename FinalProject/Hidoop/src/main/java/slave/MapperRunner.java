@@ -9,7 +9,7 @@ import hidoop.mapreduce.Mapper;
 public class MapperRunner {
     MapContext context;
     Mapper mapper;
-    public MapperRunner(String configString) {
+    public MapperRunner(String[] configs) {
         // TODO parse the configString
 
 

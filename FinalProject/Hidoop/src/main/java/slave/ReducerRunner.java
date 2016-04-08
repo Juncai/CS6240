@@ -10,7 +10,7 @@ public class ReducerRunner {
     ReduceContext context;
     Reducer reducer;
 
-    public ReducerRunner(String configString) {
+    public ReducerRunner(String[] configs) {
         // TODO parse the configString
 
 
