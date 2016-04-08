@@ -22,17 +22,17 @@ public interface ReduceContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
      */
     public Iterable<VALUEIN> getValues() throws IOException, InterruptedException;
 
-    /**
-     * {@link Iterator} to iterate over values for a given group of records.
-     */
-    interface ValueIterator<VALUEIN> extends MarkableIteratorInterface<VALUEIN> {
-
-        /**
-         * This method is called when the reducer moves from one key to
-         * another.
-         *
-         * @throws IOException
-         */
-        void resetBackupStore() throws IOException;
-    }
+//    /**
+//     * {@link Iterator} to iterate over values for a given group of records.
+//     */
+//    interface ValueIterator<VALUEIN> extends MarkableIteratorInterface<VALUEIN> {
+//
+//        /**
+//         * This method is called when the reducer moves from one key to
+//         * another.
+//         *
+//         * @throws IOException
+//         */
+//        void resetBackupStore() throws IOException;
+//    }
 }

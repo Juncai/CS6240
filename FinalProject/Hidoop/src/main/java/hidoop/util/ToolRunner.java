@@ -18,7 +18,7 @@ public class ToolRunner {
         //get the args w/o generic hadoop args
 //        String[] toolArgs = parser.getRemainingArgs();
 //        return tool.run(toolArgs);
-        return tool.run(null);
+        return tool.run(args);
     }
 
     /**

@@ -14,6 +14,7 @@ public class Job {
     Job(Configuration conf) throws IOException {
         // propagate existing user credentials to job
         this.cluster = null;
+        this.conf = conf;
     }
 
     public static Job getInstance() throws IOException {
@@ -102,11 +103,33 @@ public class Job {
 //        return isSuccessful();
 
         try {
-
-            Mapper m = (Mapper)conf.mapperClass.newInstance();
+            System.out.println(conf.mapperClass.getCanonicalName());
+            System.out.println(conf.mapperClass.getName());
+            String mName = conf.mapperClass.getName();
+            Mapper m = (Mapper) Mapper.class.getClassLoader().loadClass(mName).newInstance();
+//            Mapper m = (Mapper)conf.mapperClass.newInstance();
             m.run(null);
-            Reducer r = (Reducer)conf.reducerClass.newInstance();
+            Reducer r = (Reducer) conf.reducerClass.newInstance();
             r.run(null);
+
+            // TODO load class from URL
+//            JarFile jarFile = new JarFile(pathToJar);
+//            Enumeration e = jarFile.entries();
+//
+//            URL[] urls = {new URL("jar:file:" + pathToJar + "!/")};
+//            URLClassLoader cl = URLClassLoader.newInstance(urls);
+//
+//            while (e.hasMoreElements()) {
+//                JarEntry je = (JarEntry) e.nextElement();
+//                if (je.isDirectory() || !je.getName().endsWith(".class")) {
+//                    continue;
+//                }
+//                // -6 because of .class
+//                String className = je.getName().substring(0, je.getName().length() - 6);
+//                className = className.replace('/', '.');
+//                Class c = cl.loadClass(className);
+//
+//            }
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
@@ -114,7 +137,7 @@ public class Job {
         return true;
     }
 
-//    public void submit()
+    //    public void submit()
 //            throws IOException, InterruptedException, ClassNotFoundException {
 //        ensureState(JobState.DEFINE);
 //        setUseNewAPI();
@@ -131,9 +154,9 @@ public class Job {
 //        LOG.info("The url to track the job: " + getTrackingURL());
 //    }
 //
-//    public Configuration getConfiguration() {
-//        return conf;
-//    }
+    public Configuration getConfiguration() {
+        return conf;
+    }
 //
 //    public boolean isComplete() throws IOException {
 ////        ensureState(JobState.RUNNING);
