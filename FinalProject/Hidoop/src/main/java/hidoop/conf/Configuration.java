@@ -4,6 +4,14 @@ import hidoop.fs.Path;
 import hidoop.mapreduce.Mapper;
 import hidoop.mapreduce.Partitioner;
 import hidoop.mapreduce.Reducer;
+import hidoop.util.Consts;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by jon on 4/6/16.
@@ -20,14 +28,40 @@ public class Configuration {
     public Class mapOutputValueClass;
     public Path inputPath;
     public Path outputPath;
+    private List<String> slaveIpList;
+    private String masterIp;
+    private int masterPort;
+    private int slavePort;
+    private int slaveNum;
 
 
-    public Configuration() {
+    public Configuration() throws IOException {
         isLocalMode = true;
         // TODO load local config file
-        // mode: local/S3
-        // IPs
-        // AWS credentials
+        // slave IPs
+        BufferedReader br = new BufferedReader(new FileReader(Consts.IP_LIST_PATH));
+        slaveIpList = new ArrayList<String>();
+        String line = null;
+        while ((line = br.readLine()) != null) {
+            slaveIpList.add(line);
+            System.out.println("adding ip to slave iplist: " + line);
+        }
+        br.close();
+        slaveNum = slaveIpList.size();
+
+        // mode: local/ec2
+        // master port
+        // slave port
+        // master ip
+        br = new BufferedReader(new FileReader(Consts.CONFIG_PATH));
+        isLocalMode = br.readLine().equals(Consts.LOCAL_MODE);
+        masterPort = Integer.parseInt(br.readLine());
+        slavePort = Integer.parseInt(br.readLine());
+        masterIp = br.readLine();
+
+        System.out.println("Master port: " + masterPort);
+        System.out.println("Slave port: " + slavePort);
+        System.out.println("Master ip: " + masterIp);
     }
 
     public void setJobName(String jname) {
@@ -65,6 +99,7 @@ public class Configuration {
     public void setInputPath(Path p) {
         this.inputPath = p;
     }
+
     public void setOutputPath(Path p) {
         this.outputPath = p;
     }

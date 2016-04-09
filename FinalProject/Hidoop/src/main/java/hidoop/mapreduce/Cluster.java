@@ -13,9 +13,12 @@ public class Cluster {
 
     public Cluster(Configuration conf) throws IOException {
         this.conf = conf;
-//        initialize(jobTrackAddr, conf);
+        initialize(conf);
     }
 
+    private void initialize(Configuration conf) {
+
+    }
 
 //    private void initialize(InetSocketAddress jobTrackAddr, Configuration conf)
 //            throws IOException {

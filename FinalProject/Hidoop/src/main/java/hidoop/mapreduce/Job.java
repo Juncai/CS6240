@@ -84,6 +84,8 @@ public class Job {
     public boolean waitForCompletion(boolean verbose
     ) throws IOException, InterruptedException,
             ClassNotFoundException {
+        // TODO create cluster with the configuration
+        cluster  = new Cluster(conf);
 //        if (state == JobState.DEFINE) {
 //            submit();
 //        }
@@ -102,15 +104,15 @@ public class Job {
 //        }
 //        return isSuccessful();
 
-        try {
-            System.out.println(conf.mapperClass.getCanonicalName());
-            System.out.println(conf.mapperClass.getName());
-            String mName = conf.mapperClass.getName();
-            Mapper m = (Mapper) Mapper.class.getClassLoader().loadClass(mName).newInstance();
-//            Mapper m = (Mapper)conf.mapperClass.newInstance();
-            m.run(null);
-            Reducer r = (Reducer) conf.reducerClass.newInstance();
-            r.run(null);
+//        try {
+//            System.out.println(conf.mapperClass.getCanonicalName());
+//            System.out.println(conf.mapperClass.getName());
+//            String mName = conf.mapperClass.getName();
+//            Mapper m = (Mapper) Mapper.class.getClassLoader().loadClass(mName).newInstance();
+////            Mapper m = (Mapper)conf.mapperClass.newInstance();
+//            m.run(null);
+//            Reducer r = (Reducer) conf.reducerClass.newInstance();
+//            r.run(null);
 
             // load class from URL
 //            JarFile jarFile = new JarFile(pathToJar);
@@ -130,10 +132,10 @@ public class Job {
 //                Class c = cl.loadClass(className);
 //
 //            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            return false;
+//        }
         return true;
     }
 

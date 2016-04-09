@@ -43,4 +43,13 @@ public class Consts {
     public static final String REDUCE_FAILED = "REDUCER_FAILED";
     public static final String SHUT_DOWN = "SHUT_DOWN";
     public static final String JOB_STATUS = "JOB_STATUS";
+
+    // config file path
+    public static final String CONFIG_DIR = "./config";
+    public static final String IP_LIST_PATH = CONFIG_DIR + "/ips";
+    public static final String CONFIG_PATH = CONFIG_DIR + "/hidoop.conf";
+
+    // config consts
+    public static final String LOCAL_MODE = "LOCAL";
+    public static final String EC2_MODE = "EC2";
 }
