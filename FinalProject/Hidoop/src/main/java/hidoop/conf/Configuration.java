@@ -28,6 +28,7 @@ public class Configuration {
     public Class mapOutputValueClass;
     public Path inputPath;
     public Path outputPath;
+    public int reducerNumber;
     private List<String> slaveIpList;
     private String masterIp;
     private int masterPort;
@@ -48,6 +49,7 @@ public class Configuration {
         }
         br.close();
         slaveNum = slaveIpList.size();
+        reducerNumber = slaveNum;
 
         // mode: local/ec2
         // master port
