@@ -8,6 +8,13 @@ public class Consts {
         DEFINE, BOOSTRAP, MAP, PARTITION, REDUCE, DONE
     }
 
+    public enum TaskStatus {
+        DEFINE, READY, RUNNING, DONE, FAILED
+    }
+
+    public enum NodeStatus {
+        OFFLINE, IDLE, BUSY
+    }
 
     public static final String MAP_OUTPUT_DIR = "map_out";
     public static final String REDUCE_INPUT_DIR = "reduce_in";
@@ -52,4 +59,8 @@ public class Consts {
     // config consts
     public static final String LOCAL_MODE = "LOCAL";
     public static final String EC2_MODE = "EC2";
+
+    // context path
+    public static final String REDUCE_INPUT_PREFIX = "reduce_";
+
 }

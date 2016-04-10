@@ -38,12 +38,15 @@ public class LocalClient implements Client {
                 mapper = (Mapper) conf.mapperClass.newInstance();
                 mapper.run((Mapper.Context) context);
 
-                // TODO handle output in the context
+                // TODO handle output in the context with PARTITIONER!
             }
 
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
+
+        // TODO send reduce input to reducer
 
     }
 

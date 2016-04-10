@@ -29,11 +29,11 @@ public class Configuration {
     public Path inputPath;
     public Path outputPath;
     public int reducerNumber;
-    private List<String> slaveIpList;
-    private String masterIp;
-    private int masterPort;
-    private int slavePort;
-    private int slaveNum;
+    public List<String> slaveIpList;
+    public String masterIp;
+    public int masterPort;
+    public int slavePort;
+    public int slaveNum;
 
 
     public Configuration() throws IOException {
