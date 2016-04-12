@@ -49,15 +49,7 @@ public class EC2Client implements Client {
         }
 
         // initialize Mapper
-        // get s3 bucket info
-        inputBucketInfo = InputUtils.extractBucketAndDir(conf.inputPath.toString());
-        outputBucketInfo = InputUtils.extractBucketAndDir(conf.outputPath.toString());
-        // load data from S3
-        AWSCredentials credentials = new ProfileCredentialsProvider().getCredentials();
-        AmazonS3 s3 = new AmazonS3Client(credentials);
-        Region usEast1 = Region.getRegion(Regions.US_EAST_1);
-        s3.setRegion(usEast1);
-        inputSummaryList = s3.listObjects(inputBucketInfo[0], inputBucketInfo[1]).getObjectSummaries();
+        // TODO get the input file list
         for (int i = 0; i < inputSummaryList.size(); i++) {
             mapStatus.put(i, Consts.TaskStatus.DEFINE);
         }

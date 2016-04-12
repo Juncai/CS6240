@@ -32,8 +32,9 @@ public class Consts {
 
     // regex pattern
     public static final String BUCKET_GROUP = "bucket";
-    public static final String DIR_GROUP = "dir";
-    public static final String S3_URL_PATTERN = "s3://(?<" + BUCKET_GROUP + ">\\w+)/(?<" + DIR_GROUP + ">\\w+)";
+    public static final String KEY_GROUP = "key";
+    public static final String S3_URL_PATTERN = "s3://(?<" + BUCKET_GROUP +
+            ">\\w+)/(?<" + KEY_GROUP + ">\\.+)";
 
     // Communication headers
     public static final String RUNNING = "RUNNING";
@@ -62,5 +63,13 @@ public class Consts {
 
     // context path
     public static final String REDUCE_INPUT_PREFIX = "reduce_";
+
+    // intput/output path related
+    public enum FileSystemTypes {
+        LOCAL, S3
+    }
+    public static final String S3_URL_PREFIX = "s3://";
+    public static final String TXT_EXT = ".txt";
+    public static final String TAR_GZ_EXT = ".tar.gz";
 
 }

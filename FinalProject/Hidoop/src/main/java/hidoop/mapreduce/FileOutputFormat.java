@@ -17,7 +17,7 @@ public class FileOutputFormat {
 //            throw new RuntimeException(e);
 //        }
 //        job.getConfiguration().set(FileOutputFormat.OUTDIR, outputDir.toString());
-        job.getConfiguration().setOutputPath(outputDir);
+        job.getConfiguration().setOutputPath(outputDir.toString());
     }
 
 }

@@ -1,6 +1,8 @@
 package hidoop.conf;
 
 import hidoop.fs.Path;
+import hidoop.io.LongWritable;
+import hidoop.io.Text;
 import hidoop.mapreduce.Mapper;
 import hidoop.mapreduce.Partitioner;
 import hidoop.mapreduce.Reducer;
@@ -20,14 +22,17 @@ public class Configuration {
     public boolean isLocalMode;
     public String jobName;
     public Class mapperClass;
+    public Class combinerClass;
     public Class reducerClass;
     public Class partitionerClass;
     public Class outputKeyClass;
     public Class outputValueClass;
     public Class mapOutputKeyClass;
     public Class mapOutputValueClass;
-    public Path inputPath;
-    public Path outputPath;
+    public Class mapInputKeyClass;
+    public Class mapInputValueClass;
+    public String inputPath;
+    public String outputPath;
     public int reducerNumber;
     public List<String> slaveIpList;
     public String masterIp;
@@ -61,6 +66,10 @@ public class Configuration {
         slavePort = Integer.parseInt(br.readLine());
         masterIp = br.readLine();
 
+        // input key value type
+        mapInputKeyClass = LongWritable.class;
+        mapInputValueClass = Text.class;
+
         System.out.println("Master port: " + masterPort);
         System.out.println("Slave port: " + slavePort);
         System.out.println("Master ip: " + masterIp);
@@ -72,6 +81,10 @@ public class Configuration {
 
     public void setMapperClass(Class<? extends Mapper> cls) {
         this.mapperClass = cls;
+    }
+
+    public void setCombinerClass(Class<? extends Reducer> cls) {
+        this.combinerClass = cls;
     }
 
     public void setReducerClass(Class<? extends Reducer> cls) {
@@ -98,11 +111,11 @@ public class Configuration {
         this.mapOutputValueClass = cls;
     }
 
-    public void setInputPath(Path p) {
+    public void setInputPath(String p) {
         this.inputPath = p;
     }
 
-    public void setOutputPath(Path p) {
+    public void setOutputPath(String p) {
         this.outputPath = p;
     }
 

@@ -3,6 +3,7 @@ package hidoop.mapreduce;
 import hidoop.conf.Configuration;
 import hidoop.fs.Path;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -12,11 +13,9 @@ public class FileInputFormat {
     public static void addInputPath(Job job,
                                     Path path) throws IOException {
         Configuration conf = job.getConfiguration();
-//        path = path.getFileSystem(conf).makeQualified(path);
-//        String dirStr = StringUtils.escapeString(path.toString());
-//        String dirs = conf.get(INPUT_DIR);
-//        conf.set(INPUT_DIR, dirs == null ? dirStr : dirs + "," + dirStr);
-        conf.setInputPath(path);
+        File f = new File(path.toString());
+        if (!f.exists()) throw new IOException("The input path doesn't exist");
+        conf.setInputPath(path.toString());
     }
 
 }

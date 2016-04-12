@@ -18,7 +18,7 @@ public class DoubleWritable implements Writable<DoubleWritable> {
 
     /**
      * serialize the object to the output stream
-     * @param DataOutputStream out
+     * @param out
      * @throws IOException
      */
     public void write(DataOutput out) throws IOException{
@@ -27,7 +27,7 @@ public class DoubleWritable implements Writable<DoubleWritable> {
 
     /**
      * deserialize the object to the input stream
-     * @param DataInputStream in
+     * @param in
      * @throws IOException
      */
     public void readFrom(DataInput in) throws IOException{
@@ -36,7 +36,7 @@ public class DoubleWritable implements Writable<DoubleWritable> {
 
     /**
      * compare this value to the objective return 1 if greater -1 if less 0 if equal
-     * @param DoubleWritable o
+     * @param o
      * @return int
      */
     public int compareTo(DoubleWritable o){

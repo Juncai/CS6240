@@ -11,10 +11,17 @@ public class Job {
     private Configuration conf;
     private Cluster cluster;
 
-    Job(Configuration conf) throws IOException {
+    public Job(Configuration conf) throws IOException {
         // propagate existing user credentials to job
         this.cluster = null;
         this.conf = conf;
+    }
+
+    public Job(Configuration conf, String name) throws IOException {
+        // propagate existing user credentials to job
+        this.cluster = null;
+        this.conf = conf;
+        conf.jobName = name;
     }
 
     public static Job getInstance() throws IOException {
@@ -43,6 +50,12 @@ public class Job {
     ) throws IllegalStateException {
 //        ensureState(JobState.DEFINE);
         conf.setMapperClass(cls);
+    }
+
+    public void setCombinerClass(Class<? extends Reducer> cls
+    ) throws IllegalStateException {
+//        ensureState(JobState.DEFINE);
+        conf.setCombinerClass(cls);
     }
 
     public void setReducerClass(Class<? extends Reducer> cls
@@ -85,7 +98,7 @@ public class Job {
     ) throws IOException, InterruptedException,
             ClassNotFoundException {
         // TODO create cluster with the configuration
-        cluster  = new Cluster(conf);
+        cluster = new Cluster(conf);
 //        if (state == JobState.DEFINE) {
 //            submit();
 //        }
@@ -114,7 +127,7 @@ public class Job {
 //            Reducer r = (Reducer) conf.reducerClass.newInstance();
 //            r.run(null);
 
-            // load class from URL
+        // load class from URL
 //            JarFile jarFile = new JarFile(pathToJar);
 //            Enumeration e = jarFile.entries();
 //
@@ -137,6 +150,10 @@ public class Job {
 //            return false;
 //        }
         return true;
+    }
+
+    public Counters getCounters() {
+        return new Counters();
     }
 
     //    public void submit()
