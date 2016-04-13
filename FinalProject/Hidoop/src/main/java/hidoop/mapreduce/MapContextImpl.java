@@ -11,30 +11,31 @@ import java.io.IOException;
 public class MapContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
         implements MapContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
     Configuration conf;
-    BufferedReader inputBr;
+    RecordReader<KEYIN, VALUEIN> reader;
     String line;
     long inputCount;
 
-    public MapContextImpl(Configuration conf, BufferedReader inputBr) {
+    public MapContextImpl(Configuration conf,
+                          RecordReader<KEYIN, VALUEIN> reader) {
         this.conf = conf;
-        this.inputBr = inputBr;
+        this.reader = reader;
         line = null;
         inputCount = 0;
     }
 
     @Override
     public boolean nextKeyValue() throws IOException, InterruptedException {
-        return (line = inputBr.readLine()) == null;
+        return reader.nextKeyValue();
     }
 
     @Override
     public KEYIN getCurrentKey() throws IOException, InterruptedException {
-        return ;
+        return reader.getCurrentKey();
     }
 
     @Override
     public VALUEIN getCurrentValue() throws IOException, InterruptedException {
-        return null;
+        return reader.getCurrentValue();
     }
 
     @Override

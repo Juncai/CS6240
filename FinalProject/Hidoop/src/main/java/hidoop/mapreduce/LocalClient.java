@@ -27,7 +27,7 @@ public class LocalClient implements Client {
     }
 
     @Override
-    public void submitJob() throws IOException, InterruptedException {
+    public <KEYIN, VALUEIN, KEYOUT, VALUEOUT> void submitJob() throws IOException, InterruptedException {
         // create file system
         FileSystem fs = FileSystem.get(conf);
 
@@ -40,7 +40,7 @@ public class LocalClient implements Client {
         // TODO map
 //        MapContext<conf.mapInputKeyClass, conf.mapInputValueClass> context = new MapContextImpl(conf);
         MapContext context;
-        Mapper mapper;
+        Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> mapper;
         String dataLine;
 
         // TODO load input from s3, parse and sample the data
