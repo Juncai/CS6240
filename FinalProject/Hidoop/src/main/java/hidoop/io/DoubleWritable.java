@@ -51,4 +51,7 @@ public class DoubleWritable implements Writable<DoubleWritable> {
     public String toString(){
         return Double.toString(this.value);
     }
+    public int hashCode(){
+        return Double.valueOf(this.value).hashCode();
+    }
 }

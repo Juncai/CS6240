@@ -38,7 +38,7 @@ public class LongWritable implements Writable<LongWritable> {
 
     /**
      * compare this value to the objective
-     * @param LongWritable o
+     * @param o
      * @return return 1 if greater -1 if less 0 if equal
      */
     @Override
@@ -54,5 +54,8 @@ public class LongWritable implements Writable<LongWritable> {
      */
     public String toString(){
         return Long.toString(this.value);
+    }
+    public int hashCode(){
+        return Long.valueOf(this.value).hashCode();
     }
 }
