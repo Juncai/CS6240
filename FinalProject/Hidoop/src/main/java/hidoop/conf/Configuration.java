@@ -40,36 +40,38 @@ public class Configuration {
 
     public Configuration() throws IOException {
         isLocalMode = true;
-        // TODO load local config file
-        // slave IPs
-        BufferedReader br = new BufferedReader(new FileReader(Consts.IP_LIST_PATH));
-        slaveIpList = new ArrayList<String>();
-        String line = null;
-        while ((line = br.readLine()) != null) {
-            slaveIpList.add(line);
-            System.out.println("adding ip to slave iplist: " + line);
-        }
-        br.close();
-        slaveNum = slaveIpList.size();
-        reducerNumber = slaveNum;
+        reducerNumber = 1;
+        partitionerClass = Partitioner.class;
+        // input key value type
+        mapInputKeyClass = Object.class;
+        mapInputValueClass = Text.class;
 
+        // TODO load local config file
         // mode: local/ec2
         // master port
         // slave port
         // master ip
-        br = new BufferedReader(new FileReader(Consts.CONFIG_PATH));
+        BufferedReader br = new BufferedReader(new FileReader(Consts.CONFIG_PATH));
+        String line;
         isLocalMode = br.readLine().equals(Consts.LOCAL_MODE);
-        masterPort = Integer.parseInt(br.readLine());
-        slavePort = Integer.parseInt(br.readLine());
-        masterIp = br.readLine();
-
-        // input key value type
-        mapInputKeyClass = LongWritable.class;
-        mapInputValueClass = Text.class;
-
-        System.out.println("Master port: " + masterPort);
-        System.out.println("Slave port: " + slavePort);
-        System.out.println("Master ip: " + masterIp);
+        if (!isLocalMode) {
+            masterPort = Integer.parseInt(br.readLine());
+            slavePort = Integer.parseInt(br.readLine());
+            masterIp = br.readLine();
+            System.out.println("Master port: " + masterPort);
+            System.out.println("Slave port: " + slavePort);
+            System.out.println("Master ip: " + masterIp);
+            // slave IPs
+            br = new BufferedReader(new FileReader(Consts.IP_LIST_PATH));
+            slaveIpList = new ArrayList<String>();
+            while ((line = br.readLine()) != null) {
+                slaveIpList.add(line);
+                System.out.println("adding ip to slave iplist: " + line);
+            }
+            br.close();
+            slaveNum = slaveIpList.size();
+            reducerNumber = slaveNum;
+        }
     }
 
     public void setJobName(String jname) {
@@ -93,10 +95,16 @@ public class Configuration {
     }
 
     public void setOutputKeyClass(Class<?> cls) {
+        if (this.mapOutputKeyClass == null) {
+            setMapOutputKeyClass(cls);
+        }
         this.outputKeyClass = cls;
     }
 
     public void setOutputValueClass(Class<?> cls) {
+        if (this.mapOutputValueClass == null) {
+            setMapOutputValueClass(cls);
+        }
         this.outputValueClass = cls;
     }
 

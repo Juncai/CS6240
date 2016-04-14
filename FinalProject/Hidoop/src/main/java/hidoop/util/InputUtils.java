@@ -18,4 +18,8 @@ public class InputUtils {
         }
         return null;
     }
+
+    public static String[] extractKey(String s) {
+        return s.split(Consts.KEY_VALUE_DELI, 2);
+    }
 }

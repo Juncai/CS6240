@@ -99,6 +99,7 @@ public class Job {
             ClassNotFoundException {
         // TODO create cluster with the configuration
         cluster = new Cluster(conf);
+        cluster.getClient().submitJob();
 //        if (state == JobState.DEFINE) {
 //            submit();
 //        }

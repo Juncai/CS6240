@@ -16,16 +16,13 @@ public class Consts {
         OFFLINE, IDLE, BUSY
     }
 
-    public static final String MAP_OUTPUT_DIR = "map_out";
-    public static final String REDUCE_INPUT_DIR = "reduce_in";
-    public static final String REDUCE_OUTPUT_DIR = "reduce_out";
 
     public static final String END_OF_LINE = "\r\n";
     public static final String END_OF_LINE_L = "\n";
     public static final String END_OF_DATA = "EOD";
     public static final String END_OF_DATA_EOL = END_OF_DATA + END_OF_LINE;
     public static final String COMMA = ",";
-    public static final String DELIMITER = ", ";
+    public static final String KEY_VALUE_DELI = "\t";
 
     // data buffer file prefix
     public static final String BUFFER_FILE_PREFIX = "/dev/shm/buffer_";
@@ -61,9 +58,6 @@ public class Consts {
     public static final String LOCAL_MODE = "LOCAL";
     public static final String EC2_MODE = "EC2";
 
-    // context path
-    public static final String REDUCE_INPUT_PREFIX = "reduce_";
-
     // intput/output path related
     public enum FileSystemTypes {
         LOCAL, S3
@@ -71,5 +65,10 @@ public class Consts {
     public static final String S3_URL_PREFIX = "s3://";
     public static final String TXT_EXT = ".txt";
     public static final String TAR_GZ_EXT = ".tar.gz";
+    public static final String MAP_OUTPUT_DIR_PRE = "/tmp/map_out_";
+    public static final String MAP_OUTPUT_PREFIX = "reducer_";
+    public static final String REDUCE_INPUT_DIR_PRE = "/tmp/reduce_in_";
+    public static final String REDUCE_INPUT_PREFIX = "mapper_";
+    public static final String REDUCE_OUTPUT_PREFIX = "part-r-";
 
 }

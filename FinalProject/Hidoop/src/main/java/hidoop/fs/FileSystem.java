@@ -46,15 +46,15 @@ public class FileSystem {
 //        inputSummaryList = s3.listObjects(inputBucketInfo[0], inputBucketInfo[1]).getObjectSummaries();
     }
 
-    public List<Path> getInputList() {
+    public List<Path> getFileList(Path p) {
         List<Path> res = new ArrayList<Path>();
         if (isS3) {
             // TODO
 
         } else {
-            File path = new File(inputPath);
+            File path = new File(p.toString());
             if (path.isFile()) {
-                res.add(new Path(inputPath));
+                res.add(new Path(p.toString()));
             }
             if (path.isDirectory()) {
                 for (File f : path.listFiles()) {
@@ -66,8 +66,8 @@ public class FileSystem {
         return res;
     }
 
-    private boolean isCompressed(String path) {
-        return path.endsWith(Consts.TAR_GZ_EXT);
+    private boolean isCompressed(Path p) {
+        return p.toString().endsWith(Consts.TAR_GZ_EXT);
     }
 
     private static boolean pathFromS3(String path) {
@@ -83,7 +83,8 @@ public class FileSystem {
     }
 
     public boolean exists(Path p) {
-        return true;
+        File f = new File(p.toString());
+        return f.exists();
     }
 
     public InputStream open(Path file) throws IOException {
@@ -94,8 +95,9 @@ public class FileSystem {
         }
     }
 
-    private InputStream openLocalFile(Path file) throws FileNotFoundException {
-        return new FileInputStream(new File(file.toString()));
+    private InputStream openLocalFile(Path file) throws IOException {
+        FileInputStream fis = new FileInputStream(file.toString());
+        return isCompressed(file) ? new GZIPInputStream(fis) : fis;
     }
 
     private InputStream openS3File(Path file) throws IOException {
@@ -104,6 +106,52 @@ public class FileSystem {
         S3Object object = s3.getObject(new GetObjectRequest(inputBucketInfo[0], inputBucketInfo[1]));
         GZIPInputStream gis = new GZIPInputStream(object.getObjectContent());
         return gis;
+    }
+
+    public void createOutputFile(Path filePath, Iterable<String> content, boolean isInter) throws IOException {
+        if (isInter) {
+            File f = new File(filePath.toString());
+            f.createNewFile();
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f)));
+            for (String line : content) {
+                bw.write(line + Consts.END_OF_LINE);
+            }
+            bw.flush();
+            bw.close();
+        } else if (isS3) {
+            // TODO create a local tmp file
+        }
+    }
+
+    public OutputStream create(Path p) throws IOException {
+        File f = new File(p.toString());
+        f.createNewFile();
+        return new FileOutputStream(p.toString());
+    }
+
+    public static void createDir(Path dir) throws IOException {
+        File newDir = new File(dir.toString());
+        if (!newDir.exists()) {
+            newDir.mkdir();
+        } else {
+            throw new IOException("Output dir exists!");
+        }
+    }
+
+    public static void removeFile(Path p) {
+        File f = new File(p.toString());
+        f.deleteOnExit();
+    }
+
+    public static String getFileName(Path p) {
+        String[] parts = p.toString().split("/");
+        return parts[parts.length - 1];
+    }
+
+    public void save(Path file) {
+        if (isS3) {
+            // TODO find the local tmp file and send to s3
+        }
     }
 }
 
