@@ -1,11 +1,12 @@
 package hidoop.mapreduce;
 
+import java.io.Closeable;
 import java.io.IOException;
 
 /**
  * Created by jon on 4/7/16.
  */
-public interface TaskInputOutputContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
+public interface TaskInputOutputContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> extends Closeable {
 
     /**
      * Advance to the next key, value pair, returning null if at end.
@@ -37,4 +38,6 @@ public interface TaskInputOutputContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
      */
     public void write(KEYOUT key, VALUEOUT value)
             throws IOException, InterruptedException;
+
+    public void close();
 }

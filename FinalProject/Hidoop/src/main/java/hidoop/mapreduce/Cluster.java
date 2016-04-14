@@ -10,14 +10,19 @@ import java.net.InetSocketAddress;
  */
 public class Cluster {
     private Configuration conf;
+    private Client client;
 
     public Cluster(Configuration conf) throws IOException {
         this.conf = conf;
         initialize(conf);
     }
 
-    private void initialize(Configuration conf) {
-
+    private void initialize(Configuration conf) throws IOException {
+        if (conf.isLocalMode) {
+            client = new LocalClient(conf);
+        } else {
+            client = new EC2Client(conf);
+        }
     }
 
 //    private void initialize(InetSocketAddress jobTrackAddr, Configuration conf)
@@ -60,9 +65,9 @@ public class Cluster {
 //        }
 //    }
 //
-//    ClientProtocol getClient() {
-//        return client;
-//    }
+    Client getClient() {
+        return client;
+    }
 
     Configuration getConf() {
         return conf;

@@ -12,6 +12,9 @@ public class DoubleWritable implements Writable<DoubleWritable> {
 
     public DoubleWritable(){};
     public DoubleWritable(double value){this.value = value;}
+    public DoubleWritable(String valueStr){
+        this.value = Double.parseDouble(valueStr);
+    }
 
     public void set(double value){this.value = value;}
     public double get(){return this.value;}

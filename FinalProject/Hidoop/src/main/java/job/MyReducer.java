@@ -12,7 +12,11 @@ public class MyReducer extends Reducer<Text, Text, Text, Text> {
     @Override
     public void reduce(Text key, Iterable<Text> values, Context context)
             throws IOException, InterruptedException {
-        System.out.println("Hi from Reducer!");
+//        System.out.println("Hi from Reducer!");
+        int count = 0;
+        for (Text v : values) {
+            count++;
+        }
+        context.write(key, new Text(count + ""));
     }
-
 }

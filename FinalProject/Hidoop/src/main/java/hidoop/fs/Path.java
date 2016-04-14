@@ -17,7 +17,6 @@ public class Path implements Comparable {
 
     public Path(String s) {
         pathStr = s;
-        if ()
     }
 
     public Path(String dir, String key) {
@@ -34,6 +33,10 @@ public class Path implements Comparable {
 //    }
     public String toString() {
         return pathStr;
+    }
+
+    public static Path appendDirFile(Path dir, String fileName) {
+        return new Path(dir.toString() + "/" + fileName);
     }
 
 }

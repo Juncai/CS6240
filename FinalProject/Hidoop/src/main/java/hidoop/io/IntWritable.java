@@ -11,6 +11,9 @@ public class IntWritable implements Writable<IntWritable>{
     private int value;
     public IntWritable(){}
     public IntWritable(int value){this.value = value;}
+    public IntWritable(String valueStr){
+        this.value = Integer.parseInt(valueStr);
+    }
 
     public void set(int value){this.value = value;}
 

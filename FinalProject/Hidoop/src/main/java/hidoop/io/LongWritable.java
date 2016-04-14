@@ -12,6 +12,9 @@ public class LongWritable implements Writable<LongWritable> {
 
     public LongWritable(){}
     public LongWritable(long value){this.value = value;}
+    public LongWritable(String valueStr){
+        this.value = Long.parseLong(valueStr);
+    }
 
     public void set(long value){this.value = value;}
     public long get(){return this.value;}
