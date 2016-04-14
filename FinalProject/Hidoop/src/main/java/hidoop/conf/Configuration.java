@@ -1,15 +1,12 @@
 package hidoop.conf;
 
-import hidoop.fs.Path;
 import hidoop.io.LongWritable;
 import hidoop.io.Text;
 import hidoop.mapreduce.Mapper;
-import hidoop.mapreduce.Partitioner;
 import hidoop.mapreduce.Reducer;
 import hidoop.util.Consts;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
