@@ -5,14 +5,14 @@ date: February 11, 2016
 output: pdf_document
 ---
 
-This document describes an implementation of Mapreduce instance with Hadoop doing ticket price analysis on the OTP (On-Time Performance) dataset. The purpose of the application is to perform a simple linear regression on the ticket price. The features we used are distance and air time. The label is average ticket price. For each carrier whic is active in 2015, we finished two simple linear regression for it. One between distance and average ticket price. The other one between air time and average ticket price.
+This document describes an implementation of Mapreduce instance with Hadoop doing ticket price analysis on the OTP (On-Time Performance) dataset. The purpose of the application is to perform a simple linear regression on the ticket price. The features we used are distance and air time. The label is average ticket price. For each carrier which is active in 2015, we finished two simple linear regression for it. One between distance and average ticket price. The other one between air time and average ticket price. 
 
 ### Implementation
 #### Data Normalization
 In order to get a good regression results, the features should be normalized. We normalized the data so that they have zero mean and one variance. A R script is used to go over all the data and find out the mean and standard deviation of the distance as well as the air time. Then these information is provided to Mapper along with the dataset. Mapper will normalize the features in map phase.
 
 #### Model and Normal Equation
-For a simple linear regression, there is only one explanatory variable which in our case is either distance or air time. So the model will simply be $$y=\theta_{0} + \theta_{1}x$$ where $y$ is the average ticket price and $x$ is distance or air time of the flight. $\theta_{0}$ and $\theta{1}$ are two model parameters which can be estimated from linear regression. In this implementation, we use normal equation to solve the linear regression problem. $$\theta=(X^{T}X)^{-1}X^{T}Y$$ In order to calculate the normal equation in Mapreduce, we divide the computation into three steps: 
+For a simple linear regression, there is only one explanatory variable which in our case is either distance or air time. So the model will simply be $$y=\theta_{0} + \theta_{1}x$$ where $y$ is the average ticket price and $x$ is distance or air time of the flight. $\theta_{0}$ and $\theta{1}$ are two model parameters which can be estimated from linear regression. In this implementation, we use normal equation to solve the linear regression problem. $$\theta=(X^{T}X)^{-1}X^{T}Y$$ In order to calculate the normal equation in Mapreduce, we divided the computation into three steps: 
 1. Compute $X_{i}^{T}X_{i}$ and $X_{i}^{T}Y_{i}$ for each observation and combine the results for each carrier in the mapper. 
 2. Compute the actual $X^{T}X$ and $X^{T}Y$ in the reducer by summing up all $X_{i}^{T}X_{i}$ and $X_{i}^{T}Y_{i}$ for each carrier. 
 3. Compute $\theta=(X^{T}X)^{-1}X^{T}Y$ for each carrier.

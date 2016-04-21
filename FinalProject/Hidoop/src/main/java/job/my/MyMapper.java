@@ -1,4 +1,4 @@
-package job;
+package job.my;
 
 import hidoop.io.Text;
 import hidoop.mapreduce.Mapper;

@@ -53,4 +53,7 @@ public class IntWritable implements Writable<IntWritable>{
     public String toString(){
         return Integer.toString(this.value);
     }
+    public int hashCode(){
+        return Integer.valueOf(this.value).hashCode();
+    }
 }

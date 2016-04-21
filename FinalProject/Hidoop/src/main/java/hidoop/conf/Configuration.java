@@ -1,6 +1,5 @@
 package hidoop.conf;
 
-import hidoop.fs.Path;
 import hidoop.io.LongWritable;
 import hidoop.io.Text;
 import hidoop.mapreduce.Mapper;
@@ -9,7 +8,6 @@ import hidoop.mapreduce.Reducer;
 import hidoop.util.Consts;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,7 +41,7 @@ public class Configuration {
 
     public Configuration() throws IOException {
         isLocalMode = true;
-        reducerNumber = 1;
+        reducerNumber = 4;
         partitionerClass = Partitioner.class;
         // input key value type
         mapInputKeyClass = Object.class;
@@ -93,6 +91,10 @@ public class Configuration {
         this.reducerClass = cls;
     }
 
+    public void setNumReduceTasks(int numReduceTasks) {
+        this.reducerNumber = numReduceTasks;
+    }
+
     public void setPartitionerClass(Class<? extends Partitioner> cls) {
         this.partitionerClass = cls;
     }
@@ -131,5 +133,4 @@ public class Configuration {
         // do nothing;
 //        set(name, value, null);
     }
-
 }
