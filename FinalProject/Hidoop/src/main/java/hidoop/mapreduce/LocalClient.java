@@ -63,6 +63,7 @@ public class LocalClient implements Client {
                 from = new File(Consts.MAP_OUTPUT_DIR_PRE + j + "/" + Consts.MAP_OUTPUT_PREFIX + i);
                 reduceInput = Path.appendDirFile(reduceInputDir, Consts.REDUCE_INPUT_PREFIX + j);
                 to = new File(reduceInput.toString());
+                //System.out.println(from.toString() + "&&" + to.toString());
                 Files.move(from, to);
             }
         }

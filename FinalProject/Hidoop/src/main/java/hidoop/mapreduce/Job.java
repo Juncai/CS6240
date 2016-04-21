@@ -2,6 +2,7 @@ package hidoop.mapreduce;
 
 import hidoop.conf.Configuration;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -62,6 +63,10 @@ public class Job {
     ) throws IllegalStateException {
 //        ensureState(JobState.DEFINE);
         conf.setReducerClass(cls);
+    }
+
+    public void setNumReduceTasks(int numReduceTasks) {
+        conf.setNumReduceTasks(numReduceTasks);
     }
 
     public void setPartitionerClass(Class<? extends Partitioner> cls
@@ -150,7 +155,47 @@ public class Job {
 //            ex.printStackTrace();
 //            return false;
 //        }
+        cleanUpTmp();
         return true;
+    }
+
+    private void cleanUpTmp() {
+        File dir = new File(conf.inputPath);
+        File[] directoryListing = dir.listFiles();
+
+        int numberOfMappers = directoryListing.length;
+        File map_out;
+        for(int i = 0; i < numberOfMappers; i++) {
+            map_out = new File("/tmp/map_out_" + i);
+            delete(map_out);
+        }
+
+        int numberOfReducers = conf.reducerNumber;
+        File reduce_in;
+        for(int i = 0; i < numberOfReducers; i++) {
+            reduce_in = new File("/tmp/reduce_in_" + i);
+            delete(reduce_in);
+        }
+    }
+
+    private void delete(File toDel) {
+        if(toDel.isDirectory()){
+            if(toDel.list().length == 0) {
+                toDel.delete();
+            } else {
+                File[] nestedFiles = toDel.listFiles();
+
+                for (File toDelNestedFile : nestedFiles) {
+                    delete(toDelNestedFile);
+                }
+
+                if(toDel.list().length == 0){
+                    toDel.delete();
+                }
+            }
+        } else {
+            toDel.delete();
+        }
     }
 
     public Counters getCounters() {
@@ -177,6 +222,7 @@ public class Job {
     public Configuration getConfiguration() {
         return conf;
     }
+
 //
 //    public boolean isComplete() throws IOException {
 ////        ensureState(JobState.RUNNING);

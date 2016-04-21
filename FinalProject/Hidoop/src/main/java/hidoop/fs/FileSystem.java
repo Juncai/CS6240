@@ -1,6 +1,7 @@
 package hidoop.fs;
 
 import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.SystemPropertiesCredentialsProvider;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
@@ -134,6 +135,7 @@ public class FileSystem {
         if (!newDir.exists()) {
             newDir.mkdir();
         } else {
+            System.out.println(newDir.toString());
             throw new IOException("Output dir exists!");
         }
     }
