@@ -3,6 +3,7 @@ package hidoop.conf;
 import hidoop.io.LongWritable;
 import hidoop.io.Text;
 import hidoop.mapreduce.Mapper;
+import hidoop.mapreduce.Partitioner;
 import hidoop.mapreduce.Reducer;
 import hidoop.util.Consts;
 
@@ -122,6 +123,10 @@ public class Configuration {
 
     public void setOutputPath(String p) {
         this.outputPath = p;
+    }
+
+    public void setNumReduceTasks(int num) {
+        reducerNumber = num;
     }
 
     public void set(String name, String value) {

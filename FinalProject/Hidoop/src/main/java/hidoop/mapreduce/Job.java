@@ -94,6 +94,11 @@ public class Job {
         conf.setMapOutputValueClass(theClass);
     }
 
+
+    public void setNumReduceTasks(int num) {
+        conf.setNumReduceTasks(num);
+    }
+
     public boolean waitForCompletion(boolean verbose
     ) throws IOException, InterruptedException,
             ClassNotFoundException {

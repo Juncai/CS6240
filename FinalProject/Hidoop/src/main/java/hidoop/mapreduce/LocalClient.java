@@ -38,6 +38,8 @@ public class LocalClient implements Client {
         // get input file list
         mapInputPathList = fs.getFileList(new Path(conf.inputPath));
         numMapperTasks = mapInputPathList.size();
+        int numReducers = (numMapperTasks / 2) > 1 ? numMapperTasks / 2 : 1;
+        conf.setNumReduceTasks(numReducers);
         status = Consts.Stages.BOOSTRAP;
 
         // map

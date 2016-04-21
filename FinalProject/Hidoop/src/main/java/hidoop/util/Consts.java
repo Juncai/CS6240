@@ -40,8 +40,8 @@ public class Consts {
     public static final String MAP_FAILED = "MAPPER_FAILED";
     public static final String RUN_PARTITION = "PARTITION";
     public static final String REDUCER_INPUT = "REDUCER_INPUT";
-    public static final String PARTITION_DONE = "PARTITIONER_DONE";
-    public static final String PARTITION_FAILED = "PARTITIONER_FAILED";
+//    public static final String PARTITION_DONE = "PARTITIONER_DONE";
+//    public static final String PARTITION_FAILED = "PARTITIONER_FAILED";
     public static final String REDUCER_INPUT_READY = "REDUCER_INPUT_READY";
     public static final String RUN_REDUCE = "REDUCE";
     public static final String REDUCE_DONE = "REDUCER_DONE";

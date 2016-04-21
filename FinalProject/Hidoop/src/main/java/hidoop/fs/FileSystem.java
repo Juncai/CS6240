@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import hidoop.conf.Configuration;
 import hidoop.util.Consts;
 import hidoop.util.InputUtils;
@@ -21,36 +22,45 @@ import java.util.zip.GZIPInputStream;
  * Created by jon on 4/12/16.
  */
 public class FileSystem {
+    private static FileSystem fs;
     private boolean isS3;
     private String inputPath;
     private String outputPath;
     private AmazonS3 s3;
 
-    public FileSystem(String uri, Configuration conf) {
-        isS3 = pathFromS3(uri.toString());
+    public FileSystem(Configuration conf) {
         inputPath = conf.inputPath;
-        inputPath = conf.inputPath;
+        outputPath = conf.outputPath;
+        isS3 = pathFromS3(inputPath) || pathFromS3(outputPath);
 
         // initialize s3 if necessary
         if (isS3) initS3();
 
     }
 
-    private void initS3() {
+    public static FileSystem get(Configuration conf) {
+        if (fs == null) {
+            fs = new FileSystem(conf);
+        }
+        return fs;
+    }
 
+    private void initS3() {
         // load data from S3
         AWSCredentials credentials = new ProfileCredentialsProvider().getCredentials();
         s3 = new AmazonS3Client(credentials);
         Region usEast1 = Region.getRegion(Regions.US_EAST_1);
         s3.setRegion(usEast1);
-//        inputSummaryList = s3.listObjects(inputBucketInfo[0], inputBucketInfo[1]).getObjectSummaries();
     }
 
     public List<Path> getFileList(Path p) {
         List<Path> res = new ArrayList<Path>();
-        if (isS3) {
-            // TODO
-
+        if (pathFromS3(p.toString())) {
+            String[] inputBucketInfo = InputUtils.extractBucketAndDir(p.toString());
+            List<S3ObjectSummary> summaryList = s3.listObjects(inputBucketInfo[0], inputBucketInfo[1]).getObjectSummaries();
+            for (S3ObjectSummary sos : summaryList) {
+                res.add(new Path(sos.getBucketName(), sos.getKey(), true));
+            }
         } else {
             File path = new File(p.toString());
             if (path.isFile()) {
@@ -74,13 +84,6 @@ public class FileSystem {
         return path.startsWith(Consts.S3_URL_PREFIX);
     }
 
-    public static FileSystem get(Configuration conf) {
-        return get(conf.inputPath.toString(), conf);
-    }
-
-    public static FileSystem get(String uri, Configuration conf) {
-        return new FileSystem(uri, conf);
-    }
 
     public boolean exists(Path p) {
         File f = new File(p.toString());

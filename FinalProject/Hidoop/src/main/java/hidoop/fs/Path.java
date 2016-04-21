@@ -12,6 +12,7 @@ import java.util.List;
 public class Path implements Comparable {
     private String pathStr;
     public String bucket;
+    public String key;
     public List<String> keys;
     public Consts.FileSystemTypes type;
 
@@ -21,6 +22,18 @@ public class Path implements Comparable {
 
     public Path(String dir, String key) {
         this(dir + "/" + key);
+        type = Consts.FileSystemTypes.LOCAL;
+    }
+
+    public Path(String dir, String key, boolean isS3) {
+        this(dir + "/" + key);
+        if (isS3) {
+            bucket = dir;
+            this.key = key;
+            type = Consts.FileSystemTypes.S3;
+        } else {
+            type = Consts.FileSystemTypes.LOCAL;
+        }
     }
 
     @Override
