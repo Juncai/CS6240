@@ -22,11 +22,13 @@ public class LocalClient implements Client {
     private Consts.Stages status;
     private FileSystem fs;
     private int numMapperTasks;
+    private Counter MapOutputCounter;
 
     public LocalClient(Configuration conf) {
         this.conf = conf;
         status = Consts.Stages.DEFINE;
         reduceInputDirList = new ArrayList<Path>();
+        this.MapOutputCounter = new Counter();
     }
 
     @Override
@@ -82,7 +84,7 @@ public class LocalClient implements Client {
 
             for (Path inputDir : reduceInputDirList) {
                 inputPathList = fs.getFileList(inputDir);
-                outputPath = Path.appendDirFile(outputDir, Consts.REDUCE_OUTPUT_PREFIX + reduceInd);
+                outputPath = Path.appendDirFile(outputDir, Consts.REDUCE_OUTPUT_PREFIX +"0000" + reduceInd);
                 // prepare context
                 context = new ReduceContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT>(conf, inputPathList, outputPath, fs, reduceInd++);
                 reducerContext = new WrappedReducer<KEYIN, VALUEIN, KEYOUT, VALUEOUT>().getReducerContext(context);
@@ -115,6 +117,7 @@ public class LocalClient implements Client {
 
                 // map
                 mapper.run(mapperContext);
+                this.MapOutputCounter.join(new Counter(mapperContext.getCounterValue()));
                 mapperContext.close();
             }
 
@@ -127,4 +130,9 @@ public class LocalClient implements Client {
     public Consts.Stages getStatus() throws IOException, InterruptedException {
         return status;
     }
+    @Override
+    public Counter getCounter(){
+        return this.MapOutputCounter;
+    }
+
 }

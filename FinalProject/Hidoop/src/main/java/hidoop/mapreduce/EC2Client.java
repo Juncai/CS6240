@@ -34,6 +34,7 @@ public class EC2Client implements Client {
     private String[] outputBucketInfo;
     private List<S3ObjectSummary> inputSummaryList;
     private ListeningThread lt;
+    private Counter MapOutputCounter;
 
     public EC2Client(Configuration conf) throws IOException {
         this.conf = conf;
@@ -41,6 +42,7 @@ public class EC2Client implements Client {
         nodeStatus = new HashMap<Integer, Consts.NodeStatus>();
         mapStatus = new HashMap<Integer, Consts.TaskStatus>();
         reduceStatus = new HashMap<Integer, Consts.TaskStatus>();
+        this.MapOutputCounter = new Counter();
 
         // initialize node
         int ind = 0;
@@ -64,6 +66,10 @@ public class EC2Client implements Client {
         lt.start();
     }
 
+    @Override
+    public Counter getCounter(){
+       return this.MapOutputCounter;
+    }
     @Override
     public void submitJob() throws IOException, InterruptedException {
 
@@ -149,5 +155,6 @@ public class EC2Client implements Client {
 //            }
 //        }
     }
+
 
 }

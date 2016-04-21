@@ -5,14 +5,11 @@ import hidoop.fs.FileSystem;
 import hidoop.fs.Path;
 import hidoop.util.Consts;
 import hidoop.util.InputUtils;
-import jdk.internal.util.xml.impl.Input;
+//import jdk.internal.util.xml.impl.Input;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 // author: Jun Cai
 public class ReduceContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
@@ -70,12 +67,26 @@ public class ReduceContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
             iss.close();
             FileSystem.removeFile(p);
         }
+        List<String> sortedKeys = new ArrayList<String>(keyValueMap.keySet());
+        Collections.sort(sortedKeys,new Comparator<String>(){
+            public int compare(String o1, String o2){
+                int value1 = Integer.valueOf(o1);
+                int value2 = Integer.valueOf(o2);
+                return value1 > value2 ? 1:(value1 == value2 ? 0 : -1);
+            }
+        });
+        /*TreeSet<String> sortedKeys = new TreeSet<String>(new Comparator<String>()
+        {
+            public int compare(String o1, String o2) {
+                return Integer.valueOf(o1).compareTo(Integer.valueOf(o2));
+            }
+        });*/
 
         Path dir = new Path(Consts.REDUCE_INPUT_DIR_PRE + reducerInd);
         keyValueFile = Path.appendDirFile(dir, "kv_buffered");
         OutputStream oss = fs.create(keyValueFile);
         BufferedWriter bww = new BufferedWriter(new OutputStreamWriter(oss));
-        for (String k : keyValueMap.keySet()) {
+        for (String k : sortedKeys) {
             for (String l : keyValueMap.get(k)) {
                 bww.write(l + Consts.END_OF_LINE);
             }

@@ -10,11 +10,13 @@ import java.io.IOException;
 public class Job {
     private Configuration conf;
     private Cluster cluster;
+    private Counters counters;
 
     public Job(Configuration conf) throws IOException {
         // propagate existing user credentials to job
         this.cluster = null;
         this.conf = conf;
+        this.counters = new Counters();
     }
 
     public Job(Configuration conf, String name) throws IOException {
@@ -22,6 +24,7 @@ public class Job {
         this.cluster = null;
         this.conf = conf;
         conf.jobName = name;
+        this.counters = new Counters();
     }
 
     public static Job getInstance() throws IOException {
@@ -100,6 +103,10 @@ public class Job {
         // TODO create cluster with the configuration
         cluster = new Cluster(conf);
         cluster.getClient().submitJob();
+        this.counters.getGroup("123")
+                .setCounter(cluster
+                        .getClient()
+                        .getCounter());
 //        if (state == JobState.DEFINE) {
 //            submit();
 //        }
@@ -154,7 +161,7 @@ public class Job {
     }
 
     public Counters getCounters() {
-        return new Counters();
+        return this.counters;
     }
 
     //    public void submit()
