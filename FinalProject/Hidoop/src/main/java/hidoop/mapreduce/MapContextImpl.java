@@ -26,6 +26,7 @@ public class MapContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
     private Path outputPath;
     private Partitioner p;
     private Map<Integer, List<String>> partitionBuffer;
+    private Counter MapOutputCounter;
 
 
     public MapContextImpl(Configuration conf, Path inputPath,
@@ -40,6 +41,7 @@ public class MapContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
         inputCount = 0;
         this.p = p;
         initPartitionBuffer();
+        this.MapOutputCounter = new Counter();
     }
 
     private void initPartitionBuffer() {
@@ -86,8 +88,10 @@ public class MapContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
     public void write(KEYOUT key, VALUEOUT value) throws IOException, InterruptedException {
         int reduceInd = p.getPartition(key, value, conf.reducerNumber);
         partitionBuffer.get(reduceInd).add(key.toString() + Consts.KEY_VALUE_DELI + value.toString());
+        this.MapOutputCounter.increment();
     }
 
+    public long getCounterValue(){return this.MapOutputCounter.getValue();}
     private void createOutput() throws IOException {
         Path outPath;
         for (int i = 0; i < conf.reducerNumber; i++) {

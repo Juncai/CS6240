@@ -41,7 +41,7 @@ public class Configuration {
 
     public Configuration() throws IOException {
         isLocalMode = true;
-        reducerNumber = 1;
+        reducerNumber = 4;
         partitionerClass = Partitioner.class;
         // input key value type
         mapInputKeyClass = Object.class;
@@ -133,5 +133,4 @@ public class Configuration {
         // do nothing;
 //        set(name, value, null);
     }
-
 }

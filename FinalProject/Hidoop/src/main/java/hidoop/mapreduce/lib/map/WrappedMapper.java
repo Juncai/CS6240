@@ -1,5 +1,6 @@
 package hidoop.mapreduce.lib.map;
 
+import hidoop.mapreduce.Counter;
 import hidoop.mapreduce.MapContext;
 import hidoop.mapreduce.Mapper;
 
@@ -48,6 +49,10 @@ public class WrappedMapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
         @Override
         public void close() {
             mapContext.close();
+        }
+        @Override
+        public long getCounterValue(){
+            return mapContext.getCounterValue();
         }
     }
 }

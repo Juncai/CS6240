@@ -29,6 +29,7 @@ public class EC2Client implements Client {
     private Pool<Node> nodePool;
     private ReducerInputPool reducerPool;
     private ReducerInputPool reducerInputPool;
+    private Counter MapOutputCounter;
 
     public EC2Client(Configuration conf) throws IOException {
         this.conf = conf;
@@ -46,6 +47,7 @@ public class EC2Client implements Client {
         int numReducers = (numMapperTasks / 2) > 1 ? numMapperTasks / 2 : 1;
         conf.setNumReduceTasks(numReducers);
         int numSlaves = conf.slaveIpList.size();
+        this.MapOutputCounter = new Counter();
 
         // initialize node
         for (int i = 0; i < numSlaves; i++) {
@@ -111,6 +113,10 @@ public class EC2Client implements Client {
             header += " " + redInd;
         }
         sendInstruction(n, null, header);
+    }
+    @Override
+    public Counter getCounter(){
+       return this.MapOutputCounter;
     }
 
     private void sendInstruction(Node n, List<String> data, String header) throws IOException {
@@ -234,5 +240,6 @@ public class EC2Client implements Client {
             reducerPool.putInput(rInd, 0);
         }
     }
+
 
 }

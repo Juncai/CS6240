@@ -207,6 +207,7 @@ public class WordMedian extends Configured implements Tool {
     long totalWords = job.getCounters()
         .getGroup(TaskCounter.class.getCanonicalName())
         .findCounter("MAP_OUTPUT_RECORDS", "Map output records").getValue();
+    System.out.println("TotalWords: " + totalWords);
     int medianIndex1 = (int) Math.ceil((totalWords / 2.0));
     int medianIndex2 = (int) Math.floor((totalWords / 2.0));
 

@@ -10,4 +10,5 @@ import java.io.IOException;
 public interface Client {
     public abstract void submitJob() throws IOException, InterruptedException;
     public abstract Consts.Stages getStatus() throws IOException, InterruptedException;
+    public abstract Counter getCounter();
 }
