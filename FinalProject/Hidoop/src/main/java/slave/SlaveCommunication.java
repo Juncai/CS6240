@@ -30,6 +30,7 @@ public class SlaveCommunication {
         Thread.sleep(1000);
     }
 
+    // send map output to reduce input
     public void sendDataToNode(int ind, List<String> data, String header) throws IOException {
         // TODO add node index in the header
         header = nodeInd + " " + header;
