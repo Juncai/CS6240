@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
+import hidoop.conf.Configuration;
 import hidoop.util.Consts;
 
 // Author: Jun Cai
@@ -19,6 +21,7 @@ public class SlaveCommunication {
     private int masterPort;
     private int nodeInd;
     private boolean nodeEndStates;
+    private Configuration conf;
 
     public SlaveCommunication(int listenPort, int nodeInd, List<String> ips) throws Exception {
         nodeEndStates = false;
@@ -33,7 +36,6 @@ public class SlaveCommunication {
     // send map output to reduce input
     public void sendDataToNode(int ind, List<String> data, String header) throws IOException {
         // TODO add node index in the header
-        header = nodeInd + " " + header;
         SendDataThread sdt = new SendDataThread(ind, header, data);
         sdt.start();
     }
@@ -79,11 +81,21 @@ public class SlaveCommunication {
                     wtr.write(Consts.END_OF_DATA_EOL);
                 }
                 wtr.flush();
+
+                // TODO if it's running message, read Configuration from master
+                if (header.startsWith(Consts.RUNNING)) {
+                    ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
+                    conf = (Configuration)ois.readObject();
+                    ois.close();
+                }
+
                 wtr.close();
                 s.close();
                 // clean the payload list
                 payload = null;
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }

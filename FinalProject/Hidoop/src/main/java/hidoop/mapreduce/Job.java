@@ -68,9 +68,9 @@ public class Job {
         conf.setReducerClass(cls);
     }
 
-    public void setNumReduceTasks(int numReduceTasks) {
-        conf.setNumReduceTasks(numReduceTasks);
-    }
+//    public void setNumReduceTasks(int numReduceTasks) {
+//        conf.setNumReduceTasks(numReduceTasks);
+//    }
 
     public void setPartitionerClass(Class<? extends Partitioner> cls
     ) throws IllegalStateException {

@@ -87,7 +87,8 @@ public class LocalClient implements Client {
 
             for (Path inputDir : reduceInputDirList) {
                 inputPathList = fs.getFileList(inputDir);
-                outputPath = Path.appendDirFile(outputDir, Consts.REDUCE_OUTPUT_PREFIX +"0000" + reduceInd);
+                String indStr = String.format("%05d", reduceInd);
+                outputPath = Path.appendDirFile(outputDir, Consts.REDUCE_OUTPUT_PREFIX + indStr);
                 // prepare context
                 context = new ReduceContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT>(conf, inputPathList, outputPath, fs, reduceInd++);
                 reducerContext = new WrappedReducer<KEYIN, VALUEIN, KEYOUT, VALUEOUT>().getReducerContext(context);

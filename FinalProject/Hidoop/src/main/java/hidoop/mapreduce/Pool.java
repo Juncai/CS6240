@@ -11,7 +11,7 @@ import java.util.concurrent.Semaphore;
  * Created by jon on 4/21/16.
  */
 public class Pool<T> {
-    private Semaphore available;
+    private final Semaphore available;
     private Queue<T> q;
 
     public Pool(int numOfResource) {

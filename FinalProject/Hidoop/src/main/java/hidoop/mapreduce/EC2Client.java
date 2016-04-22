@@ -84,31 +84,39 @@ public class EC2Client implements Client {
         lt = new ListeningThread(conf.masterPort);
         lt.start();
         Node n;
-        for (Path input : inputPathList) {
+        for (int i = 0; i < inputPathList.size(); i++) {
             n = nodePool.getResource();
-            startMapOnSlave(n, input, conf.reducerNumber);
+            startMapOnSlave(n, i, inputPathList.get(i), conf.reducerNumber);
+            System.out.println("Start mapper " + i + " with input " + inputPathList.get(i).toString()
+                    + " on node: " + n.index + " (" + n.ip + ")");
         }
+        n = null;
         // TODO run whatever reducer is ready
 
         // all maps are done
-        nodePool.waitTillAllAvailable();
+//        nodePool.waitTillAllAvailable();
         // all reducer inputs are ready
         reducerInputPool.waitTillAllAvailable();
+        status = Consts.Stages.REDUCE;
         for (int i = 0; i < conf.slaveNum; i++) {
-            startReduceOnSlave(nodeMap.get(i), nodeReducerMap.get(i));
+            startReduceOnSlave(nodeMap.get(i), nodeReducerMap.get(i), conf.outputPath);
+            System.out.println("Start reducer " + i);
         }
         // wait for all the reducers finished
         reducerPool.waitTillAllAvailable();
         // TODO finish the job
+        status = Consts.Stages.DONE;
     }
 
-    private void startMapOnSlave(Node n, Path input, int reducerNum) throws IOException {
-        String header = Consts.RUN_MAP + " " + input.toString() + " " + reducerNum;
+    private void startMapOnSlave(Node n, int mapperInd, Path input, int reducerNum) throws IOException {
+        // format: RUN_MAP MAPPER_INDEX INPUT_PATH NUM_OF_REDUCER
+        String header = Consts.RUN_MAP + " " + mapperInd + " " + input.toString() + " " + reducerNum;
         sendInstruction(n, null, header);
     }
 
-    private void startReduceOnSlave(Node n, List<Integer> reduceInds) throws IOException {
-        String header = Consts.RUN_REDUCE;
+    private void startReduceOnSlave(Node n, List<Integer> reduceInds, String outputPath) throws IOException {
+        // format: RUN_REDUCE OUTPUT_PATH REDUCER_INDEX0 REDUCER_INDEX1 ...
+        String header = Consts.RUN_REDUCE + " " + outputPath;
         for (int redInd : reduceInds) {
             header += " " + redInd;
         }
@@ -201,7 +209,7 @@ public class EC2Client implements Client {
                 System.out.println("see header: " + line);
                 String[] header = line.split(" ");
                 if (header[0].equals(Consts.RUNNING)) {
-                    handleSlaveRunning(header);
+                    handleSlaveRunning(header, s);
                 } else if (header[0].equals(Consts.MAP_DONE)) {
                     handleMapDone(header);
                 } else if (header[0].equals(Consts.REDUCER_INPUT_READY)) {
@@ -217,9 +225,16 @@ public class EC2Client implements Client {
             }
         }
 
-        private void handleSlaveRunning(String[] header) {
+        private void handleSlaveRunning(String[] header, Socket s) throws IOException {
+            // TODO send Configuration to slave
+            ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
+            oos.writeObject(conf);
+            oos.flush();
+            // TODO close oos?
+            oos.close();
             // format: RUNNING NODE_INDEX
             nodePool.putResource(nodeMap.get(Integer.parseInt(header[1])));
+//            System.out.println("Node " + header[1] + " is up and running.");
         }
 
         private void handleMapDone(String[] header) {

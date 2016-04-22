@@ -6,17 +6,19 @@ import hidoop.mapreduce.Mapper;
 import hidoop.mapreduce.Partitioner;
 import hidoop.mapreduce.Reducer;
 import hidoop.util.Consts;
+import job.WordCount;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by jon on 4/6/16.
  */
-public class Configuration {
+public class Configuration implements Serializable {
     public boolean isLocalMode;
     public String jobName;
     public Class mapperClass;
@@ -73,6 +75,13 @@ public class Configuration {
             slaveNum = slaveIpList.size();
             reducerNumber = slaveNum;
         }
+    }
+
+    public Configuration(boolean test) {
+        mapperClass = WordCount.TokenizerMapper.class;
+        reducerClass = WordCount.IntSumReducer.class;
+        slaveIpList = new ArrayList<String>();
+        slaveIpList.add("hahaha");
     }
 
     public void setJobName(String jname) {
