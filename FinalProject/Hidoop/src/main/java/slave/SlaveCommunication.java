@@ -3,9 +3,8 @@ package slave;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
+//import java.nio.file.Files;
+//import java.nio.file.Paths;
 import java.util.List;
 
 import hidoop.conf.Configuration;
@@ -15,28 +14,47 @@ import hidoop.util.Consts;
 public class SlaveCommunication {
     //    private ServerSocket listenSocket;
     private ListeningThread lt;
-    private List<String> ipList;
-    private int listenPort;
-    private String masterIP;
+    private int localPort;
+    private String masterIp;
     private int masterPort;
     private int nodeInd;
     private boolean nodeEndStates;
     private Configuration conf;
 
-    public SlaveCommunication(int listenPort, int nodeInd, List<String> ips) throws Exception {
-        nodeEndStates = false;
-        this.listenPort = listenPort;
+    public SlaveCommunication(int nodeInd, int port, String masterIp, int masterPort) {
         this.nodeInd = nodeInd;
-        ipList = ips;
-        lt = new ListeningThread(listenPort);
-        lt.start();
-        Thread.sleep(1000);
+        this.localPort = port;
+        this.masterIp = masterIp;
+        this.masterPort = masterPort;
+        nodeEndStates = false;
     }
 
+    public void start() throws IOException, InterruptedException {
+        // start listening thread
+        lt = new ListeningThread(localPort);
+        lt.start();
+        Thread.sleep(1000);
+
+        // send ready info to master
+        sendRunningToMaster();
+
+
+    }
+
+    public void sendRunningToMaster() throws IOException {
+        String header = Consts.RUNNING + " " + nodeInd;
+        sendDataToNode(masterIp, masterPort, header, null);
+    }
     // send map output to reduce input
-    public void sendDataToNode(int ind, List<String> data, String header) throws IOException {
+//    public void sendDataToNode(int ind, List<String> data, String header) throws IOException {
+//        // TODO add node index in the header
+//        SendDataThread sdt = new SendDataThread(ind, header, data);
+//        sdt.start();
+//    }
+
+    public void sendDataToNode(String ip, int port, String header, List<String> data) throws IOException {
         // TODO add node index in the header
-        SendDataThread sdt = new SendDataThread(ind, header, data);
+        SendDataThread sdt = new SendDataThread(ip, port, header, data);
         sdt.start();
     }
 
@@ -47,28 +65,25 @@ public class SlaveCommunication {
     }
 
     class SendDataThread extends Thread {
-        private int n;
         private List<String> payload;
         private String header;
+        private String ip;
+        private int port;
 
-        public SendDataThread(int n, String header, List<String> payload) {
-            this.n = n;
+        public SendDataThread(String ip, int port, String header, List<String> payload) {
+            this.ip = ip;
+            this.port = port;
             this.payload = payload;
             this.header = header;
         }
 
         public void run() {
             try {
-                Socket s = new Socket(ipList.get(n), listenPort);
+                Socket s = new Socket(ip, port);
                 BufferedWriter wtr = new BufferedWriter(new OutputStreamWriter(s.getOutputStream(),
                         "UTF-8"));
                 // header
-                if (payload != null) {
-                    // for testing
-                    header += " " + payload.size() + Consts.END_OF_LINE;
-                } else {
-                    header += Consts.END_OF_LINE;
-                }
+                header += Consts.END_OF_LINE;
                 System.out.println("sending header: " + header);
                 wtr.write(header);
                 // data
@@ -86,6 +101,7 @@ public class SlaveCommunication {
                 if (header.startsWith(Consts.RUNNING)) {
                     ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
                     conf = (Configuration)ois.readObject();
+                    System.out.println("Configuration received with Mapper class: " + conf.mapperClass.getCanonicalName());
                     ois.close();
                 }
 
