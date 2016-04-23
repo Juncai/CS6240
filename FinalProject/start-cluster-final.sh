@@ -2,7 +2,7 @@
 
 ######################Global variables########################
 instance_number=$1
-# instance_type='m3.2xlarge'
+
 instance_type='m3.medium'
 
 # instances public ip address file
@@ -22,7 +22,7 @@ function start_instance(){
   local i="0"
   echo "---------------------------------------Starting instance------------------------------------"
   # # launch all instances
-  while [ $i -lt $instance_number ]
+  while [ $i -lt "$instance_number" ]
   do
 	  id=$(aws ec2 run-instances --image-id $IMAGE_ID \
 			  --count 1 \
@@ -39,7 +39,7 @@ function start_instance(){
 
   # need to wait until instance is up
   echo "Waiting for instance finishing initialization"
-  sleep 2m
+  sleep 5m
 }
 function get_ips(){
   echo "------------------------------------------Getting ips----------------------------------------------"
@@ -92,7 +92,9 @@ prepare_config
 
 get_ips
 
-./compile.sh
+chmod +x ./compile-final.sh
+
+./compile-final.sh
 
 upload_files
 

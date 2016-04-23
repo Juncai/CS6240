@@ -5,7 +5,7 @@ inputPath=$2
 outputPath=$3
 
 echo "uploading test jar to master cluster"
-master_ip=$(head -n 1 ./address.txt)
+master_ip=$(head -n 1 ./config/ips)
 scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KE $taskJar $EC2_USERNAME@$master_ip:~/
 
 ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$master_ip 'java -jar $taskJar $inputPath $outputPath >> log.txt 2>&1'
@@ -25,5 +25,5 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
 	ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$line 'java -Xmx1024m -cp Job.jar slave.Main $i $slave_port $master_ip $master_port'
 	rm -rf /tmp/map_* /tmp/reduce*
 	i=$[$i+1]
-done < "./address.txt"
+done < "./config/ips"
 
