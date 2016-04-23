@@ -8,7 +8,7 @@ echo "uploading test jar to master cluster"
 master_ip=$(head -n 1 ./address.txt)
 scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KE $taskJar $EC2_USERNAME@$master_ip:~/
 
-ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$master_ip 'java -jar $taskJar $inputPath $outputPath'
+ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$master_ip 'java -jar $taskJar $inputPath $outputPath >> log.txt 2>&1'
 
 
 sleep 1m

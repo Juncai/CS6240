@@ -6,7 +6,7 @@ outputPath=$3
 
 mode=$(head -n 1 ./config/hidoop.conf)
 case mode in
-	LOCAL) java -jar $taskJar $inputPath $outputPath
+	LOCAL) java -jar $taskJar $inputPath $outputPath >> log.txt 2>&1
 		  ;;
     EC2) ./run-ec2.sh $taskJar $inputPath $outputPath
    	      ;;

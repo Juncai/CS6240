@@ -108,7 +108,14 @@ public class Job {
             ClassNotFoundException {
         // TODO create cluster with the configuration
         cluster = new Cluster(conf);
+        
+        long start = System.currentTimeMillis();
         cluster.getClient().submitJob();
+        long finish = System.currentTimeMillis();
+        
+        // printout task lasting time
+        System.out.println("the job lasting time is: " + ((finish-start)/1000) + "s");
+        
         counters.getGroup("123")
                 .setCounter(cluster
                         .getClient()
