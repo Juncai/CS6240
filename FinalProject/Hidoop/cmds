@@ -1,0 +1,5 @@
+java -cp Job.jar job.assignment2.ClusterAnalysis s3://juncai001/input_all s3://juncai001/output_a2
+java -cp Job.jar slave.Main 0 10002 52.91.71.70 10001
+rm -rf /tmp/map_* /tmp/reduce*
+scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH build/libs/Job.jar $EC2_USERNAME@52.91.71.70:~/
+
