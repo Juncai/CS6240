@@ -66,7 +66,7 @@ public class Consts {
     }
     public static final String S3_URL_PREFIX = "s3://";
     public static final String TXT_EXT = ".txt";
-    public static final String TAR_GZ_EXT = ".tar.gz";
+    public static final String TAR_GZ_EXT = ".csv.gz";
     public static final String MAP_OUTPUT_DIR_PRE = "/tmp/map_out_";
     public static final String MAP_OUTPUT_PREFIX = "reducer_";
     public static final String REDUCE_INPUT_DIR_PRE = "/tmp/reduce_in_";

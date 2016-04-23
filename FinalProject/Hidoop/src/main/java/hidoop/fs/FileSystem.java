@@ -119,7 +119,8 @@ public class FileSystem {
 
     private InputStream openLocalFile(Path file) throws IOException {
         FileInputStream fis = new FileInputStream(file.toString());
-        return isCompressed(file) ? new GZIPInputStream(fis) : fis;
+        boolean isComp = isCompressed(file);
+        return isComp ? new GZIPInputStream(fis) : fis;
     }
 
     private InputStream openS3File(Path file) throws IOException {
