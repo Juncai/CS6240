@@ -68,11 +68,16 @@ public class ReduceContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
             FileSystem.removeFile(p);
         }
         List<String> sortedKeys = new ArrayList<String>(keyValueMap.keySet());
-        Collections.sort(sortedKeys,new Comparator<String>(){
-            public int compare(String o1, String o2){
-                int value1 = Integer.valueOf(o1);
-                int value2 = Integer.valueOf(o2);
-                return value1 > value2 ? 1:(value1 == value2 ? 0 : -1);
+        Collections.sort(sortedKeys, new Comparator<String>() {
+            public int compare(String o1, String o2) {
+                try {
+                    int value1 = Integer.valueOf(o1);
+                    int value2 = Integer.valueOf(o2);
+                    return value1 > value2 ? 1 : (value1 == value2 ? 0 : -1);
+                } catch (NumberFormatException ex) {
+                    return o1.compareTo(o2);
+                }
+
             }
         });
         /*TreeSet<String> sortedKeys = new TreeSet<String>(new Comparator<String>()

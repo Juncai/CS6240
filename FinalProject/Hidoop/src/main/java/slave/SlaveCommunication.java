@@ -3,9 +3,6 @@ package slave;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-//import java.nio.file.Files;
-//import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +12,6 @@ import hidoop.util.Consts;
 
 // Author: Jun Cai
 public class SlaveCommunication {
-    //    private ServerSocket listenSocket;
     private ListeningThread lt;
     private int localPort;
     private String masterIp;
@@ -115,6 +111,7 @@ public class SlaveCommunication {
                     conf = (Configuration) ois.readObject();
                     System.out.println("Configuration received with Mapper class: " + conf.mapperClass.getCanonicalName());
                     ois.close();
+                    sendMsgToMaster(Consts.READY + " " + nodeInd);
                 }
 
                 wtr.close();
@@ -203,7 +200,8 @@ public class SlaveCommunication {
                 sendReducerInput(outputBuffer.get(i), i, mInd);
             }
             // TODO send master the result of the Mapper
-            sendMsgToMaster(Consts.MAP_DONE + " " + mInd);
+            // format: MAP_DONE NODE_INDEX MAP_INDEX MAP_COUNTER
+            sendMsgToMaster(Consts.MAP_DONE + " " + nodeInd + " " + mInd + " " + mr.counter);
             // TODO collect all seen keys
             // TODO for reducer load balancing
         }
@@ -248,7 +246,7 @@ public class SlaveCommunication {
                 reducerInd = Integer.parseInt(header[i]);
                 ReducerRunner rr = new ReducerRunner(conf, fs, reducerInd);
                 if (!rr.run()) {
-                    sendMsgToMaster(Consts.MAP_FAILED + " " + reducerInd + " reduce run failed");
+                    sendMsgToMaster(Consts.REDUCE_FAILED + " " + reducerInd + " reduce run failed");
                     continue;
                 }
                 // send output to s3

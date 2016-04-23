@@ -68,10 +68,6 @@ public class Job {
         conf.setReducerClass(cls);
     }
 
-//    public void setNumReduceTasks(int numReduceTasks) {
-//        conf.setNumReduceTasks(numReduceTasks);
-//    }
-
     public void setPartitionerClass(Class<? extends Partitioner> cls
     ) throws IllegalStateException {
 //        ensureState(JobState.DEFINE);
@@ -113,124 +109,20 @@ public class Job {
         // TODO create cluster with the configuration
         cluster = new Cluster(conf);
         cluster.getClient().submitJob();
-        this.counters.getGroup("123")
+        counters.getGroup("123")
                 .setCounter(cluster
                         .getClient()
                         .getCounter());
-//        if (state == JobState.DEFINE) {
-//            submit();
-//        }
-//        if (verbose) {
-//            monitorAndPrintJob();
-//        } else {
-//            // get the completion poll interval from the client.
-//            int completionPollIntervalMillis =
-//                    Job.getCompletionPollInterval(cluster.getConf());
-//            while (!isComplete()) {
-//                try {
-//                    Thread.sleep(completionPollIntervalMillis);
-//                } catch (InterruptedException ie) {
-//                }
-//            }
-//        }
-//        return isSuccessful();
-
-//        try {
-//            System.out.println(conf.mapperClass.getCanonicalName());
-//            System.out.println(conf.mapperClass.getName());
-//            String mName = conf.mapperClass.getName();
-//            Mapper m = (Mapper) Mapper.class.getClassLoader().loadClass(mName).newInstance();
-////            Mapper m = (Mapper)conf.mapperClass.newInstance();
-//            m.run(null);
-//            Reducer r = (Reducer) conf.reducerClass.newInstance();
-//            r.run(null);
-
-        // load class from URL
-//            JarFile jarFile = new JarFile(pathToJar);
-//            Enumeration e = jarFile.entries();
-//
-//            URL[] urls = {new URL("jar:file:" + pathToJar + "!/")};
-//            URLClassLoader cl = URLClassLoader.newInstance(urls);
-//
-//            while (e.hasMoreElements()) {
-//                JarEntry je = (JarEntry) e.nextElement();
-//                if (je.isDirectory() || !je.getName().endsWith(".class")) {
-//                    continue;
-//                }
-//                // -6 because of .class
-//                String className = je.getName().substring(0, je.getName().length() - 6);
-//                className = className.replace('/', '.');
-//                Class c = cl.loadClass(className);
-//
-//            }
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//            return false;
-//        }
-        cleanUpTmp();
+        // TODO cleanup should be in the client
+//        cleanUpTmp();
         return true;
     }
 
-    private void cleanUpTmp() {
-        File dir = new File(conf.inputPath);
-        File[] directoryListing = dir.listFiles();
-
-        int numberOfMappers = directoryListing.length;
-        File map_out;
-        for(int i = 0; i < numberOfMappers; i++) {
-            map_out = new File("/tmp/map_out_" + i);
-            delete(map_out);
-        }
-
-        int numberOfReducers = conf.reducerNumber;
-        File reduce_in;
-        for(int i = 0; i < numberOfReducers; i++) {
-            reduce_in = new File("/tmp/reduce_in_" + i);
-            delete(reduce_in);
-        }
-    }
-
-    private void delete(File toDel) {
-        if(toDel.isDirectory()){
-            if(toDel.list().length == 0) {
-                toDel.delete();
-            } else {
-                File[] nestedFiles = toDel.listFiles();
-
-                for (File toDelNestedFile : nestedFiles) {
-                    delete(toDelNestedFile);
-                }
-
-                if(toDel.list().length == 0){
-                    toDel.delete();
-                }
-            }
-        } else {
-            toDel.delete();
-        }
-    }
 
     public Counters getCounters() {
         return this.counters;
     }
 
-    //    public void submit()
-//            throws IOException, InterruptedException, ClassNotFoundException {
-//        ensureState(JobState.DEFINE);
-//        setUseNewAPI();
-//        connect();
-//        final JobSubmitter submitter =
-//                getJobSubmitter(cluster.getFileSystem(), cluster.getClient());
-//        status = ugi.doAs(new PrivilegedExceptionAction<JobStatus>() {
-//            public JobStatus run() throws IOException, InterruptedException,
-//                    ClassNotFoundException {
-//                return submitter.submitJobInternal(Job.this, cluster);
-//            }
-//        });
-//        state = JobState.RUNNING;
-//        LOG.info("The url to track the job: " + getTrackingURL());
-//    }
-//
     public Configuration getConfiguration() {
         return conf;
     }

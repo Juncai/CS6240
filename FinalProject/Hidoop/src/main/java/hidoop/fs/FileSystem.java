@@ -37,7 +37,8 @@ public class FileSystem {
     }
 
     public FileSystem(boolean isS3) {
-        if (isS3) {
+        this.isS3 = isS3;
+        if (this.isS3) {
             initS3();
         }
     }
@@ -69,8 +70,9 @@ public class FileSystem {
         if (pathFromS3(p.toString())) {
             String[] inputBucketInfo = InputUtils.extractBucketAndDir(p.toString());
             List<S3ObjectSummary> summaryList = s3.listObjects(inputBucketInfo[0], inputBucketInfo[1]).getObjectSummaries();
-            for (S3ObjectSummary sos : summaryList) {
-                res.add(new Path(sos.getBucketName(), sos.getKey(), true));
+//            List<S3ObjectSummary> summaryList = s3.listObjects(inputBucketInfo[0], inputBucketInfo[1] + "/").getObjectSummaries();
+            for (int i = 1; i < summaryList.size(); i++) {
+                res.add(new Path(summaryList.get(i).getBucketName(), summaryList.get(i).getKey(), true));
             }
         } else {
             File path = new File(p.toString());
@@ -97,12 +99,18 @@ public class FileSystem {
 
 
     public boolean exists(Path p) {
-        File f = new File(p.toString());
-        return f.exists();
+        if (pathFromS3(p.toString())) {
+            // TODO check file on s3
+            String[] inputBucketInfo = InputUtils.extractBucketAndDir(p.toString());
+            return s3.doesObjectExist(inputBucketInfo[0], inputBucketInfo[1]);
+        } else {
+            File f = new File(p.toString());
+            return f.exists();
+        }
     }
 
     public InputStream open(Path file) throws IOException {
-        if (isS3) {
+        if (pathFromS3(file.toString())) {
             return openS3File(file);
         } else {
             return openLocalFile(file);
@@ -118,8 +126,11 @@ public class FileSystem {
         // get s3 bucket info
         String[] inputBucketInfo = InputUtils.extractBucketAndDir(file.toString());
         S3Object object = s3.getObject(new GetObjectRequest(inputBucketInfo[0], inputBucketInfo[1]));
-        GZIPInputStream gis = new GZIPInputStream(object.getObjectContent());
-        return gis;
+        if (isCompressed(file)) {
+            return new GZIPInputStream(object.getObjectContent());
+        } else {
+            return object.getObjectContent();
+        }
     }
 
     public void createOutputFile(Path filePath, Iterable<String> content, boolean isInter) throws IOException {

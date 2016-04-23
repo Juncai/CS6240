@@ -35,6 +35,7 @@ public class Consts {
 
     // Communication headers
     public static final String RUNNING = "RUNNING";
+    public static final String READY = "READY";
     public static final String RUN_MAP = "MAP";
     public static final String MAP_DONE = "MAPPER_DONE";
     public static final String MAP_FAILED = "MAPPER_FAILED";

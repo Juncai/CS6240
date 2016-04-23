@@ -134,9 +134,49 @@ public class LocalClient implements Client {
     public Consts.Stages getStatus() throws IOException, InterruptedException {
         return status;
     }
+
     @Override
-    public Counter getCounter(){
+    public Counter getCounter() {
         return this.mapOutputCounter;
+    }
+
+    private void cleanUpTmp() {
+        File dir = new File(conf.inputPath);
+        File[] directoryListing = dir.listFiles();
+
+        int numberOfMappers = directoryListing.length;
+        File map_out;
+        for (int i = 0; i < numberOfMappers; i++) {
+            map_out = new File("/tmp/map_out_" + i);
+            delete(map_out);
+        }
+
+        int numberOfReducers = conf.reducerNumber;
+        File reduce_in;
+        for (int i = 0; i < numberOfReducers; i++) {
+            reduce_in = new File("/tmp/reduce_in_" + i);
+            delete(reduce_in);
+        }
+    }
+
+    private void delete(File toDel) {
+        if (toDel.isDirectory()) {
+            if (toDel.list().length == 0) {
+                toDel.delete();
+            } else {
+                File[] nestedFiles = toDel.listFiles();
+
+                for (File toDelNestedFile : nestedFiles) {
+                    delete(toDelNestedFile);
+                }
+
+                if (toDel.list().length == 0) {
+                    toDel.delete();
+                }
+            }
+        } else {
+            toDel.delete();
+        }
     }
 
 }

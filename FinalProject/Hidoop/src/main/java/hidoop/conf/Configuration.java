@@ -56,16 +56,17 @@ public class Configuration implements Serializable {
         // master ip
         BufferedReader br = new BufferedReader(new FileReader(Consts.CONFIG_PATH));
         String line;
-        isLocalMode = br.readLine().equals(Consts.LOCAL_MODE);
+        line =  br.readLine();
+        isLocalMode = line.equals(Consts.LOCAL_MODE);
         if (!isLocalMode) {
             masterPort = Integer.parseInt(br.readLine());
             slavePort = Integer.parseInt(br.readLine());
-            masterIp = br.readLine();
             System.out.println("Master port: " + masterPort);
             System.out.println("Slave port: " + slavePort);
-            System.out.println("Master ip: " + masterIp);
             // slave IPs
             br = new BufferedReader(new FileReader(Consts.IP_LIST_PATH));
+            masterIp = br.readLine();
+            System.out.println("Master ip: " + masterIp); // the master ip will be the first one in the ips
             slaveIpList = new ArrayList<String>();
             while ((line = br.readLine()) != null) {
                 slaveIpList.add(line);

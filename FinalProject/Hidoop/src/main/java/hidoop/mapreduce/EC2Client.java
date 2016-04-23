@@ -29,11 +29,12 @@ public class EC2Client implements Client {
     private Pool<Node> nodePool;
     private ReducerInputPool reducerPool;
     private ReducerInputPool reducerInputPool;
-    private Counter MapOutputCounter;
+    private Counter mapOutputCounter;
 
     public EC2Client(Configuration conf) throws IOException {
         this.conf = conf;
         fs = FileSystem.get(conf);
+        inputPathList = fs.getFileList(new Path(conf.inputPath));
         initialize();
     }
 
@@ -47,7 +48,7 @@ public class EC2Client implements Client {
         int numReducers = (numMapperTasks / 2) > 1 ? numMapperTasks / 2 : 1;
         conf.setNumReduceTasks(numReducers);
         int numSlaves = conf.slaveIpList.size();
-        this.MapOutputCounter = new Counter();
+        mapOutputCounter = new Counter();
 
         // initialize node
         for (int i = 0; i < numSlaves; i++) {
@@ -58,7 +59,6 @@ public class EC2Client implements Client {
 
         // initialize Mapper
         // get the input file list
-        inputPathList = fs.getFileList(new Path(conf.inputPath));
 //        for (int i = 0; i < numMapperTasks; i++) {
 //            mapStatus.put(i, Consts.TaskStatus.DEFINE);
 //        }
@@ -67,7 +67,7 @@ public class EC2Client implements Client {
         for (int i = 0; i < conf.reducerNumber; i++) {
 //            reduceStatus.put(i, Consts.TaskStatus.DEFINE);
             int nodeInd = i % numSlaves;
-            if (nodeReducerMap.containsKey(nodeInd)) {
+            if (!nodeReducerMap.containsKey(nodeInd)) {
                 nodeReducerMap.put(nodeInd, new ArrayList<Integer>());
             }
             nodeReducerMap.get(nodeInd).add(i);
@@ -106,6 +106,7 @@ public class EC2Client implements Client {
         reducerPool.waitTillAllAvailable();
         // TODO finish the job
         status = Consts.Stages.DONE;
+        System.out.println("Job completes!");
     }
 
     private void startMapOnSlave(Node n, int mapperInd, Path input) throws IOException {
@@ -124,7 +125,7 @@ public class EC2Client implements Client {
     }
     @Override
     public Counter getCounter(){
-       return this.MapOutputCounter;
+       return this.mapOutputCounter;
     }
 
     private void sendInstruction(Node n, List<String> data, String header) throws IOException {
@@ -210,6 +211,8 @@ public class EC2Client implements Client {
                 String[] header = line.split(" ");
                 if (header[0].equals(Consts.RUNNING)) {
                     handleSlaveRunning(header, s);
+                } else if (header[0].equals(Consts.READY)) {
+                    handleSlaveReady(header, s);
                 } else if (header[0].equals(Consts.MAP_DONE)) {
                     handleMapDone(header);
                 } else if (header[0].equals(Consts.REDUCER_INPUT_READY)) {
@@ -226,19 +229,26 @@ public class EC2Client implements Client {
         }
 
         private void handleSlaveRunning(String[] header, Socket s) throws IOException {
+            // format: RUNNING NODE_INDEX
             // TODO send Configuration to slave
             ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
             oos.writeObject(conf);
             oos.flush();
             // TODO close oos?
             oos.close();
-            // format: RUNNING NODE_INDEX
+        }
+        private void handleSlaveReady(String[] header, Socket s) throws IOException {
+            // format: READY NODE_INDEX
             nodePool.putResource(nodeMap.get(Integer.parseInt(header[1])));
 //            System.out.println("Node " + header[1] + " is up and running.");
         }
 
         private void handleMapDone(String[] header) {
-            // format: MAP_DONE NODE_INDEX
+            // format: MAP_DONE NODE_INDEX MAP_INDEX MAP_COUNTER
+            // join map counter
+            mapOutputCounter.join(new Counter(Long.parseLong(header[3])));
+            // TODO handle mapper failure
+
             nodePool.putResource(nodeMap.get(Integer.parseInt(header[1])));
         }
 

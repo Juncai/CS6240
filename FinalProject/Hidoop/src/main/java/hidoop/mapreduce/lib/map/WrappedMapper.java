@@ -5,6 +5,8 @@ import hidoop.mapreduce.MapContext;
 import hidoop.mapreduce.Mapper;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jon on 4/13/16.
@@ -54,6 +56,11 @@ public class WrappedMapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
         @Override
         public long getCounterValue(){
             return mapContext.getCounterValue();
+        }
+
+        @Override
+        public Map<Integer, List<String>> getOutputBuffer() {
+            return mapContext.getOutputBuffer();
         }
     }
 }

@@ -31,6 +31,7 @@ public class Path implements Comparable {
             bucket = dir;
             this.key = key;
             type = Consts.FileSystemTypes.S3;
+            pathStr = Consts.S3_URL_PREFIX + pathStr;
         } else {
             type = Consts.FileSystemTypes.LOCAL;
         }
