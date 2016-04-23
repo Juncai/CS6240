@@ -107,6 +107,15 @@ public class EC2Client implements Client {
         // TODO finish the job
         status = Consts.Stages.DONE;
         System.out.println("Job completes!");
+        for (int i = 0; i < conf.slaveNum; i++) {
+            shutDownSlave(nodeMap.get(i));
+        }
+    }
+
+    private void shutDownSlave(Node n) throws IOException {
+        // format: RUN_MAP MAPPER_INDEX INPUT_PATH
+        String header = Consts.SHUT_DOWN;
+        sendInstruction(n, null, header);
     }
 
     private void startMapOnSlave(Node n, int mapperInd, Path input) throws IOException {
@@ -117,6 +126,7 @@ public class EC2Client implements Client {
 
     private void startReduceOnSlave(Node n, List<Integer> reduceInds, String outputPath) throws IOException {
         // format: RUN_REDUCE OUTPUT_PATH REDUCER_INDEX0 REDUCER_INDEX1 ...
+        if (reduceInds == null) return;
         String header = Consts.RUN_REDUCE + " " + outputPath;
         for (int redInd : reduceInds) {
             header += " " + redInd;
