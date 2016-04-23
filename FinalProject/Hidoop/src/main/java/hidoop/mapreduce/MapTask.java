@@ -10,13 +10,13 @@ import hidoop.util.Consts;
 
 
 public class MapTask<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
-	public void runMapTask(Path inputPath, int mapInd, Configuration conf, FileSystem fs,
-			Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> mapper) throws InstantiationException, IllegalAccessException, IOException, InterruptedException{
-		
-		Partitioner partitioner = (Partitioner) conf.partitionerClass.newInstance();
-		
-		
-		Path outputPath = new Path(Consts.MAP_OUTPUT_DIR_PRE + mapInd++);
+    public void runMapTask(Path inputPath, int mapInd, Configuration conf, FileSystem fs,
+                           Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> mapper) throws InstantiationException, IllegalAccessException, IOException, InterruptedException {
+
+        Partitioner partitioner = (Partitioner) conf.partitionerClass.newInstance();
+
+
+        Path outputPath = new Path(Consts.MAP_OUTPUT_DIR_PRE + mapInd++);
         FileSystem.createDir(outputPath);
         // prepare context
         MapContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> context = new MapContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT>(conf, inputPath, outputPath, fs, partitioner);
@@ -25,6 +25,6 @@ public class MapTask<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
         // map
         mapper.run(mapperContext);
         mapperContext.close();
-	}
+    }
 
 }

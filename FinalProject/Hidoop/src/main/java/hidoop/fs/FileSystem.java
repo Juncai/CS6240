@@ -7,9 +7,7 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.*;
 import hidoop.conf.Configuration;
 import hidoop.util.Consts;
 import hidoop.util.InputUtils;
@@ -36,12 +34,24 @@ public class FileSystem {
 
         // initialize s3 if necessary
         if (isS3) initS3();
+    }
 
+    public FileSystem(boolean isS3) {
+        if (isS3) {
+            initS3();
+        }
     }
 
     public static FileSystem get(Configuration conf) {
         if (fs == null) {
             fs = new FileSystem(conf);
+        }
+        return fs;
+    }
+
+    public static FileSystem get(boolean isS3) {
+        if (fs == null) {
+            fs = new FileSystem(isS3);
         }
         return fs;
     }
@@ -143,6 +153,13 @@ public class FileSystem {
         }
     }
 
+    public static void createDirIfNotExisted(Path dir) throws IOException {
+        File newDir = new File(dir.toString());
+        if (!newDir.exists()) {
+            newDir.mkdir();
+        }
+    }
+
     public static void removeFile(Path p) {
         File f = new File(p.toString());
         f.deleteOnExit();
@@ -157,6 +174,14 @@ public class FileSystem {
         if (isS3) {
             // TODO find the local tmp file and send to s3
         }
+    }
+
+    public void uploadToS3(Path input, Path output) {
+        String[] outputBucketInfo = InputUtils.extractBucketAndDir(output.toString());
+        String bucketName = outputBucketInfo[0];
+        String key = outputBucketInfo[1];
+        File f = new File(input.toString());
+        s3.putObject(new PutObjectRequest(bucketName, key, f));
     }
 }
 

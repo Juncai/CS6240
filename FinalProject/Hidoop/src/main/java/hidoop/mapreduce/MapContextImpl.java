@@ -16,7 +16,7 @@ import java.util.Map;
  * Created by jon on 4/9/16.
  */
 public class MapContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
-        implements MapContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT>{
+        implements MapContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
     private Configuration conf;
     private String line;
     public long inputCount;
@@ -26,7 +26,7 @@ public class MapContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
     private Path outputPath;
     private Partitioner p;
     private Map<Integer, List<String>> partitionBuffer;
-    private Counter MapOutputCounter;
+    private Counter mapOutputCounter;
 
 
     public MapContextImpl(Configuration conf, Path inputPath,
@@ -41,7 +41,7 @@ public class MapContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
         inputCount = 0;
         this.p = p;
         initPartitionBuffer();
-        this.MapOutputCounter = new Counter();
+        mapOutputCounter = new Counter();
     }
 
     private void initPartitionBuffer() {
@@ -88,23 +88,35 @@ public class MapContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
     public void write(KEYOUT key, VALUEOUT value) throws IOException, InterruptedException {
         int reduceInd = p.getPartition(key, value, conf.reducerNumber);
         partitionBuffer.get(reduceInd).add(key.toString() + Consts.KEY_VALUE_DELI + value.toString());
-        this.MapOutputCounter.increment();
+        this.mapOutputCounter.increment();
     }
 
-    public long getCounterValue(){return this.MapOutputCounter.getValue();}
+    public long getCounterValue() {
+        return this.mapOutputCounter.getValue();
+    }
+
+    @Override
+    public Map<Integer, List<String>> getOutputBuffer() {
+        return partitionBuffer;
+    }
+
     private void createOutput() throws IOException {
         Path outPath;
         for (int i = 0; i < conf.reducerNumber; i++) {
             outPath = Path.appendDirFile(outputPath, Consts.MAP_OUTPUT_PREFIX + i);
             fs.createOutputFile(outPath, partitionBuffer.get(i), true);
         }
+        partitionBuffer.clear();
+        partitionBuffer = null;
     }
 
     public void close() {
         try {
             if (br != null) br.close();
             if (is != null) is.close();
-            createOutput();
+            if (conf.isLocalMode) {
+                createOutput();
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }

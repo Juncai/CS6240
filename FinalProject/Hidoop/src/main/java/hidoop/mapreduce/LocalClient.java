@@ -22,13 +22,13 @@ public class LocalClient implements Client {
     private Consts.Stages status;
     private FileSystem fs;
     private int numMapperTasks;
-    private Counter MapOutputCounter;
+    private Counter mapOutputCounter;
 
     public LocalClient(Configuration conf) {
         this.conf = conf;
         status = Consts.Stages.DEFINE;
         reduceInputDirList = new ArrayList<Path>();
-        this.MapOutputCounter = new Counter();
+        mapOutputCounter = new Counter();
     }
 
     @Override
@@ -121,7 +121,7 @@ public class LocalClient implements Client {
 
                 // map
                 mapper.run(mapperContext);
-                this.MapOutputCounter.join(new Counter(mapperContext.getCounterValue()));
+                mapOutputCounter.join(new Counter(mapperContext.getCounterValue()));
                 mapperContext.close();
             }
 
@@ -136,7 +136,7 @@ public class LocalClient implements Client {
     }
     @Override
     public Counter getCounter(){
-        return this.MapOutputCounter;
+        return this.mapOutputCounter;
     }
 
 }

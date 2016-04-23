@@ -86,7 +86,7 @@ public class EC2Client implements Client {
         Node n;
         for (int i = 0; i < inputPathList.size(); i++) {
             n = nodePool.getResource();
-            startMapOnSlave(n, i, inputPathList.get(i), conf.reducerNumber);
+            startMapOnSlave(n, i, inputPathList.get(i));
             System.out.println("Start mapper " + i + " with input " + inputPathList.get(i).toString()
                     + " on node: " + n.index + " (" + n.ip + ")");
         }
@@ -108,9 +108,9 @@ public class EC2Client implements Client {
         status = Consts.Stages.DONE;
     }
 
-    private void startMapOnSlave(Node n, int mapperInd, Path input, int reducerNum) throws IOException {
-        // format: RUN_MAP MAPPER_INDEX INPUT_PATH NUM_OF_REDUCER
-        String header = Consts.RUN_MAP + " " + mapperInd + " " + input.toString() + " " + reducerNum;
+    private void startMapOnSlave(Node n, int mapperInd, Path input) throws IOException {
+        // format: RUN_MAP MAPPER_INDEX INPUT_PATH
+        String header = Consts.RUN_MAP + " " + mapperInd + " " + input.toString();
         sendInstruction(n, null, header);
     }
 
