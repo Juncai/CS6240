@@ -8,22 +8,25 @@ import java.util.concurrent.Semaphore;
 public class ReducerInputPool {
     private final Semaphore available;
     private boolean[][] p;
+    private int numInputs;
 
     public ReducerInputPool(int numReducer, int numMapper) {
         p = new boolean[numReducer][numMapper];
-        int numInputs = numMapper * numReducer;
+        numInputs = numMapper * numReducer;
         available = new Semaphore(numInputs, true);
-        available.acquireUninterruptibly(numInputs);
+//        available.acquireUninterruptibly(numInputs);
+        waitTillAllAvailable();
     }
 
     public void putInput(int reducerInd, int mapperInd) {
         if (ready(reducerInd, mapperInd)) {
             available.release();
+            System.out.println("available: " + available.availablePermits());
         }
     }
 
-    public void waitTillAllAvailable() throws InterruptedException {
-        available.acquireUninterruptibly();
+    public void waitTillAllAvailable() {
+        available.acquireUninterruptibly(numInputs);
     }
 
     protected synchronized boolean ready(int rInd, int mInd) {

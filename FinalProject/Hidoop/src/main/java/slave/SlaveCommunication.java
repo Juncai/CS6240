@@ -17,7 +17,7 @@ public class SlaveCommunication {
     private String masterIp;
     private int masterPort;
     private int nodeInd;
-    private boolean nodeEndStates;
+    private boolean jobCompleted;
     private Configuration conf;
     private FileSystem fs;
 
@@ -26,7 +26,7 @@ public class SlaveCommunication {
         this.localPort = port;
         this.masterIp = masterIp;
         this.masterPort = masterPort;
-        nodeEndStates = false;
+        jobCompleted = false;
         // TODO prepare file system
         fs = FileSystem.get(true);
     }
@@ -66,9 +66,8 @@ public class SlaveCommunication {
         sdt.start();
     }
 
-    public void endCommunication() throws InterruptedException {
+    public void waitTillJobCompleted() throws InterruptedException {
         // waiting for listening thread
-        nodeEndStates = true;
         lt.join();
     }
 
@@ -136,7 +135,7 @@ public class SlaveCommunication {
         public void run() {
             Socket s;
             WorkThread wt;
-            while (true) {
+            while (!jobCompleted) {
                 try {
                     if (null != (s = listenSocket.accept())) {
                         wt = new WorkThread(s);
@@ -170,6 +169,8 @@ public class SlaveCommunication {
                     handleRunReduce(header);
                 } else if (header[0].equals(Consts.REDUCER_INPUT)) {
                     handleDataTransfer(header, rdr);
+                } else if (header[0].equals(Consts.SHUT_DOWN)) {
+                    handleShutDown(header);
                 }
                 rdr.close();
                 // close the connection on client side
@@ -177,6 +178,10 @@ public class SlaveCommunication {
             } catch (Exception ee) {
                 System.err.println("Error in ReceiveDataThread: " + ee.toString());
             }
+        }
+
+        private void handleShutDown(String[] header) throws IOException {
+            jobCompleted = true;
         }
 
         private void handleRunMap(String[] header) throws IOException {

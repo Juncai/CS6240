@@ -15,5 +15,6 @@ public class Main {
     	SlaveCommunication sc = new SlaveCommunication(nodeInd, listeningPort, masterIp, masterPort);
 		sc.start();
 		// TODO wait for job completed
+		sc.waitTillJobCompleted();
     }
 }

@@ -90,7 +90,8 @@ public class FileSystem {
     }
 
     private boolean isCompressed(Path p) {
-        return p.toString().endsWith(Consts.TAR_GZ_EXT);
+//        return p.toString().endsWith(Consts.TAR_GZ_EXT);
+        return p.toString().endsWith(Consts.CSV_GZ_EXT);
     }
 
     private static boolean pathFromS3(String path) {
@@ -100,7 +101,6 @@ public class FileSystem {
 
     public boolean exists(Path p) {
         if (pathFromS3(p.toString())) {
-            // TODO check file on s3
             String[] inputBucketInfo = InputUtils.extractBucketAndDir(p.toString());
             return s3.doesObjectExist(inputBucketInfo[0], inputBucketInfo[1]);
         } else {

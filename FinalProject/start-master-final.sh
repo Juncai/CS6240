@@ -1,6 +1,7 @@
 #!/bin/bash
 
-instance_type='m3.2xlarge'
+# instance_type='m3.2xlarge'
+instance_type='m3.medium'
 
 # instances id file. Used in stop cluster
 id_file=id.txt
