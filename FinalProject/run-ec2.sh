@@ -14,7 +14,8 @@ master_ip=$(head -n 1 ./config/ips)
 
 scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $taskJar $EC2_USERNAME@$master_ip:~/test.jar
 
-ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$master_ip 'java -cp test.jar $taskMain $inputPath $outputPath >> log.txt 2>&1'
+ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$master_ip "java -cp test.jar $taskMain $inputPath $outputPath >> log.txt 2>&1"
+
 
 
 sleep 1m
@@ -28,7 +29,7 @@ slave_port=$(awk 'NR==3' ./config/hidoop.conf)
 i="0"
 while IFS='' read -r line || [[ -n "$line" ]]; do
 	echo slave ip $line
-	ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$line 'java -Xmx1024m -cp Job.jar slave.Main $i $slave_port $master_ip $master_port'
+	ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$line "java -Xmx1024m -cp Job.jar slave.Main $i $slave_port $master_ip $master_port"
 	rm -rf /tmp/map_* /tmp/reduce*
 	i=$[$i+1]
 done < "./config/ips"
