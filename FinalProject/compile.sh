@@ -8,13 +8,22 @@ gradle clean;gradle jar
 mv build/libs/Client.jar ./
 cd ..
 
-
 cd wordcount
 gradle clean;gradle jar
 mv build/libs/Job.jar ./
 cd ..
 
+cd wordcount_hadoop
+gradle clean;gradle jar
+mv build/libs/Job.jar ./
+cd ..
+
 cd wordmedian
+gradle clean;gradle jar
+mv build/libs/Job.jar ./
+cd ..
+
+cd wordmedian_hadoop
 gradle clean;gradle jar
 mv build/libs/Job.jar ./
 cd ..

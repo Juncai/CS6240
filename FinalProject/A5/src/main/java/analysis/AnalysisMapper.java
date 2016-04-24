@@ -9,10 +9,10 @@ import utils.OTPConsts;
 import java.io.IOException;
 
 // Authors: Jun Cai and Vikas Boddu
-public class AnalysisMapper extends Mapper<LongWritable, Text, Text, Text> {
+public class AnalysisMapper extends Mapper<Object, Text, Text, Text> {
 
     @Override
-    public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+    public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
         String line = value.toString();
 
         // skip the header

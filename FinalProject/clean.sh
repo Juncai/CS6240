@@ -18,6 +18,17 @@ gradle clean
 rm ./Job.jar
 cd ..
 
+cd wordcount_hadoop
+gradle clean
+rm ./Job.jar
+cd ..
+
+cd wordmedian_hadoop
+gradle clean
+rm ./Job.jar
+cd ..
+
+
 cd A2
 gradle clean
 rm ./Job.jar
