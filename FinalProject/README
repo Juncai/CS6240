@@ -9,7 +9,7 @@ Pre-requests:
         d. Create an EC2 security group that has an inbound rule with Type: "All Traffic", Protocol: "All", Source: "Anywhere" on AWS web console;
         e. Please specify a S3 bucket name where the output files and logs will be saved.
 
-    2)Fill the aws_access_key_id and aws_secret_access_key in "credentials_template", and rename it "credentials".
+    2)Fill the aws_access_key_id and aws_secret_access_key in "credentials_template", and rename it "credentials", move the "credentials" to directory "~/.aws".
 
     3)Install the "json" package which is used to parse the AWS response. Please follow the instruction: https://github.com/trentm/json.
 	4) Make sure Gradle is installed. 
@@ -20,29 +20,29 @@ How to run:
         - Command: . env.sh
     - Package the assignment into Jar file.
         - Command: ./compile.sh;
-    - Create the cluster and upload Jar file and node address file. Note that for now we only support 2 or 8 nodes setup.
+    - Configure the job in "config/hidoop.conf"
+        - First line: "LOCAL" or "EC2"
+        - Second line: MASTER_PORT
+        - Third line: SLAVE_PORT (need to be different from MASTER_PORT)
+    - Create the cluster and upload Jar file and node address file. 
         - Command: ./start-cluster.sh NUM_OF_NODES
-    - Sort the input.
-		- Command: ./sort.sh "dry buld temp" INPUT_S3_PATH OUTPUT_S3_PATH
-		- Example: ./sort.sh "dry buld temp" s3://cs6240sp16/climate s3://juncai001/output
-    - (OPTIONAL) Get logs from all the slave nodes. The logs will be downloaded into './logs' dir.
-        - Command: ./get_logs.sh
-    - When finish sorting, stop the cluster and terminate the ec2 instances.
+    - Run map-reduce job with Hidoop
+		- Command: ./hidoop JOB_JAR_FILE_PATH INPUT_PATH OUTPUT_PATH
+		- Example: ./hidoop wordcount/Job.jar s3://juncai001/input_wc s3://juncai001/output_wc
+		- Wait for job to be completed
+		- The log of master node will be in 'logs' directory
+    - Stop the cluster
         - Command: ./stop-cluster.sh
 ==============================================================================================================
-Other useful scripts:
-    - Access each EC2 instances from command line: (NODE_NUM starts from 0)
-        - Command: ./login.sh NODE_NUM
-        - Example: if you have 2 nodes, command are "./login.sh 0" and "./login.sh 1";
-    - Re-upload the JAR file and input list to all the nodes:
-        - Command: ./upload_jar.sh
-    - Kill job on all nodes:
-        - Command: ./shutdown.sh
-
-Reminder: For your information, don't forget to double check if your EC2 instances are correctly terminated form AWS web console;
+How to compile other Hadoop code with Hidoop:
+	- Compile Hidoop.jar with './compile.sh'
+	- In all import statements, replace 'hadoop' with 'hidoop'
+	- Add 'Hidoop/Hidoop.jar' into dependencies.
+	- Compile the code in a way you like.
 ==============================================================================================================
 References:
     http://aws.amazon.com/documentation/
     http://stackoverflow.com/questions/8193768/trying-to-ssh-into-an-amazon-ec2-instance-permission-error
     http://docs.aws.amazon.com/cli/latest/userguide/cli-ec2-sg.html#configuring-a-security-group
     https://github.com/trentm/json
+    https://github.com/apache/hadoop

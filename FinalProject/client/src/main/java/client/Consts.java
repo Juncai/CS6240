@@ -27,7 +27,9 @@ public class Consts {
 
     // Communication headers
     public static final String MASTER_HEADER = "MASTER";
+    public static final String STATUS_HEADER = "STATUS";
     public static final String MASTER_HEADER_EOL = MASTER_HEADER + END_OF_LINE;
+    public static final String STATUS_HEADER_EOL = STATUS_HEADER + END_OF_LINE;
     public static final String SAMPLE_HEADER = "SAMPLE";
     public static final String DATA_HEADER = "DATA";
     public static final String READY_HEADER = "READY";

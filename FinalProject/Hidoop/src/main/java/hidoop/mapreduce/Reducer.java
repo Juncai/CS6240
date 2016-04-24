@@ -3,31 +3,19 @@ package hidoop.mapreduce;
 import java.io.IOException;
 import java.util.Iterator;
 
-/**
- * Created by jon on 4/6/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public class Reducer<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
 
-    /**
-     * The <code>Context</code> passed on to the {@link Reducer} implementations.
-     */
     public abstract class Context
             implements ReduceContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
     }
 
-    /**
-     * Called once at the start of the task.
-     */
     protected void setup(Context context
     ) throws IOException, InterruptedException {
         // NOTHING
     }
 
-    /**
-     * This method is called once for each key. Most applications will define
-     * their reduce class by overriding this method. The default implementation
-     * is an identity function.
-     */
     @SuppressWarnings("unchecked")
     protected void reduce(KEYIN key, Iterable<VALUEIN> values, Context context
     ) throws IOException, InterruptedException {
@@ -36,9 +24,6 @@ public class Reducer<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
         }
     }
 
-    /**
-     * Called once at the end of the task.
-     */
     protected void cleanup(Context context
     ) throws IOException, InterruptedException {
         // NOTHING
@@ -54,6 +39,5 @@ public class Reducer<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
         } finally {
             cleanup(context);
         }
-//        reduce(null, null, context);
     }
 }

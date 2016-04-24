@@ -3,9 +3,8 @@ package hidoop.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created by jon on 4/9/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public class InputUtils {
     public static String[] extractBucketAndDir(String s3Path) {
         String[] tmp = s3Path.split("/", 4);

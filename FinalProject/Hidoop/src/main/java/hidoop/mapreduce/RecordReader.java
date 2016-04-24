@@ -7,9 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-/**
- * Created by jon on 4/12/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public abstract class RecordReader<KEYIN, VALUEIN> implements Cloneable {
     public abstract void init(List<Path> inputs, FileSystem fs) throws IOException, InterruptedException;
     public abstract boolean nextKeyValue() throws IOException, InterruptedException;

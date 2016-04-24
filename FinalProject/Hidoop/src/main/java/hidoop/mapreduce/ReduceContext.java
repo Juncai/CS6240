@@ -2,23 +2,12 @@ package hidoop.mapreduce;
 
 import java.io.IOException;
 
-/**
- * Created by jon on 4/8/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public interface ReduceContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
         extends TaskInputOutputContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
 
-    /**
-     * Start processing next unique key.
-     */
     public boolean nextKey() throws IOException, InterruptedException;
 
-    /**
-     * Iterate through the values for the current key, reusing the same value
-     * object, which is stored in the context.
-     *
-     * @return the series of values associated with the current key. All of the
-     * objects returned directly and indirectly from this method are reused.
-     */
     public Iterable<VALUEIN> getValues() throws IOException, InterruptedException;
 }

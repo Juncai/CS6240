@@ -7,9 +7,8 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Semaphore;
 
-/**
- * Created by jon on 4/21/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public class Pool<T> {
     private final Semaphore available;
     private Queue<T> q;

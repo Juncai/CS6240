@@ -1,11 +1,8 @@
 package hidoop.mapreduce;
 
-import java.util.HashMap;
-import java.util.Map;
 
-/**
- * Created by jon on 4/12/16.
- */
+// Author: Xinyuan Wang, Xi Wang
+// Reference: github.com/apache/hadoop
 public enum TaskCounter{
     MAP_OUTPUT_RECORDS;
 }

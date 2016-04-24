@@ -1,6 +1,5 @@
 package hidoop.mapreduce.lib.map;
 
-import hidoop.mapreduce.Counter;
 import hidoop.mapreduce.MapContext;
 import hidoop.mapreduce.Mapper;
 
@@ -8,9 +7,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by jon on 4/13/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public class WrappedMapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
         extends Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
 	

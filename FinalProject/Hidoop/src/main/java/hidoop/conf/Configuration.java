@@ -1,12 +1,10 @@
 package hidoop.conf;
 
-import hidoop.io.LongWritable;
 import hidoop.io.Text;
 import hidoop.mapreduce.Mapper;
 import hidoop.mapreduce.Partitioner;
 import hidoop.mapreduce.Reducer;
 import hidoop.util.Consts;
-import job.WordCount;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,9 +13,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by jon on 4/6/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public class Configuration implements Serializable {
     public boolean isLocalMode;
     public String jobName;
@@ -53,7 +50,6 @@ public class Configuration implements Serializable {
         // mode: local/ec2
         // master port
         // slave port
-        // master ip
         BufferedReader br = new BufferedReader(new FileReader(Consts.CONFIG_PATH));
         String line;
         line = br.readLine();
@@ -80,13 +76,6 @@ public class Configuration implements Serializable {
             slaveNum = slaveIpList.size();
             reducerNumber = slaveNum;
         }
-    }
-
-    public Configuration(boolean test) {
-        mapperClass = WordCount.TokenizerMapper.class;
-        reducerClass = WordCount.IntSumReducer.class;
-        slaveIpList = new ArrayList<String>();
-        slaveIpList.add("hahaha");
     }
 
     public void setJobName(String jname) {
@@ -145,6 +134,5 @@ public class Configuration implements Serializable {
 
     public void set(String name, String value) {
         // do nothing;
-//        set(name, value, null);
     }
 }

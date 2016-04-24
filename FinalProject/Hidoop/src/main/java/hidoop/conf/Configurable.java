@@ -1,10 +1,8 @@
 package hidoop.conf;
 
-/**
- * Created by jon on 4/7/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public interface Configurable {
     void setConf(Configuration conf);
-
     Configuration getConf();
 }

@@ -4,9 +4,8 @@ import hidoop.util.Consts;
 
 import java.io.IOException;
 
-/**
- * Created by jon on 4/9/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public interface Client {
     public abstract void submitJob() throws IOException, InterruptedException;
     public abstract Consts.Stages getStatus() throws IOException, InterruptedException;

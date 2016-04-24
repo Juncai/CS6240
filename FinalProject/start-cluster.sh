@@ -1,85 +1,106 @@
 #!/bin/bash
 
-# author: Xi Wang
-
-# Get input instances number
+######################Global variables########################
 instance_number=$1
-if [ $instance_number != "2" ] && [ $instance_number != "8" ]; then
-	echo "The valid instance numbers are 2 and 8"
-	exit 1
-fi
-
-# if [ $instance_number = "2" ]; then
-instance_type='m3.2xlarge'
-	# instance_type='m3.medium'
-# else
-	# instance_type='m3.xlarge'
-# fi
-
-
-echo starting $instance_number $instance_type instances
+instance_type='t2.small'
 
 # instances public ip address file
-ip_file=address.txt
+ip_file=config/ips
+
+# instances id file. Used in stop cluster
+id_file=id.txt
+
+config_dir="config"
+config_path="config/hidoop.conf"
 
 # instances public ip address list
 ids[0]='some id'
 ips[0]='some ip'
+########################Functions#############################
+if [ -z $1 ]; then
+  echo "Usage: ./start-cluster-final.sh [number of instances]"
+  exit 1
+fi
 
-# instances id file
-id_file=id.txt
+function start_instance(){
+  local i="0"
+  echo "---------------------------------------Starting instance------------------------------------"
+  # # launch all instances
+  while [ $i -lt "$instance_number" ]
+  do
+	  id=$(aws ec2 run-instances --image-id $IMAGE_ID \
+			  --count 1 \
+			  --instance-type $instance_type \
+			  --key-name $EC2_KEY_PAIR_NAME \
+			  --instance-initiated-shutdown-behavior terminate \
+			  --security-groups $EC2_SECURITY_GROUP | json Instances[0].InstanceId)
+	  echo $id >> $id_file
+	  ids[$i]=$id
+	  echo "Instance $id started"
+  	  i=$[$i+1]
+  	  sleep 5s
+  done
 
+  # need to wait until instance is up
+  echo "Waiting for instance finishing initialization"
+  sleep 5m
+}
+function get_ips(){
+  echo "------------------------------------------Getting ips----------------------------------------------"
+  local i="0"
+   ## write out ip addresses
+  for id in "${ids[@]}"
+  do
+	  public_ip=$(aws ec2 describe-instances --instance-ids $id | json Reservations[0].Instances[0].PublicIpAddress)
+	  ips[$i]=$public_ip
+	  echo $public_ip >> $ip_file
+	  i=$[$i+1]
+	  echo "IP: " $public_ip "got"
+	  sleep 3s
+  done
+  sleep 3s
+}
+function prepare_config(){
+  echo "------------------------------------Preparing hidoop.config file-----------------------------------"
+  # check if config file exists
+  if [ ! -f $config_path ]; then
+      echo "create default config file"
+      "EC2" >> $config_path
+      "10001" >> $config_path
+      "10002" >> $config_path
+  fi
+}
+
+function upload_files(){
+  i="0"
+  echo "--------------------------------Start uploading files to Instances---------------------------------"
+  for ip in "${ips[@]}"
+  do
+  # upload peer and master address list, input file paths, jar file and env.sh
+	  ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$ip 'rm -rf ~/*'
+	  # ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$ip 'mkdir ~/output'
+	  # scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH Job.jar $EC2_USERNAME@$ip:~/
+	  scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH -r ~/.aws $EC2_USERNAME@$ip:~/
+	  scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH -r $config_dir $EC2_USERNAME@$ip:~/
+	  i=$[$i+1]
+	  echo "Done initializing node:" $ip
+  done
+}
+########################Main##################################
 # clean the stale files
-rm $ip_file $id_file
+rm -rf $ip_file $id_file
 
-i="0"
+start_instance
 
-# # launch instances
-while [ $i -lt $instance_number ]
-do
-	instance_id=$(aws ec2 run-instances --image-id $IMAGE_ID \
-			--count 1 \
-			--instance-type $instance_type \
-			--key-name $EC2_KEY_PAIR_NAME \
-			--instance-initiated-shutdown-behavior terminate \
-			--security-groups $EC2_SECURITY_GROUP | json Instances[0].InstanceId)
-	echo $instance_id >> $id_file
-	ids[$i]=$instance_id
+prepare_config
+get_ips
 
-	i=$[$i+1]
-	sleep 5s
-done
+chmod +x ./compile-final.sh
 
-# need to wait until instance is up
-sleep 2m
+./compile-final.sh
 
-i="0"
-inputs_prefix='inputs/inputs_'
-for id in "${ids[@]}"
-do
-	public_ip=$(aws ec2 describe-instances --instance-ids $id | json Reservations[0].Instances[0].PublicIpAddress)
+upload_files
 
-	ips[$i]=$public_ip
-	echo $public_ip >> $ip_file
-	i=$[$i+1]
-	sleep 3s
-done
 
-# need to wait until instance is up
-sleep 1m
 
-i="0"
-for public_ip in "${ips[@]}"
-do
-# upload peer and master address list, input file paths, jar file and env.sh
-	ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$public_ip 'rm -rf ~/*'
-	ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$public_ip 'mkdir ~/output ~/.aws'
-	scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH Job.jar $EC2_USERNAME@$public_ip:~/
-	scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH credentials $EC2_USERNAME@$public_ip:~/.aws/
-	scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $ip_file $EC2_USERNAME@$public_ip:~/
-	# scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $inputs_prefix$i $EC2_USERNAME@$public_ip:~/
-
-	i=$[$i+1]
-	echo "Done initializing node:" $public_ip
-done
 

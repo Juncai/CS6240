@@ -2,9 +2,8 @@ package hidoop.util;
 
 import hidoop.conf.Configurable;
 
-/**
- * Created by jon on 4/7/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public interface Tool extends Configurable {
     int run(String[] args) throws Exception;
 }

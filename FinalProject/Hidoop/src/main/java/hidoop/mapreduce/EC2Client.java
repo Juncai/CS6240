@@ -13,16 +13,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by jon on 4/9/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public class EC2Client implements Client {
     private Configuration conf;
     private List<Path> inputPathList;
     private Map<Integer, Node> nodeMap;
     private Map<Integer, List<Integer>> nodeReducerMap;
-//    private Map<Integer, Consts.TaskStatus> mapStatus;
-//    private Map<Integer, Consts.TaskStatus> reduceStatus;
     private Consts.Stages status;
     private ListeningThread lt;
     private FileSystem fs;
@@ -42,8 +39,6 @@ public class EC2Client implements Client {
         status = Consts.Stages.DEFINE;
         nodeMap = new HashMap<Integer, Node>();
         nodeReducerMap = new HashMap<Integer, List<Integer>>();
-//        mapStatus = new HashMap<Integer, Consts.TaskStatus>();
-//        reduceStatus = new HashMap<Integer, Consts.TaskStatus>();
         int numMapperTasks = inputPathList.size();
         int numReducers = (numMapperTasks / 2) > 1 ? numMapperTasks / 2 : 1;
         conf.setNumReduceTasks(numReducers);
@@ -58,10 +53,6 @@ public class EC2Client implements Client {
         nodePool = new Pool<Node>(numSlaves);
 
         // initialize Mapper
-        // get the input file list
-//        for (int i = 0; i < numMapperTasks; i++) {
-//            mapStatus.put(i, Consts.TaskStatus.DEFINE);
-//        }
 
         // initialize Reducer
         for (int i = 0; i < conf.reducerNumber; i++) {
@@ -94,7 +85,6 @@ public class EC2Client implements Client {
         // TODO run whatever reducer is ready
 
         // all maps are done
-//        nodePool.waitTillAllAvailable();
         // all reducer inputs are ready
         reducerInputPool.waitTillAllAvailable();
         status = Consts.Stages.REDUCE;
@@ -133,9 +123,10 @@ public class EC2Client implements Client {
         }
         sendInstruction(n, null, header);
     }
+
     @Override
-    public Counter getCounter(){
-       return this.mapOutputCounter;
+    public Counter getCounter() {
+        return this.mapOutputCounter;
     }
 
     private void sendInstruction(Node n, List<String> data, String header) throws IOException {
@@ -221,6 +212,8 @@ public class EC2Client implements Client {
                 String[] header = line.split(" ");
                 if (header[0].equals(Consts.RUNNING)) {
                     handleSlaveRunning(header, s);
+                } else if (header[0].equals(Consts.STATUS)) {
+                    handleStatusQuery(header, s);
                 } else if (header[0].equals(Consts.READY)) {
                     handleSlaveReady(header, s);
                 } else if (header[0].equals(Consts.MAP_DONE)) {
@@ -238,6 +231,20 @@ public class EC2Client implements Client {
             }
         }
 
+        private void handleStatusQuery(String[] header, Socket s) throws IOException {
+            // format: RUNNING NODE_INDEX
+            // TODO send Configuration to slave
+            BufferedWriter br = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+            if (status == Consts.Stages.DONE) {
+                br.write(Consts.FINISHED);
+            } else {
+                br.write(Consts.RUNNING);
+            }
+            br.write(Consts.END_OF_LINE);
+            br.flush();
+            br.close();
+        }
+
         private void handleSlaveRunning(String[] header, Socket s) throws IOException {
             // format: RUNNING NODE_INDEX
             // TODO send Configuration to slave
@@ -247,10 +254,10 @@ public class EC2Client implements Client {
             // TODO close oos?
             oos.close();
         }
+
         private void handleSlaveReady(String[] header, Socket s) throws IOException {
             // format: READY NODE_INDEX
             nodePool.putResource(nodeMap.get(Integer.parseInt(header[1])));
-//            System.out.println("Node " + header[1] + " is up and running.");
         }
 
         private void handleMapDone(String[] header) {

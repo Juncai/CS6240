@@ -2,9 +2,8 @@ package hidoop.mapreduce;
 
 import java.util.concurrent.Semaphore;
 
-/**
- * Created by jon on 4/21/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public class ReducerInputPool {
     private final Semaphore available;
     private boolean[][] p;
@@ -14,7 +13,6 @@ public class ReducerInputPool {
         p = new boolean[numReducer][numMapper];
         numInputs = numMapper * numReducer;
         available = new Semaphore(numInputs, true);
-//        available.acquireUninterruptibly(numInputs);
         waitTillAllAvailable();
     }
 

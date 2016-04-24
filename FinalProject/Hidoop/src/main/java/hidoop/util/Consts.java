@@ -1,8 +1,7 @@
 package hidoop.util;
 
-/**
- * Created by jon on 4/7/16.
- */
+// Author: Jun Cai, Xi Wang
+// Reference: github.com/apache/hadoop
 public class Consts {
     public enum Stages {
         DEFINE, BOOSTRAP, MAP, PARTITION, REDUCE, DONE
@@ -35,14 +34,14 @@ public class Consts {
 
     // Communication headers
     public static final String RUNNING = "RUNNING";
+    public static final String STATUS = "STATUS";
+    public static final String FINISHED = "FINISHED";
     public static final String READY = "READY";
     public static final String RUN_MAP = "MAP";
     public static final String MAP_DONE = "MAPPER_DONE";
     public static final String MAP_FAILED = "MAPPER_FAILED";
     public static final String RUN_PARTITION = "PARTITION";
     public static final String REDUCER_INPUT = "REDUCER_INPUT";
-//    public static final String PARTITION_DONE = "PARTITIONER_DONE";
-//    public static final String PARTITION_FAILED = "PARTITIONER_FAILED";
     public static final String REDUCER_INPUT_READY = "REDUCER_INPUT_READY";
     public static final String REDUCER_INPUT_FAILED = "REDUCER_INPUT_FAILED";
     public static final String RUN_REDUCE = "REDUCE";

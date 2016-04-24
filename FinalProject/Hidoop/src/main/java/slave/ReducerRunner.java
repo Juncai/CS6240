@@ -11,9 +11,8 @@ import hidoop.util.Consts;
 
 import java.util.List;
 
-/**
- * Created by jon on 4/8/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public class ReducerRunner<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
     private Configuration conf;
     private int reducerInd;
@@ -46,12 +45,6 @@ public class ReducerRunner<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
             // reduce
             reducer.run(reducerContext);
             reducerContext.close();
-//            for (Path inputDir : reduceInputDirList) {
-//                inputPathList = fs.getFileList(inputDir);
-//                outputPath = Path.appendDirFile(outputDir, Consts.REDUCE_OUTPUT_PREFIX + indStr);
-//                // prepare context
-//
-//            }
 
             return true;
         } catch (Exception ex) {

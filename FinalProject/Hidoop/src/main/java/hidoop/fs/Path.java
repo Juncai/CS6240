@@ -1,14 +1,11 @@
 package hidoop.fs;
 
-import hidoop.conf.Configuration;
 import hidoop.util.Consts;
 
-import java.io.IOException;
 import java.util.List;
 
-/**
- * Created by jon on 4/6/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public class Path implements Comparable {
     private String pathStr;
     public String bucket;
@@ -42,9 +39,6 @@ public class Path implements Comparable {
         return 0;
     }
 
-    //    public FileSystem getFileSystem(Configuration conf) throws IOException {
-//        return FileSystem.get(this.toUri(), conf);
-//    }
     public String toString() {
         return pathStr;
     }

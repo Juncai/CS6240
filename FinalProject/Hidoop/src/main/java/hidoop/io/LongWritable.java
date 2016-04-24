@@ -4,9 +4,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- *  written by Xinyuan
- */
+// Author: Xinyuan Wang
+// Reference: github.com/apache/hadoop
 public class LongWritable implements Writable<LongWritable> {
     private long value;
 

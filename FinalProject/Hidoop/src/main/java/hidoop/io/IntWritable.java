@@ -4,9 +4,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * Created by jon on 4/6/16.
- */
+// Author: Xinyuan Wang
+// Reference: github.com/apache/hadoop
 public class IntWritable implements Writable<IntWritable>{
     private int value;
     public IntWritable(){}

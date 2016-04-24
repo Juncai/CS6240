@@ -2,9 +2,8 @@ package hidoop.util;
 
 import hidoop.conf.Configuration;
 
-/**
- * Created by jon on 4/12/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public class GenericOptionsParser {
     private String[] args;
     public GenericOptionsParser(Configuration conf, String[] args) {

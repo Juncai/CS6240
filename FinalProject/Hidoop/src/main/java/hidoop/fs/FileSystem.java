@@ -1,7 +1,6 @@
 package hidoop.fs;
 
 import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.SystemPropertiesCredentialsProvider;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
@@ -17,9 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-/**
- * Created by jon on 4/12/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public class FileSystem {
     private static FileSystem fs;
     private boolean isS3;
@@ -70,7 +68,6 @@ public class FileSystem {
         if (pathFromS3(p.toString())) {
             String[] inputBucketInfo = InputUtils.extractBucketAndDir(p.toString());
             List<S3ObjectSummary> summaryList = s3.listObjects(inputBucketInfo[0], inputBucketInfo[1]).getObjectSummaries();
-//            List<S3ObjectSummary> summaryList = s3.listObjects(inputBucketInfo[0], inputBucketInfo[1] + "/").getObjectSummaries();
             for (int i = 1; i < summaryList.size(); i++) {
                 res.add(new Path(summaryList.get(i).getBucketName(), summaryList.get(i).getKey(), true));
             }
@@ -90,7 +87,6 @@ public class FileSystem {
     }
 
     private boolean isCompressed(Path p) {
-//        return p.toString().endsWith(Consts.TAR_GZ_EXT);
         return p.toString().endsWith(Consts.CSV_GZ_EXT);
     }
 

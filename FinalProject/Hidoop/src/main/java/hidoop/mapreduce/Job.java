@@ -5,9 +5,8 @@ import hidoop.conf.Configuration;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Created by jon on 4/6/16.
- */
+// Author: Jun Cai, Vikas Boddu
+// Reference: github.com/apache/hadoop
 public class Job {
     private Configuration conf;
     private Cluster cluster;
@@ -35,66 +34,54 @@ public class Job {
 
     public static Job getInstance(Configuration conf) throws IOException {
         // create with a null Cluster
-//        JobConf jobConf = new JobConf(conf);
         return new Job(conf);
     }
 
     public void setJarByClass(Class<?> cls) {
         // do nothing
-//        ensureState(JobState.DEFINE);
-//        conf.setJarByClass(cls);
     }
 
     public void setJobName(String name) throws IllegalStateException {
-//        ensureState(JobState.DEFINE);
         conf.setJobName(name);
     }
 
     public void setMapperClass(Class<? extends Mapper> cls
     ) throws IllegalStateException {
-//        ensureState(JobState.DEFINE);
         conf.setMapperClass(cls);
     }
 
     public void setCombinerClass(Class<? extends Reducer> cls
     ) throws IllegalStateException {
-//        ensureState(JobState.DEFINE);
         conf.setCombinerClass(cls);
     }
 
     public void setReducerClass(Class<? extends Reducer> cls
     ) throws IllegalStateException {
-//        ensureState(JobState.DEFINE);
         conf.setReducerClass(cls);
     }
 
     public void setPartitionerClass(Class<? extends Partitioner> cls
     ) throws IllegalStateException {
-//        ensureState(JobState.DEFINE);
         conf.setPartitionerClass(cls);
     }
 
     public void setOutputKeyClass(Class<?> theClass
     ) throws IllegalStateException {
-//        ensureState(JobState.DEFINE);
         conf.setOutputKeyClass(theClass);
     }
 
     public void setOutputValueClass(Class<?> theClass
     ) throws IllegalStateException {
-//        ensureState(JobState.DEFINE);
         conf.setOutputValueClass(theClass);
     }
 
     public void setMapOutputKeyClass(Class<?> theClass
     ) throws IllegalStateException {
-//        ensureState(JobState.DEFINE);
         conf.setMapOutputKeyClass(theClass);
     }
 
     public void setMapOutputValueClass(Class<?> theClass
     ) throws IllegalStateException {
-//        ensureState(JobState.DEFINE);
         conf.setMapOutputValueClass(theClass);
     }
 
@@ -120,8 +107,6 @@ public class Job {
                 .setCounter(cluster
                         .getClient()
                         .getCounter());
-        // TODO cleanup should be in the client
-//        cleanUpTmp();
         return true;
     }
 
@@ -133,48 +118,4 @@ public class Job {
     public Configuration getConfiguration() {
         return conf;
     }
-
-//
-//    public boolean isComplete() throws IOException {
-////        ensureState(JobState.RUNNING);
-//        updateStatus();
-//        return status.isJobComplete();
-//    }
-//
-//    /**
-//     * Check if the job completed successfully.
-//     *
-//     * @return <code>true</code> if the job succeeded, else <code>false</code>.
-//     * @throws IOException
-//     */
-//    public boolean isSuccessful() throws IOException {
-////        ensureState(JobState.RUNNING);
-//        updateStatus();
-//        return status.getState() == JobStatus.State.SUCCEEDED;
-//    }
-//
-//    synchronized void updateStatus() throws IOException {
-//        try {
-//            this.status = ugi.doAs(new PrivilegedExceptionAction<JobStatus>() {
-//                @Override
-//                public JobStatus run() throws IOException, InterruptedException {
-//                    return cluster.getClient().getJobStatus(status.getJobID());
-//                }
-//            });
-//        } catch (InterruptedException ie) {
-//            throw new IOException(ie);
-//        }
-//        if (this.status == null) {
-//            throw new IOException("Job status not available ");
-//        }
-//        this.statustime = System.currentTimeMillis();
-//    }
-//
-//    public JobStatus getStatus() throws IOException, InterruptedException {
-//        ensureState(JobState.RUNNING);
-//        updateStatus();
-//        return status;
-//    }
-
-
 }

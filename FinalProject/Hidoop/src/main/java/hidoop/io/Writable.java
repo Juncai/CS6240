@@ -4,9 +4,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * written by xinyuan
- */
+// Author: Xinyuan Wang
+// Reference: github.com/apache/hadoop
 public interface Writable<T> extends Comparable<T> {
     /**
      * serialize the object to the output stream

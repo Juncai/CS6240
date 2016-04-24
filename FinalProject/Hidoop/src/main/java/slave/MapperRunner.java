@@ -10,9 +10,8 @@ import hidoop.util.Consts;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by jon on 4/8/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public class MapperRunner<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
     private Configuration conf;
     private int mapperInd;

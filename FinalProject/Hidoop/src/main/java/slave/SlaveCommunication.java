@@ -11,6 +11,7 @@ import hidoop.fs.*;
 import hidoop.util.Consts;
 
 // Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public class SlaveCommunication {
     private ListeningThread lt;
     private int localPort;
@@ -46,12 +47,6 @@ public class SlaveCommunication {
     private void sendMsgToMaster(String msg) throws IOException {
         sendDataToNode(masterIp, masterPort, msg, null);
     }
-    // send map output to reduce input
-//    public void sendDataToNode(int ind, List<String> data, String header) throws IOException {
-//        // TODO add node index in the header
-//        SendDataThread sdt = new SendDataThread(ind, header, data);
-//        sdt.start();
-//    }
 
     private void sendReducerInput(List<String> data, int reducerInd, int mapperInd) throws IOException {
         // format: REDUCER_INPUT REDUCER_INDEX MAPPER_INDEX

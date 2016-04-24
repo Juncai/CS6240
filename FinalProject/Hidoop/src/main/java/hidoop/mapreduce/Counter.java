@@ -1,8 +1,7 @@
 package hidoop.mapreduce;
 
-/**
- * Created by jon on 4/12/16.
- */
+// Author: Xinyuan Wang, Xi Wang
+// Reference: github.com/apache/hadoop
 public class Counter {
     private long value;
 

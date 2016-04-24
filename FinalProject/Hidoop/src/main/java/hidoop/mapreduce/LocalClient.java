@@ -12,9 +12,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by jon on 4/9/16.
- */
+// Author: Jun Cai, Vikas Boddu
+// Reference: github.com/apache/hadoop
 public class LocalClient implements Client {
     private Configuration conf;
     private List<Path> mapInputPathList;
@@ -33,7 +32,6 @@ public class LocalClient implements Client {
 
     @Override
     public void submitJob() throws IOException, InterruptedException {
-//        public <KEYIN, VALUEIN, KEYOUT, VALUEOUT> void submitJob() throws IOException, InterruptedException {
         // create file system
         fs = FileSystem.get(conf);
 
@@ -67,7 +65,6 @@ public class LocalClient implements Client {
                 from = new File(Consts.MAP_OUTPUT_DIR_PRE + j + "/" + Consts.MAP_OUTPUT_PREFIX + i);
                 reduceInput = Path.appendDirFile(reduceInputDir, Consts.REDUCE_INPUT_PREFIX + j);
                 to = new File(reduceInput.toString());
-                //System.out.println(from.toString() + "&&" + to.toString());
                 Files.move(from, to);
             }
         }

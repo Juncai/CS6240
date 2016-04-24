@@ -5,9 +5,8 @@ import hidoop.mapreduce.Reducer;
 
 import java.io.IOException;
 
-/**
- * Created by jon on 4/13/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public class WrappedReducer<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
         extends Reducer<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
 

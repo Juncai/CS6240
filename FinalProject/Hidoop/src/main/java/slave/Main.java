@@ -1,9 +1,8 @@
 package slave;
 
 
-/**
- * Created by jon on 4/8/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public class Main {
     public static void main(String[] args) throws Exception {
 

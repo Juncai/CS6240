@@ -2,9 +2,8 @@ package hidoop.mapreduce.counters;
 
 import hidoop.mapreduce.Counter;
 
-/**
- * Created by jon on 4/12/16.
- */
+// Author: Xinyuan Wang, Xi Wang
+// Reference: github.com/apache/hadoop
 public class CounterGroup {
     private Counter c;
     public CounterGroup(){};

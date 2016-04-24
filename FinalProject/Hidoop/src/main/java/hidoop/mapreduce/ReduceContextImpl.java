@@ -11,7 +11,8 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-// author: Jun Cai
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public class ReduceContextImpl<KEYIN, VALUEIN, KEYOUT, VALUEOUT>
         implements ReduceContext<KEYIN, VALUEIN, KEYOUT, VALUEOUT> {
     private Configuration conf;

@@ -4,9 +4,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-/**
- * written by xinyuan
- */
+// Author: Xinyuan Wang
+// Reference: github.com/apache/hadoop
 public class DoubleWritable implements Writable<DoubleWritable> {
     private double value;
 

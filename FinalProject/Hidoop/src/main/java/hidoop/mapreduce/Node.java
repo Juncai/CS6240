@@ -2,9 +2,8 @@ package hidoop.mapreduce;
 
 import hidoop.util.Consts;
 
-/**
- * Created by jon on 4/21/16.
- */
+// Author: Jun Cai
+// Reference: github.com/apache/hadoop
 public class Node {
     public int index;
     public Consts.NodeStatus status;
