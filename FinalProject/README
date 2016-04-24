@@ -27,8 +27,8 @@ How to run:
     - Create the cluster and upload Jar file and node address file. 
         - Command: ./start-cluster.sh NUM_OF_NODES
     - Run map-reduce job with Hidoop
-		- Command: ./hidoop JOB_JAR_FILE_PATH INPUT_PATH OUTPUT_PATH
-		- Example: ./hidoop wordcount/Job.jar s3://juncai001/input_wc s3://juncai001/output_wc
+		- Command: ./hidoop_run JOB_JAR_FILE_PATH INPUT_PATH OUTPUT_PATH
+		- Example: ./hidoop_run wordcount/Job.jar s3://juncai001/input_wc s3://juncai001/output_wc
 		- Wait for job to be completed
 		- The log of master node will be in 'logs' directory
     - Stop the cluster
