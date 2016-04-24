@@ -1,12 +1,10 @@
 cd Hidoop
 gradle clean;gradle jar
-rm ./Hidoop.jar
 mv build/libs/Hidoop.jar ./
 cd ..
 
 cd client
 gradle clean;gradle jar
-rm ./Client.jar
 mv build/libs/Client.jar ./
 cd ..
 

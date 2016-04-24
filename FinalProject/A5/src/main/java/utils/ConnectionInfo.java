@@ -1,20 +1,20 @@
 package utils;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import java.util.*;
 
 // Authors: Jun Cai and Vikas Boddu
 public class ConnectionInfo {
-    static private DateTimeFormatter sf = DateTimeFormat.forPattern(OTPConsts.DATEKEY_FORMAT);
+    static private DateTimeFormatter sf = DateTimeFormat.forPattern(OTPConsts.DATEKEY_FORMAT).withZone(DateTimeZone.UTC);
 
-    private Map<String, List<LocalDateTime[]>> depMap;
-    private Map<String, List<LocalDateTime[]>> arrMap;
+    private Map<String, List<DateTime[]>> depMap;
+    private Map<String, List<DateTime[]>> arrMap;
     private String[] possibleKeys;
-    List<LocalDateTime[]> arrTSs;
-    List<LocalDateTime[]> depTSs;
+    List<DateTime[]> arrTSs;
+    List<DateTime[]> depTSs;
 
     static private String[] generatePossibleKeys(int year) {
 
@@ -35,30 +35,30 @@ public class ConnectionInfo {
     }
 
     public ConnectionInfo() {
-        arrTSs = new ArrayList<LocalDateTime[]>();
-        depTSs = new ArrayList<LocalDateTime[]>();
+        arrTSs = new ArrayList<DateTime[]>();
+        depTSs = new ArrayList<DateTime[]>();
     }
 
     public ConnectionInfo(int year) {
-        arrTSs = new ArrayList<LocalDateTime[]>();
-        depTSs = new ArrayList<LocalDateTime[]>();
+        arrTSs = new ArrayList<DateTime[]>();
+        depTSs = new ArrayList<DateTime[]>();
         possibleKeys = generatePossibleKeys(year);
     }
 
-    public void updateArr(LocalDateTime scheduled, LocalDateTime actual) {
-        LocalDateTime[] newEntry = {scheduled, actual};
+    public void updateArr(DateTime scheduled, DateTime actual) {
+        DateTime[] newEntry = {scheduled, actual};
         arrTSs.add(newEntry);
     }
 
-    public void updateDep(LocalDateTime scheduled, LocalDateTime actual) {
-        LocalDateTime[] newEntry = {scheduled, actual};
+    public void updateDep(DateTime scheduled, DateTime actual) {
+        DateTime[] newEntry = {scheduled, actual};
         depTSs.add(newEntry);
     }
 
     public int countMissedConnections() {
 
-        depMap = new HashMap<String, List<LocalDateTime[]>>();
-        arrMap = new HashMap<String, List<LocalDateTime[]>>();
+        depMap = new HashMap<String, List<DateTime[]>>();
+        arrMap = new HashMap<String, List<DateTime[]>>();
 
         fillConMap(depMap, depTSs);
         fillConMap(arrMap, arrTSs);
@@ -66,8 +66,8 @@ public class ConnectionInfo {
         return countMissedConnectionsHelper(depMap, arrMap);
     }
 
-    public List<LocalDateTime[]> firstDepartures() {
-        List<LocalDateTime[]> res = new ArrayList<LocalDateTime[]>();
+    public List<DateTime[]> firstDepartures() {
+        List<DateTime[]> res = new ArrayList<DateTime[]>();
         for (int i = 0; i < 6; i++) {
             if (depMap.containsKey(possibleKeys[i])) {
                 res.addAll(depMap.get(possibleKeys[i]));
@@ -76,8 +76,8 @@ public class ConnectionInfo {
         return res;
     }
 
-    public List<LocalDateTime[]> lastArrivals() {
-        List<LocalDateTime[]> res = new ArrayList<LocalDateTime[]>();
+    public List<DateTime[]> lastArrivals() {
+        List<DateTime[]> res = new ArrayList<DateTime[]>();
         int len = possibleKeys.length;
         for (int i = len - 6; i < len; i++) {
             if (arrMap.containsKey(possibleKeys[i])) {
@@ -87,8 +87,8 @@ public class ConnectionInfo {
         return res;
     }
 
-    public int countMissedConnectionsHelper(Map<String, List<LocalDateTime[]>> depMap,
-                                            Map<String, List<LocalDateTime[]>> arrMap) {
+    public int countMissedConnectionsHelper(Map<String, List<DateTime[]>> depMap,
+                                            Map<String, List<DateTime[]>> arrMap) {
         int res = 0;
         String cKey;
         String[] pKeys;
@@ -106,17 +106,17 @@ public class ConnectionInfo {
         return res;
     }
 
-    int missedConBetweenLOD(List<LocalDateTime[]> depLod, List<LocalDateTime[]> arrLod) {
+    int missedConBetweenLOD(List<DateTime[]> depLod, List<DateTime[]> arrLod) {
         int res = 0;
-        for (LocalDateTime[] arr : arrLod) {
-            for (LocalDateTime[] dep : depLod) {
+        for (DateTime[] arr : arrLod) {
+            for (DateTime[] dep : depLod) {
                 res += isMissedConnection(dep, arr);
             }
         }
         return res;
     }
 
-    private int isMissedConnection(LocalDateTime[] dep, LocalDateTime[] arr) {
+    private int isMissedConnection(DateTime[] dep, DateTime[] arr) {
         // check if it's a valid connection
         if (arr[0].plusMinutes(29).isBefore(dep[0])
                 && arr[0].plusMinutes(361).isAfter(dep[0])) {
@@ -138,19 +138,19 @@ public class ConnectionInfo {
         return res;
     }
 
-    private void fillConMap(Map<String, List<LocalDateTime[]>> map, List<LocalDateTime[]> lod) {
-        for (LocalDateTime[] tss :
+    private void fillConMap(Map<String, List<DateTime[]>> map, List<DateTime[]> lod) {
+        for (DateTime[] tss :
                 lod) {
-            LocalDateTime scheduled = tss[0];
+            DateTime scheduled = tss[0];
             String dateKey = dateToKey(scheduled);
             if (!map.containsKey(dateKey)) {
-                map.put(dateKey, new ArrayList<LocalDateTime[]>());
+                map.put(dateKey, new ArrayList<DateTime[]>());
             }
             map.get(dateKey).add(tss);
         }
     }
 
-    private String dateToKey(LocalDateTime d) {
+    private String dateToKey(DateTime d) {
         return d.toString(sf);
     }
 }

@@ -5,10 +5,9 @@ import hidoop.conf.Configured;
 import hidoop.fs.Path;
 import hidoop.io.IntWritable;
 import hidoop.io.Text;
+import hidoop.mapreduce.Job;
 import hidoop.mapreduce.FileInputFormat;
 import hidoop.mapreduce.FileOutputFormat;
-import hidoop.mapreduce.Job;
-
 import hidoop.util.Tool;
 import hidoop.util.ToolRunner;
 
@@ -28,7 +27,7 @@ public class MissedConnectionAnalysis extends Configured implements Tool {
         job.setMapperClass(AnalysisMapper.class);
         job.setReducerClass(AnalysisReducer.class);
         job.setPartitionerClass(AnalysisPartitioner.class); // set custom partitioner
-        job.setNumReduceTasks(4); // for test
+//        job.setNumReduceTasks(2); // for test
 
 		job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);

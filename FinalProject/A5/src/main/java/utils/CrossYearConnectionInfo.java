@@ -1,7 +1,6 @@
 package utils;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,15 +10,15 @@ import java.util.List;
  */
 public class CrossYearConnectionInfo extends ConnectionInfo {
     public CrossYearConnectionInfo() {
-        depTSs = new ArrayList<LocalDateTime[]>();
-        arrTSs = new ArrayList<LocalDateTime[]>();
+        depTSs = new ArrayList<DateTime[]>();
+        arrTSs = new ArrayList<DateTime[]>();
     }
 
-    public void updateDeps(List<LocalDateTime[]> deps) {
+    public void updateDeps(List<DateTime[]> deps) {
         depTSs.addAll(deps);
     }
 
-    public void updateArrs(List<LocalDateTime[]> arrs) {
+    public void updateArrs(List<DateTime[]> arrs) {
         arrTSs.addAll(arrs);
     }
 
