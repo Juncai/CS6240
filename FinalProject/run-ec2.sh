@@ -1,14 +1,20 @@
 #!/bin/bash
 
 taskJar=$1
-inputPath=$2
-outputPath=$3
-
+taskMain=$2
+inputPath=$3
+outputPath=$4
+echo $taskJar
+if [ -z $1 ] && [ -z $2 ] && [ -z $3 ] && [ -z $4 ]; then
+  echo "Usage: ./my-mapreduce.sh [yourJarFile] [YourMainClass] [YourInputPath] [YourOutputPath]"
+  exit 1
+fi
 echo "uploading test jar to master cluster"
 master_ip=$(head -n 1 ./config/ips)
-scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KE $taskJar $EC2_USERNAME@$master_ip:~/
 
-ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$master_ip 'java -jar $taskJar $inputPath $outputPath >> log.txt 2>&1'
+scp -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $taskJar $EC2_USERNAME@$master_ip:~/test.jar
+
+ssh -o "StrictHostKeyChecking no" -i $EC2_PRIVATE_KEY_PATH $EC2_USERNAME@$master_ip 'java -cp test.jar $taskMain $inputPath $outputPath >> log.txt 2>&1'
 
 
 sleep 1m

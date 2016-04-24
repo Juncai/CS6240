@@ -2,7 +2,6 @@
 
 ######################Global variables########################
 instance_number=$1
-
 instance_type='m3.medium'
 
 # instances public ip address file
@@ -18,6 +17,11 @@ config_path="config/hidoop.conf"
 ids[0]='some id'
 ips[0]='some ip'
 ########################Functions#############################
+if [ -z $1 ]; then
+  echo "Usage: ./start-cluster-final.sh [number of instances]"
+  exit 1
+fi
+
 function start_instance(){
   local i="0"
   echo "---------------------------------------Starting instance------------------------------------"
@@ -61,7 +65,7 @@ function prepare_config(){
   # check if config file exists
   if [ ! -f $config_path ]; then
       echo "create default config file"
-      "LOCAL" >> $config_path
+      "EC2" >> $config_path
       "10001" >> $config_path
       "10002" >> $config_path
   fi
@@ -89,7 +93,6 @@ rm -rf $ip_file $id_file
 start_instance
 
 prepare_config
-
 get_ips
 
 chmod +x ./compile-final.sh
