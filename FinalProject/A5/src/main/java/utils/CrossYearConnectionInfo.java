@@ -1,4 +1,4 @@
-package job.assignment5.utils;
+package utils;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;

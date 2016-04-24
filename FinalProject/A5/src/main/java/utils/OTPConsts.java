@@ -1,4 +1,4 @@
-package job.assignment5.utils;
+package utils;
 
 
 // Authors: Jun Cai and Vikas Boddu

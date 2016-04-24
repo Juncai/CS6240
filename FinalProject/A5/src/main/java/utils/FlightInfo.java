@@ -1,4 +1,4 @@
-package job.assignment5.utils;
+package utils;
 
 import hidoop.io.Text;
 import org.joda.time.DateTime;

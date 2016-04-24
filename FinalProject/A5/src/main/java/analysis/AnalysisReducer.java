@@ -3,7 +3,7 @@ package analysis;
 import hidoop.io.IntWritable;
 import hidoop.io.Text;
 import hidoop.mapreduce.Reducer;
-import job.assignment5.utils.*;
+import utils.*;
 
 import java.io.IOException;
 import java.util.HashMap;

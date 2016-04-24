@@ -3,8 +3,8 @@ package analysis;
 import hidoop.io.Text;
 import hidoop.mapreduce.Mapper;
 
-import job.assignment5.utils.FlightInfo;
-import job.assignment5.utils.OTPConsts;
+import utils.FlightInfo;
+import utils.OTPConsts;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package job.assignment5.utils;
+package utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
